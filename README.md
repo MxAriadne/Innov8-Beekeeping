@@ -4,39 +4,41 @@ We will be developing an educational Beekeeping game in Love2D for INNOV8 Africa
 
 # Group
 
-- Freyja Richardson
-- Stephanie Zhang
-- Amelia Reiss
-- Elaina Vogel
-- Natalie Galvan
+- Freyja Richardson - Integrator & Debugger
+- Stephanie Zhang - Economy & Progression
+- Amelia Reiss - UI/UX Developer
+- Elaina Vogel - Systems Developer
+- Natalie Galvan - AI Developer
+- Ming Chen - Base Gameplay Developer
 
 Idea for group split:
-- Gameplay Developer
-	- Implement mechanics (movement, hive placement, resource management, honey production)
+- Base Gameplay Developer
+	- Implement mechanics (movement, hive placement, event triggers)
 - AI Developer
 	- Implement predator AI (honey badgers breaking hives, wasps attacking colonies)
 	- Implement bee colony behavior (foraging, returning with nectar, hive expansion).
 - UI/UX Developer
 	- Design and implement HUD elements (hive health, productivity bars, alerts).
 	- UI menus for hive management, upgrades, and purchases.
-	- Implement actual shopping/upgrade mechanic/
-- Graphics Developer
-	- Create sprite assets for hives, bees, flowers, and predators.
-	- Develop animations for bee movement, hive activity, and threats.
-	- Implement effects (i.e. On screen visual changes, like triggering walking animations)
+	- Implement actual shopping mechanic and economy.
+- Economy & Progression
+	- Implement honey production and hive expansion.
+	- Implement resource management systems (nectar collection, hive maintenance).
+- Systems Developer
+	- Event scripting (i.e. Colony growth, predator attacks.)
+	- Implement save/load functionality to persist player progress.
+	- Create educational tooltips in-game.
 - Integrator & Debugger
 	- Integrate all components (gameplay, UI, art, and educational elements).
-	- Implement save/load functionality to persist player progress.
 	- Manage version control & project organization (GitHub, documentation).
-	- Create educational tooltips.
-	- Event scripting (i.e. Colony growth, predator attacks.)
-	- Balance honey production rates, hive upgrades, and economy. 
+	- Optimize existing code.
+
 # Aims
 
 ###  Educational Highlights:  
 
 1.  Introduces beekeeping practices, colony health, and nectar diversity.
-###  Game Loop
+### Game Loop
 
 1.  **Startup Phase**  
 	- Start with a small budget to purchase a basic hive and a queen bee.  
