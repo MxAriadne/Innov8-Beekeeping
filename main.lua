@@ -1,4 +1,5 @@
 function love.load(arg)
+    require "dayCycleScript" --includes script that handles night and day transitions
     x = 100
     y = 50
 end
@@ -17,4 +18,11 @@ end
 
 function love.draw()
     love.graphics.rectangle("line", x, y, 200, 150)
+
+    --print day/night messages
+    if isNight then
+        love.graphics.print("Good night!", 100, 50)
+    else
+        love.graphics.print("Good morning!", 100, 50)
+    end
 end
