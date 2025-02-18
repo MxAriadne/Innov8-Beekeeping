@@ -1,4 +1,5 @@
 --dayCycleScript.lua file
+--author: Elaina Vogel
 
 --[[This file handles the day cycle aspent of the game]]
 
