@@ -1,4 +1,6 @@
 function love.load(arg)
+    require "mainMenu"
+    
     x = 100
     y = 50
 end
