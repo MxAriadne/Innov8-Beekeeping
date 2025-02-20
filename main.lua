@@ -1,3 +1,6 @@
+local Beehive = require("beehive")
+local Jumper = require("jumper")
+
 function love.load(arg)
     Object = require "classic"
     require "bee"
@@ -7,6 +10,15 @@ function love.load(arg)
     hive = Hive()
     bee = Bee()
     flower = Flower()
+
+    print("Beehive loaded successfully!") -- test
+    
+    -- another test
+    if Jumper then
+        print("Jumper loaded successfully!")
+    else
+        print("Failed to load Jumper.")
+    end
 
     x = 100
     y = 50
