@@ -1,9 +1,13 @@
+-- TODO: fix dialogue implementation
+
 require "dayCycleScript" --includes script that handles night and day transitions
+local Dia = require"dialove.engine"
 
 local cycleKey = "space" --for testing purposes, will change to what needs to trigger daycycle
 
 function love.load(arg)
-    -- require "dayCycleScript" --includes script that handles night and day transitions
+    dia = Dia()
+    dia:loadDialogs("dialogs.lua") -- load dialogue script
     print("game loaded")
     
     x = 100
@@ -11,6 +15,8 @@ function love.load(arg)
 end
 
 function love.update(dt)
+    dia:update(dt) -- update dia system
+
     if love.keyboard.isDown("right") then
         x = x + 100 * dt
     elseif love.keyboard.isDown("left") then
