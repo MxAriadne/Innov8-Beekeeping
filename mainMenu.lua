@@ -1,9 +1,9 @@
--- This file contains functions to implement the main menu screen
+-- This file contains the implementation for the main menu screen
+-- Author: Amelia Reiss
 
 
 -- This function creates a new button on the screen
 function newButton(text, action)
-    -- return the button 
     return{
         text = text, -- text on button
         action = action, -- function called when clicked
@@ -13,19 +13,11 @@ function newButton(text, action)
 end
 
 -- This function generates the buttons. 
--- It will be called in love.load()
 function loadMainMenu()
-    buttons = {} -- Table of buttons for menu screen
-    buttonFont = love.graphics.newFont(32) -- Font for button text
-    titleFont = love.graphics.newFont(72) -- Font for title
+    require "design"
+    require "loadFilesScreen"
 
-    -- Table of colors used
-    colors = {
-        tan = {.784, .663, .553},
-        yellow = {.902, .714, .333},
-        darkYellow = {.702, .514, .133},
-        brown = {.302, .173, .114}
-    }
+    buttons = {} -- Table of buttons for menu screen
 
     -- Create the buttons and add them to the table
     table.insert(buttons, newButton("New Game", newGame))
@@ -37,7 +29,6 @@ function loadMainMenu()
 end
 
 -- This function draws the created buttons on the screen. 
--- It will be called in love.draw()
 function drawMainMenu()
     -- Variables for button placement and dimensions
     local windowW = love.graphics.getWidth()
@@ -48,11 +39,11 @@ function drawMainMenu()
     local totalButtonsHeight = (buttonH + margin) * #buttons
 
     -- Set background color
-    love.graphics.setBackgroundColor(colors.tan)
+    love.graphics.setBackgroundColor(menuBackgroundColor)
 
     -- Draw title
     title = "Bizzy Beez"
-    love.graphics.setColor(colors.brown)
+    love.graphics.setColor(gameTitleColor)
     local titleW = windowW / 2 - love.graphics.getWidth() / 2
     local titleH = windowH / 2 - love.graphics.getHeight() / 2
     love.graphics.print(title, titleFont, titleW, titleH)
@@ -72,7 +63,7 @@ function drawMainMenu()
         local hovering = mouseX > buttonX and mouseX < buttonX + buttonW and
                          mouseY > buttonY and mouseY < buttonY + buttonH
         if hovering then
-            buttonColor = colors.darkYellow
+            buttonColor = highlightedButtonColor
         end
 
         -- Execute function if the button is clicked
@@ -91,7 +82,7 @@ function drawMainMenu()
                             buttonH)
 
         -- Add text to the buttons
-        love.graphics.setColor(colors.brown)
+        love.graphics.setColor(menuTextColor)
         local textWidth = buttonFont:getWidth(button.text)
         local textHeight = buttonFont:getHeight(button.text)
         love.graphics.print(
@@ -100,13 +91,6 @@ function drawMainMenu()
                         buttonX + (buttonW - textWidth) / 2, 
                         buttonY + (buttonH - textHeight) / 2)
     end
-end
-
-
--- This function displays the screen for the player to select their save file.
-function loadGameSaves()
-    -- TODO
-    print("Loading save files")
 end
 
 -- This function displays the settings screen
