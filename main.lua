@@ -1,20 +1,19 @@
-function love.load(arg)
-    x = 100
-    y = 50
+-- Game State Manager
+GameStateManager = require("libraries/gamestateManager")
+
+-- States holder file
+local MainState = require("states/MainState")
+
+function love.load()
+    love.window.setMode(960, 640)
+
+    GameStateManager:setState(MainState)
 end
 
 function love.update(dt)
-    if love.keyboard.isDown("right") then
-        x = x + 100 * dt
-    elseif love.keyboard.isDown("left") then
-        x = x - 100 * dt
-    elseif love.keyboard.isDown("up") then
-        y = y - 100 * dt
-    elseif love.keyboard.isDown("down") then
-        y = y + 100 * dt
-    end
+    GameStateManager:update(dt)
 end
 
 function love.draw()
-    love.graphics.rectangle("line", x, y, 200, 150)
+    GameStateManager:draw()
 end
