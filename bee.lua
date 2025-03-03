@@ -1,7 +1,7 @@
 Bee = Object:extend()
 
 function Bee:new()
-    self.image = love.graphics.newImage("bee.png")
+    self.image = love.graphics.newImage("sprites/bee.png")
     self.x = 325
     self.y = 450
 end

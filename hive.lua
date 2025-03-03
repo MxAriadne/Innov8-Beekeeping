@@ -1,7 +1,7 @@
 Hive = Object:extend()
 
 function Hive:new()
-    self.image = love.graphics.newImage("hive.png")
+    self.image = love.graphics.newImage("sprites/hive.png")
     self.x = 125
     self.y = 350
 end
