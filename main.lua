@@ -1,17 +1,22 @@
-function love.load(arg)
-    -- Imported files and libraries
-    require "mainMenu"
-    
-    -- Load main menu screen
-    loadMainMenu()
+-- Load other files
+local mainMenu = require "mainMenu"
+local gameSaves = require "loadFilesScreen"
 
+-- For nav testing: stateManager will handle later
+
+function love.load(arg)
+    -- Assuming window cannot be resized
+    windowW, windowH = love.graphics.getDimensions()
+
+    -- buttons = mainMenu:load()
+    buttons = gameSaves:load()
 end
 
 function love.update(dt)
-
+    
 end
 
 function love.draw()
-    -- Draw main menu screen
-    drawMainMenu()
+    -- mainMenu:draw(buttons)
+    gameSaves:draw(buttons)
 end

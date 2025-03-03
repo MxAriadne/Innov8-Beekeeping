@@ -8,12 +8,18 @@ colors = {
     yellow = {.902, .714, .333},
     darkYellow = {.702, .514, .133},
     brown = {.302, .173, .114},
-    grey = {.83, .83, .83}
+    grey = {.83, .83, .83},
+    white = {1, 1, 1},
+    black = {0, 0, 0},
 }
 
+-- Space between buttons on menu
+margin = 10
+
 -- Fonts used on main menu screen
-buttonFont = love.graphics.newFont(32) -- Font for button text
-titleFont = love.graphics.newFont(72) -- Font for game title
+smallFont = love.graphics.newFont(24) -- Font for text and notes
+mediumFont = love.graphics.newFont(32) -- Font for button text
+largeFont = love.graphics.newFont(72) -- Font for game title
 
 -- Main menu colors
 menuBackgroundColor = colors.tan
@@ -24,4 +30,4 @@ menuTextColor = colors.brown
 
 -- Save file search page
 textBoxColor = colors.grey
-searchButtonColor = colors.yellow
+searchButtonColor = colors.grey

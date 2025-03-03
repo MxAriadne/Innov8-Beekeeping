@@ -1,95 +1,49 @@
 -- This file contains the implementation for the main menu screen
 -- Author: Amelia Reiss
 
+-- Import other files
+local button = require "button"
+local gameSaves = require "loadFilesScreen"
+require "design"
 
--- This function creates a new button on the screen
-function newButton(text, action)
-    return{
-        text = text, -- text on button
-        action = action, -- function called when clicked
-        clicked = false, -- true if button is clicked
-        last = false
-    }
-end
+local mainMenu = {}
 
--- This function generates the buttons. 
-function loadMainMenu()
-    require "design"
-    require "loadFilesScreen"
+-- This function generates and returns the buttons for the main menu
+function mainMenu:load()
+    local buttons = {} -- Table of buttons for menu screen
 
-    buttons = {} -- Table of buttons for menu screen
-
-    -- Create the buttons and add them to the table
-    table.insert(buttons, newButton("New Game", newGame))
-    table.insert(buttons, newButton("Load Game", loadGameSaves))
-    table.insert(buttons, newButton("Settings", loadSettings))
-    table.insert(buttons, newButton("Exit", exitGame))
-
-    return {buttons}
-end
-
--- This function draws the created buttons on the screen. 
-function drawMainMenu()
     -- Variables for button placement and dimensions
-    local windowW = love.graphics.getWidth()
-    local windowH = love.graphics.getHeight()
     local buttonW = windowW / 3
     local buttonH = windowH / 10
-    local margin = 16
-    local totalButtonsHeight = (buttonH + margin) * #buttons
 
+    -- Create the buttons and add them to the table
+    table.insert(buttons, button:new("New Game", newGame, buttonW, buttonH))
+    table.insert(buttons, button:new("Load Game", gameSaves.load, buttonW, buttonH))
+    table.insert(buttons, button:new("Settings", loadSettings, buttonW, buttonH))
+    table.insert(buttons, button:new("Exit", exitGame, buttonW, buttonH))
+
+    -- Calculate each button's X and Y position
+    for i, button in ipairs(buttons) do
+        button.yPos = button.yPos - button.height + i * (button.height + margin)
+    end
+
+    return buttons
+end
+
+-- This function draws the created buttons on the screen
+function mainMenu:draw(buttons)
     -- Set background color
     love.graphics.setBackgroundColor(menuBackgroundColor)
 
-    -- Draw title
-    title = "Bizzy Beez"
+    -- Draw title centered to top of window
+    local title = "Bizzy Beez"
     love.graphics.setColor(gameTitleColor)
-    local titleW = windowW / 2 - love.graphics.getWidth() / 2
-    local titleH = windowH / 2 - love.graphics.getHeight() / 2
-    love.graphics.print(title, titleFont, titleW, titleH)
-
-
+    local titleW = largeFont:getWidth(title)
+    love.graphics.print(title, largeFont, (windowW-titleW) / 2, margin)
+    
     -- Draw the buttons
-    for i, button in ipairs(buttons) do
-        button.last = button.clicked
-
-        -- Button positions
-        local buttonX = windowW / 2 - buttonW / 2
-        local buttonY = windowH / 2 - totalButtonsHeight / 3 + i * (buttonH + margin)
-
-        -- Highlight button if mouse is hovering
-        local buttonColor = colors.yellow
-        local mouseX, mouseY = love.mouse.getPosition()
-        local hovering = mouseX > buttonX and mouseX < buttonX + buttonW and
-                         mouseY > buttonY and mouseY < buttonY + buttonH
-        if hovering then
-            buttonColor = highlightedButtonColor
-        end
-
-        -- Execute function if the button is clicked
-        button.clicked = love.mouse.isDown(1)
-        if button.clicked and not button.last and hovering then
-            button.action()
-        end
-
-        -- Draw the buttons
-        love.graphics.setColor(buttonColor)
-        love.graphics.rectangle(
-                            "fill", 
-                            buttonX,
-                            buttonY,
-                            buttonW,
-                            buttonH)
-
-        -- Add text to the buttons
-        love.graphics.setColor(menuTextColor)
-        local textWidth = buttonFont:getWidth(button.text)
-        local textHeight = buttonFont:getHeight(button.text)
-        love.graphics.print(
-                        button.text, 
-                        buttonFont, 
-                        buttonX + (buttonW - textWidth) / 2, 
-                        buttonY + (buttonH - textHeight) / 2)
+    for _, button in ipairs(buttons) do
+        button:draw(button.color, mediumFont, menuTextColor)
     end
 end
 
@@ -109,3 +63,5 @@ end
 function newGame()
     print("Starting a new game")
 end
+
+return mainMenu
