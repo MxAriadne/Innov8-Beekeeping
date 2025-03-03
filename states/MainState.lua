@@ -78,6 +78,13 @@ end
 
 function MainState:draw()
     map:draw(0, 0, 2, 2)
+    
+    -- draw entities
+    bee:draw()
+    flower:draw()
+    wasp:draw()
+    honeybadger:draw()
+
     love.graphics.draw(hive, 200, 225, 0, -1, 1)
 
     world:draw()--makes the colliders visible, for debugging - comment out later

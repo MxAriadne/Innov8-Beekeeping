@@ -4,6 +4,7 @@ function Flower:new()
     self.image = love.graphics.newImage("sprites/flower.png")
     self.x = 225
     self.y = 150
+    self.beingHarvested = false
 end
 
 function Flower:draw()

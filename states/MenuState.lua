@@ -10,4 +10,6 @@ end
 
 function MenuState:draw()
 
+end
+
 return MenuState
