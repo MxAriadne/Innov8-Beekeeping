@@ -1,14 +1,21 @@
 -- Game State Manager
 GameStateManager = require("libraries/gamestateManager")
 
--- States holder file
+local MenuState = require("states/MenuState")
 local MainState = require("states/MainState")
+
+GameConfig = {}
 
 function love.load()
     love.window.setMode(960, 640)
 
-    GameStateManager:setState(MainState)
+    -- Update GameConfig after setting the window mode
+    GameConfig.windowW = love.graphics.getWidth()
+    GameConfig.windowH = love.graphics.getHeight()
+
+    GameStateManager:setState(MenuState)
 end
+
 
 function love.update(dt)
     GameStateManager:update(dt)

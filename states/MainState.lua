@@ -64,6 +64,10 @@ function MainState:update(dt)
         vy = player.speed
     end
 
+    if love.keyboard.isDown("escape") then
+        GameStateManager:revertState()
+    end
+
     player.collider:setLinearVelocity(vx, vy)
 
 end
@@ -77,6 +81,9 @@ function MainState:keypressed(key)
 end
 
 function MainState:draw()
+    love.graphics.setBackgroundColor(1, 1, 1, 1)
+    love.graphics.setColor(1, 1, 1, 1)
+
     map:draw(0, 0, 2, 2)
     love.graphics.draw(hive, 200, 225, 0, -1, 1)
 
