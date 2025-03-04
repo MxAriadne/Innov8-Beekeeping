@@ -2,8 +2,11 @@ Flower = Object:extend()
 
 function Flower:new()
     self.image = love.graphics.newImage("sprites/flower.png")
-    self.x = 225
-    self.y = 150
+    self.x = 250
+    self.y = 500
+    self.scale = 0.75
+    self.width = self.image:getWidth() * self.scale
+    self.height = self.image:getHeight() * self.scale
     self.beingHarvested = false
 end
 

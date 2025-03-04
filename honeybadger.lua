@@ -2,9 +2,9 @@ HoneyBadger = Object:extend()
 
 function HoneyBadger:new()
     self.image = love.graphics.newImage("sprites/honey-badger.png")
-    self.x = 425
+    self.x = 600
     self.y = 150
-    self.scale = 0.3
+    self.scale = 0.5
     self.width = self.image:getWidth() * self.scale
     self.height = self.image:getHeight() * self.scale
 end

@@ -1,5 +1,5 @@
-local Beehive = require("beehive")
-local Jumper = require("jumper")
+local Beehive = require("libraries/beehive")
+local Jumper = require("libraries/jumper")
 local MainState = require("states/MainState")
 GameStateManager = require("libraries/gamestateManager")
 

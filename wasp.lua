@@ -2,9 +2,9 @@ Wasp = Object:extend()
 
 function Wasp:new()
     self.image = love.graphics.newImage("sprites/wasp.png")
-    self.x = 425
+    self.x = 700
     self.y = 250
-    self.scale = 0.15
+    self.scale = 0.08
     self.width = self.image:getWidth() * self.scale
     self.height = self.image:getHeight() * self.scale
     self.speed = 100
