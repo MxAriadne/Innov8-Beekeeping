@@ -1,7 +1,11 @@
+local DayCycle = require("dayCycleScript")
 local Beehive = require("libraries/beehive")
 local Jumper = require("libraries/jumper")
 local MainState = require("states/MainState")
 GameStateManager = require("libraries/gamestateManager")
+
+-- global variables
+tintEnabled = false
 
 function love.load()
     Object = require "classic"
@@ -22,17 +26,18 @@ function love.load()
 
     GameStateManager:setState(MainState)
 
-    dia = Dia()
-    dia:loadDialogs("dialogs.lua") -- load dialogue script
+    --dia = Dia()
+    --dia:loadDialogs("dialogs.lua") -- load dialogue script
 end
 
 function love.update(dt)
     GameStateManager:update(dt)
-    dia:update(dt) -- update dia system
+    --dia:update(dt) -- update dia system
 end
 
 function love.draw()
     GameStateManager:draw()
+    ApplyBGTint()
 end
 
 -- helper functions from Poultry Profits
@@ -56,8 +61,14 @@ end
 -- trigger event for day cycle
 function love.keypressed(key)
     -- Check if the key for advancing the day was pressed
-    if key == cycleKey then
-        print("advancing day")
-        AdvanceDay()  -- Call the day/night cycle function from dayCycleScript.lua
+    if key == "space" then
+        AdvanceDay()  -- Call the trigger updates function from dayCycleScript.lua
+        if tintEnabled then
+            NightSky()
+            tintEnabled = false
+        else
+            DaySky()
+            tintEnabled = true
+        end
     end
 end

@@ -9,7 +9,7 @@
 
 daysPassed = 0;
 isNight = false -- tracks time of day
-bgTint = {1, 1, 1} -- tint for background(r, g, b)
+bgTint = {0.1, 0, .2} -- tint for background(r, g, b)
 
 --this function changes the day counter
 --called: after user is done updating their hive for the day
@@ -22,8 +22,10 @@ function AdvanceDay()
     --either use the global variable daysPassed to change the graphics to indicate day/night
         --or do so here
 
-    --change to NightSky()
-    NightSky()
+    
+        --change to NightSky()
+        --NightSky()
+    
 
     -- tigger nightly updates
     TriggerUpdates()
@@ -32,7 +34,7 @@ function AdvanceDay()
     isNight = false
 
     --change to DaySky()
-    DaySky()
+    --DaySky()
 
 end
 
@@ -40,7 +42,8 @@ end
 function NightSky()
     --change background to night sky
     isNight = true
-    bgTint = {0.2, 0.2, 0.5} -- dark blue tint
+    --bgTint = {0.2, 0.2, 0.5} -- dark blue tint
+    ApplyBGTint()
     
     -- show night mesage
     --ShowMessage("Good night!")
@@ -52,7 +55,7 @@ end
 function DaySky()
     --change background to day
     isNight = false
-    bgTint = {1, 1, 1}
+    --bgTint = {1, 1, 1}
 
     --day message
     --ShowMessage("Morning!")
@@ -79,11 +82,19 @@ function TriggerUpdates(dt)
     --update...
 end
 
+-- applys a tint over everything using a transparent rectangle
 function ApplyBGTint()
-    love.graphics.setColor(bgTint)
+    if not tintEnabled then return end -- If tint is disabled, do nothing
 
-    -- TODO: change this later
-    -- effect rectangle over entire screen
+    love.graphics.setColor(bgTint[1], bgTint[2], bgTint[3], 0.5) -- Add semi-transparent tint
+
+    -- Disable blending issues by using "alpha" mode explicitly
+    love.graphics.setBlendMode("alpha")
+
+    -- Full-screen rectangle to overlay everything
     love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
-    love.graphics.setColor(1, 1, 1) -- reset color
+
+    -- Reset blend mode and color to prevent issues
+    love.graphics.setBlendMode("alpha") 
+    love.graphics.setColor(1, 1, 1, 1) 
 end
