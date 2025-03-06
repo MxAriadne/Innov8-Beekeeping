@@ -6,6 +6,7 @@
 --[[This file handles the day cycle aspent of the game]]
 
 --include appropiate files
+-- local Dialove = require "Dialove.dialove"
 
 daysPassed = 0;
 isNight = false -- tracks time of day
@@ -45,8 +46,9 @@ function NightSky()
     --bgTint = {0.2, 0.2, 0.5} -- dark blue tint
     ApplyBGTint()
     
-    -- show night mesage
-    --ShowMessage("Good night!")
+    -- Show a night message using Dialove
+    -- Push the night message to the dialog manager
+    dialogManager:push('Good night, the day has ended!')
 
     --add sleeping emotes?
 end
@@ -58,7 +60,7 @@ function DaySky()
     --bgTint = {1, 1, 1}
 
     --day message
-    --ShowMessage("Morning!")
+    -- dialogManager:push('Good morning!')
 
     --flash any urgent messages
 end
