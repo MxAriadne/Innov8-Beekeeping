@@ -64,6 +64,11 @@ function MainState:update(dt)
         vy = player.speed
     end
 
+    --updating entities, making the entities travel
+    wasp:update(dt)
+    bee:update(dt)
+    honeybadger:update(dt)
+
     player.collider:setLinearVelocity(vx, vy)
 
 end
@@ -79,11 +84,15 @@ end
 function MainState:draw()
     map:draw(0, 0, 2, 2)
     
-    -- draw entities
+    --draw entities
     bee:draw()
     flower:draw()
     wasp:draw()
     honeybadger:draw()
+
+    --calling drawDebug() through wasp object
+    --(!!!) this makes the grid visible (!!!)
+    wasp.pathfinding:drawDebug()
 
     love.graphics.draw(hive, 200, 225, 0, -1, 1)
 
