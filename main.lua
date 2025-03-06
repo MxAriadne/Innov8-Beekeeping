@@ -7,6 +7,7 @@ GameStateManager = require("libraries/gamestateManager")
 
 -- global variables
 tintEnabled = false
+debugMode = false
 
 GameConfig = {}
 
@@ -24,8 +25,12 @@ function love.load()
     honeybadger = HoneyBadger()
     wasp = Wasp()
     
-    -- table for flowers
+    --table for flowers
     flowers = {flower}
+
+    music = love.audio.newSource("tunes/Flowers.mp3", "stream")
+    music:setLooping(true)  --music loop
+    music:play()  --playing the music
 
     -- Update GameConfig after setting the window mode
     GameConfig.windowW = love.graphics.getWidth()
@@ -75,5 +80,9 @@ function love.keypressed(key)
             DaySky()
             tintEnabled = true
         end
+
+    --pathfinding debug toggle
+    elseif key == "`" then  --tilde key
+        debugMode = not debugMode
     end
 end

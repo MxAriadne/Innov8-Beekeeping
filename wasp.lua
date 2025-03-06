@@ -60,7 +60,7 @@ function Wasp:draw()
     love.graphics.draw(self.image, self.x, self.y, 0, self.scale, self.scale)
 
     --debug, draws the wasp's path
-    if self.current_path then
+    if debugMode and self.current_path then
         love.graphics.setColor(1, 0, 0, 0.5) --red path
         for i = 1, #self.current_path - 1 do
             local current = self.current_path[i]

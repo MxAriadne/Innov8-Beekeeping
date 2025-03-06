@@ -14,6 +14,7 @@ function Hive:draw()
     love.graphics.draw(self.image, self.x, self.y, 0, self.scale, self.scale)
 end
 
+--for when a bee brings in nectar that has been foraged
 function Hive:receiveNectar()
     self.nectar = self.nectar + 1
 end
