@@ -68,6 +68,10 @@ function MainState:update(dt)
     wasp:update(dt)
     bee:update(dt)
     honeybadger:update(dt)
+    
+    if love.keyboard.isDown("escape") then
+        GameStateManager:revertState()
+    end
 
     player.collider:setLinearVelocity(vx, vy)
 
@@ -82,6 +86,9 @@ function MainState:keypressed(key)
 end
 
 function MainState:draw()
+    love.graphics.setBackgroundColor(1, 1, 1, 1)
+    love.graphics.setColor(1, 1, 1, 1)
+
     map:draw(0, 0, 2, 2)
     
     --draw entities

@@ -1,11 +1,14 @@
 local DayCycle = require("dayCycleScript")
 local Beehive = require("libraries/beehive")
 local Jumper = require("libraries/jumper")
+local MenuState = require("states/MenuState")
 local MainState = require("states/MainState")
 GameStateManager = require("libraries/gamestateManager")
 
 -- global variables
 tintEnabled = false
+
+GameConfig = {}
 
 function love.load()
     Object = require "classic"
@@ -24,11 +27,13 @@ function love.load()
     -- table for flowers
     flowers = {flower}
 
-    GameStateManager:setState(MainState)
+    -- Update GameConfig after setting the window mode
+    GameConfig.windowW = love.graphics.getWidth()
+    GameConfig.windowH = love.graphics.getHeight()
 
-    --dia = Dia()
-    --dia:loadDialogs("dialogs.lua") -- load dialogue script
+    GameStateManager:setState(MenuState)
 end
+
 
 function love.update(dt)
     GameStateManager:update(dt)
