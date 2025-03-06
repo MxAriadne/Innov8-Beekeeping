@@ -7,32 +7,36 @@ local gameSaves = {}
 local button = require "states/button"
 require "states/design"
 
+-- Design elements
+local textBoxColor = colors.grey
+
 -- Function to load UI elements for the save files screen
-function gameSaves:load()
+function gameSaves:enter()
     -- Create text box and search button
-    local buttons = {}
+    self.buttons = {}
     local textBoxW = GameConfig.windowW / 2
     local textBoxH = GameConfig.windowH / 16
 
     local textBox = button:new("", temp, textBoxW, textBoxH)
     local searchButton = button:new("Search", search, textBoxW / 3, textBoxH)
 
-    table.insert(buttons, textBox)
-    table.insert(buttons, searchButton)
+    table.insert(self.buttons, textBox)
+    table.insert(self.buttons, searchButton)
 
     -- Calculate position on screen
     textBox.yPos = textBox.yPos - textBox.height * 5
     searchButton.yPos = textBox.yPos
     searchButton.xPos = textBox.xPos + textBox.width + margin
-    return buttons
+
+    return self.buttons
 end
 
 -- Function to render the save files screen
-function gameSaves:draw(buttons)
+function gameSaves:draw()
     love.graphics.setBackgroundColor(menuBackgroundColor)
-
+    
     -- Draw UI elements
-    local textBox, searchButton = buttons[1], buttons[2]
+    local textBox, searchButton = self.buttons[1], self.buttons[2]
     textBox:draw(textBoxColor, smallFont, menuTextColor)
     searchButton:draw(searchButton.color, smallFont, menuTextColor)
 

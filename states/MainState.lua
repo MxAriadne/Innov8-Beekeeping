@@ -48,19 +48,19 @@ function MainState:update(dt)
 
     local vx = 0
     local vy = 0
-    if love.keyboard.isDown("right") then
+    if love.keyboard.isDown("right", 'd') then
         vx = player.speed
     end
 
-    if love.keyboard.isDown("left") then
+    if love.keyboard.isDown("left", 'a') then
         vx = player.speed * -1
     end
 
-    if love.keyboard.isDown("up") then
+    if love.keyboard.isDown("up", 'w') then
         vy = player.speed * -1
     end
 
-    if love.keyboard.isDown("down") then
+    if love.keyboard.isDown("down", 's') then
         vy = player.speed
     end
 
