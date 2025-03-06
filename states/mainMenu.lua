@@ -2,8 +2,8 @@
 -- Author: Amelia Reiss
 
 -- Import required modules
-require "states/design"
-local button = require "states/button"
+require "UI/design"
+local button = require "UI/button"
 local gameSaves = require "states/loadFilesScreen"
 local MainState = require("states/MainState")
 
