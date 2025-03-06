@@ -99,7 +99,9 @@ function MainState:draw()
 
     --calling drawDebug() through wasp object
     --(!!!) this makes the grid visible (!!!)
-    wasp.pathfinding:drawDebug()
+    if debugMode then
+        wasp.pathfinding:drawDebug()
+    end
 
     love.graphics.draw(hive, 200, 225, 0, -1, 1)
 
