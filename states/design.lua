@@ -27,7 +27,3 @@ gameTitleColor = colors.brown
 menuButtonColor = colors.yellow
 highlightedButtonColor = colors.darkYellow
 menuTextColor = colors.brown
-
--- Save file search page
-textBoxColor = colors.grey
-searchButtonColor = colors.grey

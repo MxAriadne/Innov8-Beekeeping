@@ -70,7 +70,7 @@ end
 
 -- This is a placeholder function
 function temp()
-    print("it worked")
+    print("temp function called")
 end
 
 return button
