@@ -13,6 +13,8 @@ function love.load()
     GameConfig.windowW = love.graphics.getWidth()
     GameConfig.windowH = love.graphics.getHeight()
 
+    love.graphics.setDefaultFilter("nearest", "nearest")
+
     GameStateManager:setState(MenuState)
 end
 
