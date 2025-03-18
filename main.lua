@@ -2,11 +2,15 @@ local Dialove = require("libraries/Dialove.dialove")
 local DayCycle = require("dayCycleScript")
 local Beehive = require("libraries/beehive")
 local Jumper = require("libraries/jumper")
+local MenuState = require("states/MenuState")
 local MainState = require("states/MainState")
 GameStateManager = require("libraries/gamestateManager")
 
 -- global variables
 tintEnabled = false
+debugMode = false
+
+GameConfig = {}
 
 function love.load()
     Object = require "classic"
@@ -16,22 +20,26 @@ function love.load()
     require "wasp"
     require "honeybadger"
     
-    hive = Hive()
-    bee = Bee()
-    flower = Flower()
-    honeybadger = HoneyBadger()
-    wasp = Wasp()
-    
-    -- table for flowers
+    --table for flowers
     flowers = {flower}
 
-    GameStateManager:setState(MainState)
+    music = love.audio.newSource("tunes/Flowers.mp3", "stream")
+    music:setLooping(true)  --music loop
+    music:play()  --playing the music
 
     dialogManager = Dialove.init({
         font = love.graphics.newFont('libraries/fonts/comic-neue/ComicNeue-Bold.ttf', 16)
       })
 
+    -- Update GameConfig after setting the window mode
+    GameConfig.windowW = love.graphics.getWidth()
+    GameConfig.windowH = love.graphics.getHeight()
+
+    --commenting out menu state for now while working on the main state
+    --GameStateManager:setState(MenuState)
+    GameStateManager:setState(MainState)
 end
+
 
 function love.update(dt)
     GameStateManager:update(dt)
@@ -74,6 +82,10 @@ function love.keypressed(key)
             DaySky()
             tintEnabled = true
         end
+
+    --pathfinding debug toggle
+    elseif key == "`" then  --tilde key
+        debugMode = not debugMode
     end
 end
 

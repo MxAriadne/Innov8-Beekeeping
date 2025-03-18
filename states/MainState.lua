@@ -9,7 +9,6 @@ function MainState:enter()
     --base size for the game right now
     --will put everything into variables later so it can be more easily resized
     money = 0
-    hive = love.graphics.newImage('sprites/hive.png')
     map = sti('maps/TilesForBeekeepingGameTopBoundaries.lua')
     love.window.setMode(960, 640)
 
@@ -33,14 +32,26 @@ function MainState:enter()
         end
     end
 
-    --collider for the beehive itself
-    local wall = world:newRectangleCollider(80, 225, 120, 135 )
-    wall:setType('static')
+    --creating the entities instance variables
+    self.hive = Hive()
+    self.bee = Bee()
+    self.flower = Flower()
+    self.honeybadger = HoneyBadger()
+    self.wasp = Wasp()
+    
+    --assigning the instances to global variables for accessibility
+    hive = self.hive
+    bee = self.bee
+    flower = self.flower
+    honeybadger = self.honeybadger
+    wasp = self.wasp
 
+    --making the hive collider using values in hive.lua instead of hardcoding
+    local wall = world:newRectangleCollider(self.hive.x, self.hive.y, self.hive.width, self.hive.height)
+    wall:setType('static')
 end
 
 function MainState:update(dt)
-
     --player movement with colliders
     world:update(dt)
     player.x = player.collider:getX()
@@ -48,20 +59,29 @@ function MainState:update(dt)
 
     local vx = 0
     local vy = 0
-    if love.keyboard.isDown("right") then
+    if love.keyboard.isDown("right", 'd') then
         vx = player.speed
     end
 
-    if love.keyboard.isDown("left") then
+    if love.keyboard.isDown("left", 'a') then
         vx = player.speed * -1
     end
 
-    if love.keyboard.isDown("up") then
+    if love.keyboard.isDown("up", 'w') then
         vy = player.speed * -1
     end
 
-    if love.keyboard.isDown("down") then
+    if love.keyboard.isDown("down", 's') then
         vy = player.speed
+    end
+
+    --updating the entities (making them move) IF they exist
+    if self.wasp then self.wasp:update(dt) end
+    if self.bee then self.bee:update(dt) end
+    if self.honeybadger then self.honeybadger:update(dt) end
+    
+    if love.keyboard.isDown("escape") then
+        GameStateManager:revertState()
     end
 
     player.collider:setLinearVelocity(vx, vy)
@@ -77,15 +97,23 @@ function MainState:keypressed(key)
 end
 
 function MainState:draw()
+    love.graphics.setBackgroundColor(1, 1, 1, 1)
+    love.graphics.setColor(1, 1, 1, 1)
+
     map:draw(0, 0, 2, 2)
     
-    -- draw entities
-    bee:draw()
-    flower:draw()
-    wasp:draw()
-    honeybadger:draw()
+    --drawing the entities if they exist
+    if self.bee then self.bee:draw() end
+    if self.flower then self.flower:draw() end
+    if self.wasp then self.wasp:draw() end
+    if self.honeybadger then self.honeybadger:draw() end
+    if self.hive then self.hive:draw() end
 
-    love.graphics.draw(hive, 200, 225, 0, -1, 1)
+    --debug mode
+    if debugMode and self.wasp then
+        self.wasp.pathfinding:drawDebug()
+    end
+
 
     world:draw()--makes the colliders visible, for debugging - comment out later
     love.graphics.circle("line", player.x, player.y, 20)
