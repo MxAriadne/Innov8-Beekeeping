@@ -33,7 +33,8 @@ function button:draw(buttonColor, font, textColor)
 
     -- Draw the button
     love.graphics.setColor(buttonColor)
-    love.graphics.rectangle("fill", self.xPos, self.yPos, self.width, self.height, 15, 15)
+    --love.graphics.rectangle("fill", self.xPos, self.yPos, self.width, self.height, 15, 15)
+    love.graphics.rectangle("fill", self.xPos, self.yPos, self.width, self.height)
 
     -- Add text to button (center by default)
     love.graphics.setColor(textColor)
