@@ -19,12 +19,6 @@ function love.load()
     require "wasp"
     require "honeybadger"
     
-    hive = Hive()
-    bee = Bee()
-    flower = Flower()
-    honeybadger = HoneyBadger()
-    wasp = Wasp()
-    
     --table for flowers
     flowers = {flower}
 
@@ -36,7 +30,9 @@ function love.load()
     GameConfig.windowW = love.graphics.getWidth()
     GameConfig.windowH = love.graphics.getHeight()
 
-    GameStateManager:setState(MenuState)
+    --commenting out menu state for now while working on the main state
+    --GameStateManager:setState(MenuState)
+    GameStateManager:setState(MainState)
 end
 
 

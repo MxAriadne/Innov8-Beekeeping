@@ -20,10 +20,6 @@ function Pathfinding:initialize()
     --creating Grid and Pathfinder
     self.grid = Grid(grid_data)
     self.pathfinder = Pathfinder(self.grid, 'JPS', 0)  --using Jump Point Search algorithm for its simplicity
-
-    --defining the hive position
-    self.hive_cell = {x = math.floor(200/23), y = math.floor(225/22)}  --coverting the hive position to grid coordinates
-    --NOTE: hive position is hard coded and might be problematic later
 end
 
 --converts world coordinates to grid coordinates
@@ -38,12 +34,15 @@ end
 
 --finds a path from the wasp/hb's start position to the hive
 function Pathfinding:findPathToHive(start_x, start_y)
-    local start_grid_x, start_grid_y = self:worldToGrid(start_x, start_y) --getting grid coordinates
+    if not hive then return nil end  --in the unlikely case that there is no hive
+    
+    local start_grid_x, start_grid_y = self:worldToGrid(start_x, start_y)
+    local hive_grid_x, hive_grid_y = self:worldToGrid(hive.x, hive.y)
     
     --calculating the path from the start point to the hive
     local path = self.pathfinder:getPath(
         start_grid_x, start_grid_y,
-        self.hive_cell.x, self.hive_cell.y
+        hive_grid_x, hive_grid_y
     )
     
     --if a path is found, convert back to world coordinates and returning the list of coords
@@ -92,6 +91,29 @@ function Pathfinding:drawDebug()
         end
     end
     love.graphics.setColor(1, 1, 1, 1)
+end
+
+function Pathfinding:findPathToTarget(startX, startY, targetX, targetY)
+    --converting world to grid coordinates
+    local start_grid_x, start_grid_y = self:worldToGrid(startX, startY)
+    local target_grid_x, target_grid_y = self:worldToGrid(targetX, targetY)
+    
+    --getting a path to the target
+    local path = self.pathfinder:getPath(
+        start_grid_x, start_grid_y,
+        target_grid_x, target_grid_y
+    )
+    
+    --if a path is found, convert to world coordinates and return the list of coords
+    if path then
+        local world_path = {}
+        for node, count in path:nodes() do
+            local wx, wy = self:gridToWorld(node:getX(), node:getY())
+            table.insert(world_path, {x = wx, y = wy})
+        end
+        return world_path
+    end
+    return nil
 end
 
 return Pathfinding 
