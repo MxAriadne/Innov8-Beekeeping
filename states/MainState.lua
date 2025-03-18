@@ -3,6 +3,7 @@ local MainState = {}
 --libraries import from libraries folder
 local sti = require 'libraries/sti'
 local wf = require 'libraries/windfield'
+local HUD = require "UI/HUD"
 
 function MainState:enter()
 
@@ -13,6 +14,9 @@ function MainState:enter()
     love.window.setMode(960, 640)
 
     world = wf.newWorld()
+
+    -- Load HUD overlay
+    HUD:load()
 
     --player creation and collider configuation
     player = {}
@@ -119,6 +123,9 @@ function MainState:draw()
     love.graphics.circle("line", player.x, player.y, 20)
     --hiveTagColor = {.3, 0, 0, 1}
     --love.graphics.print({hiveTagColor, "Beehive: Level 1"}, 70, 195, 0, 1.5, 1.5)
+
+    -- Draw HUD overlay
+    HUD:draw()
 
 end
 
