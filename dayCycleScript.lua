@@ -6,10 +6,19 @@
 --[[This file handles the day cycle aspent of the game]]
 
 --include appropiate files
--- local Dialove = require "Dialove.dialove"
+--local Dialove = require "Dialove.dialove"
+
+--quick read
+--[[
+    check days passed
+    if a certain num, change bool for specific attack
+        triggers event
+    update everything
+    repeat
+
+]]
 
 daysPassed = 0;
-isNight = false -- tracks time of day
 bgTint = {0.1, 0, .2} -- tint for background(r, g, b)
 
 --this function changes the day counter
@@ -23,44 +32,32 @@ function AdvanceDay()
     --either use the global variable daysPassed to change the graphics to indicate day/night
         --or do so here
 
-    
-        --change to NightSky()
-        --NightSky()
-    
+  
 
     -- tigger nightly updates
     TriggerUpdates()
 
-    --morning message
-    isNight = false
 
-    --change to DaySky()
-    --DaySky()
 
 end
 
 --method to change to night
 function NightSky()
-    --change background to night sky
-    isNight = true
-    --bgTint = {0.2, 0.2, 0.5} -- dark blue tint
-    ApplyBGTint()
     
     -- Show a night message using Dialove
     -- Push the night message to the dialog manager
-    dialogManager:push('Good night, the day has ended!')
+    dialogManager:show('Good night, the day has ended!') -- stores dialog
+    --dialogManager:pop() -- requests the first pushed dialog to be shown on screen
 
     --add sleeping emotes?
 end
 
 --method to change to day
 function DaySky()
-    --change background to day
-    isNight = false
-    --bgTint = {1, 1, 1}
 
     --day message
-    -- dialogManager:push('Good morning!')
+    dialogManager:show('Good morning!') -- stores dialog
+    --dialogManager:pop() -- requests the first pushed dialog to be shown on screen
 
     --flash any urgent messages
 end

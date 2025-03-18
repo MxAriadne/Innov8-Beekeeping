@@ -30,6 +30,7 @@ function love.load()
     dialogManager = Dialove.init({
         font = love.graphics.newFont('libraries/fonts/comic-neue/ComicNeue-Bold.ttf', 16)
       })
+    
 
     -- Update GameConfig after setting the window mode
     GameConfig.windowW = love.graphics.getWidth()
@@ -70,63 +71,23 @@ function isInPickupRange(a, b)
     return distance <= range
 end
 
---[[ trigger event for day cycle
-function love.keypressed(key)
-    -- Check if the key for advancing the day was pressed
-    if key == "space" then
-        AdvanceDay()  -- Call the trigger updates function from dayCycleScript.lua
-        if tintEnabled then
-            NightSky()
-            tintEnabled = false
-        else
-            DaySky()
-            tintEnabled = true
-        end
-
-    --pathfinding debug toggle
-    elseif key == "`" then  --tilde key
-        debugMode = not debugMode
-    end
-end
-
-function love.keypressed(k)
-    -- Handle key presses to control the dialog flow
-    if k == 'return' then
-        dialogManager:pop()
-    elseif k == 'c' then
-        dialogManager:complete()
-    elseif k == 'f' then
-        dialogManager:faster()
-    elseif k == 'b' then
-        dialogManager:changeOption(1)  -- next one
-    elseif k == 'n' then
-        dialogManager:changeOption(-1) -- previous one
-    end
-end
-
-
-function love.keyreleased(k)
-    -- Handle the spacebar to adjust dialog speed
-    if k == 's' then
-        dialogManager:slower()
-    end
-end
-]]
 
 function love.keypressed(k)
     -- Handle spacebar for day cycle
     if k == "space" then
         AdvanceDay()  -- Call the trigger updates function from dayCycleScript.lua
-        if tintEnabled then
+        if tintEnabled == false then --tintEnabled
             NightSky()
-            tintEnabled = false
+            tintEnabled = true
         else
             DaySky()
-            tintEnabled = true
+            tintEnabled = false
         end
     -- Handle dialog flow controls
-    elseif k == 'return' then
+    elseif k == 'return' then 
+    -- exit dialogue box
         dialogManager:pop()
+        --dialogManager.queue = {} -- Force empty
     elseif k == 'c' then
         dialogManager:complete()
     elseif k == 'f' then

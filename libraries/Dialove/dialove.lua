@@ -312,6 +312,8 @@ function dialove:pop(forcePop)
       if self.activeDialogListIndex >= 1 then
         self.activeDialogListIndex = self.activeDialogListIndex - 1
         table.remove(self.activeDialogListMap)
+
+      else break -- added to fix bug
       end
     until not self:getActiveDialogList() or #self:getActiveDialogList() > 0
 
