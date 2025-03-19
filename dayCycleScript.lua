@@ -1,12 +1,9 @@
 --dayCycleScript.lua file
 --author: Elaina Vogel
 
--- TODO: dialog library, update appropiate variables
+-- TODO: update appropiate variables to show progression
 
---[[This file handles the day cycle aspent of the game]]
-
---include appropiate files
---local Dialove = require "Dialove.dialove"
+--[[This file handles the day cycle aspect of the game]]
 
 --quick read
 --[[
@@ -14,30 +11,34 @@
     if a certain num, change bool for specific attack
         triggers event
     update everything
-    repeat
+    
+    outside fucntion decides to call night v day to show appropiate message
 
+    correct tint is applied
 ]]
 
-daysPassed = 0;
+--local wasp = require("wasp")
+
+daysPassed = 0.0;
 bgTint = {0.1, 0, .2} -- tint for background(r, g, b)
 
---this function changes the day counter
---called: after user is done updating their hive for the day
---output: changes the scenery to night/day and triggers events
-    --this method is assuming the night graphics can be handled here 
-    --and has no other functionality besides aesthetics.
+-- days for attacks
+waspDay = 5
+waspGo = false
+badgerDay = 10
+badgerGo = false
+
+
+--this function changes the day counter and triggers updates
+--after user is done updating their hive for the day
 function AdvanceDay()
-    daysPassed = daysPassed + 1
+    daysPassed = daysPassed + 0.5
 
-    --either use the global variable daysPassed to change the graphics to indicate day/night
-        --or do so here
+    --dialogManager:show(daysPassed)
 
-  
 
     -- tigger nightly updates
     TriggerUpdates()
-
-
 
 end
 
@@ -47,6 +48,7 @@ function NightSky()
     -- Show a night message using Dialove
     -- Push the night message to the dialog manager
     dialogManager:show('Good night, the day has ended!') -- stores dialog
+    --dialogManager:show('days passed')
     --dialogManager:pop() -- requests the first pushed dialog to be shown on screen
 
     --add sleeping emotes?
@@ -57,7 +59,7 @@ function DaySky()
 
     --day message
     dialogManager:show('Good morning!') -- stores dialog
-    --dialogManager:pop() -- requests the first pushed dialog to be shown on screen
+    --dialogManager:push(daysPassed) -- requests the first pushed dialog to be shown on screen
 
     --flash any urgent messages
 end
@@ -66,12 +68,14 @@ end
 function TriggerUpdates(dt)
 
     --check for attack
-    --[[
-    if daysPassed == badgerDay
-        BadgerAttackFunction()
-    elseif daysPassed == 
-    ]]
-
+    if daysPassed == waspDay then
+        --trigger wasp event
+        waspGo = true
+    elseif daysPassed == badgerDay then
+        --trigger badger eent
+        badgerGo = true
+    
+    end
     --update bee count
     --update hive
     --update flowers

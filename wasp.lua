@@ -61,9 +61,11 @@ function Wasp:new()
 end
 
 function Wasp:update(dt)
-    self:updateState(dt)
-    self:updateCombat(dt)
-    self:move(dt)
+    if waspGo then
+        self:updateState(dt)
+        self:updateCombat(dt)
+        self:move(dt)
+    end
 end
 
 --function that performs timer checking and transitioning between entity states
