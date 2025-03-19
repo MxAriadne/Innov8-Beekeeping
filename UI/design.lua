@@ -1,7 +1,6 @@
 -- This file contains design elements for the UI of the game
 -- Colors, fonts, dimensions, etc. are all accessed here
 
-
 -- Table of color options
 colors = {
     tan = {.784, .663, .553},
