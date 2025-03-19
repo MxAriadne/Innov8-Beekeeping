@@ -69,3 +69,5 @@ function Hive:takeDamage(amount)
     self.isDamaged = true
     self.damageFlashTimer = 0
 end
+
+return Hive
