@@ -180,7 +180,6 @@ function MainState:draw()
 
     -- Draw HUD overlay
     HUD:draw()
-
     dialogManager:draw()
     ApplyBGTint()
 end
