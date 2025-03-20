@@ -25,9 +25,9 @@ daysPassed = 0.0;
 bgTint = {0.1, 0, .2} -- tint for background(r, g, b)
 
 -- days for attacks
-waspDay = 5
+waspDay = 2 --5
 waspGo = false
-badgerDay = 10
+badgerDay = 5 --10
 badgerGo = false
 
 
@@ -75,6 +75,7 @@ function TriggerUpdates(dt)
     elseif daysPassed == badgerDay+0.5 then
         --trigger badger eent
         badgerGo = true
+        dialogManager:push(d.badgermessage)
     
     end
 
