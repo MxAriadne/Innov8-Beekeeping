@@ -4,8 +4,8 @@
 local gameSaves = {}
 
 -- Import required modules
-local button = require "states/button"
-require "states/design"
+local button = require "UI/button"
+require "UI/design"
 
 -- Design elements
 local textBoxColor = colors.grey
