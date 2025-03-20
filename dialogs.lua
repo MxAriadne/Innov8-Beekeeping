@@ -18,7 +18,7 @@ return {
         options = {} -- no choices, signals end of dialogue
     },
     morningstats = {
-        text = string.format("Check out your stats:\nYour hive's health is at %d.\nYour hive's honey count is at %d.\nYour bee count is %d.\nYour fences are at %d strength.", _G.hive.health, _G.hive.honey, _G.hive.beeCount, 0),
+        text = string.format("Check out your stats:\nYour hive's health is at %d.\nYour hive's honey count is at %d.\nYour bee count is %d.\nYour fences are at %d strength.", hive.health, hive.honey, hive.beeCount, 0),
         options = {} -- no choices, signals end of dialogue
     },
     waspmessage = {
