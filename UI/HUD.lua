@@ -4,12 +4,7 @@
 local HUD = {}
 local tileSize = 32
 local itemSize = tileSize * 1.5 -- 1.5 times dimension of tile
-
--- Variables for tables/attributes not yet defined
--- example of player.items
-local items = { {name = "item1", image = love.graphics.newImage("sprites/honey_dipper.png")}, 
-                {name = "item2", image = love.graphics.newImage("sprites/honey_dipper.png")},
-                }
+local items = require "items"
 
 function HUD:load()
     -- images of items in hotbar will be attributed to each tool
