@@ -2,11 +2,11 @@
 -- author: Elaina Vogel
 
 --TODO: fix ref to hive so that it pulls correct info
---[[
+
 Object = require "classic" 
 Hive = require("hive")  -- Loads the Hive classh
 hive = Hive()        -- Creates an instance
-]]
+
 
 return {
     goodnight = {
