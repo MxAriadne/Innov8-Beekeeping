@@ -22,6 +22,7 @@ function MainState:enter()
     flowers = {flower}
 
     music = love.audio.newSource("tunes/Flowers.mp3", "stream")
+    music:setVolume(0.3)
     music:setLooping(true)  --music loop
     music:play()  --playing the music
 
@@ -73,8 +74,8 @@ function MainState:enter()
     honeybadger = self.honeybadger
     wasp = self.wasp
 
-    --collider for the beehive itself
-    local wall = world:newRectangleCollider(80, 225, 120, 135 )
+    --making the hive collider using values in hive.lua instead of hardcoding
+    local wall = world:newRectangleCollider(self.hive.x, self.hive.y, self.hive.width, self.hive.height)
     wall:setType('static')
 end
 
