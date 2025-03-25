@@ -7,38 +7,34 @@
 
 --quick read
 --[[
-    check days passed
+    update days passed
+    call day/night function to match tint
+        display appropiate message
+        trigger events
+        display updates stats
+
+    in trigger:
     if a certain num, change bool for specific attack
         triggers event
     update everything
-    
-    outside fucntion decides to call night v day to show appropiate message
-
-    correct tint is applied
 ]]
 
---local wasp = require("wasp")
+local d = require("dialogs")
 
 daysPassed = 0.0;
 bgTint = {0.1, 0, .2} -- tint for background(r, g, b)
 
 -- days for attacks
-waspDay = 5
+waspDay = 2 --5
 waspGo = false
-badgerDay = 10
+badgerDay = 5 --10
 badgerGo = false
 
 
---this function changes the day counter and triggers updates
+--this function changes the day counter
 --after user is done updating their hive for the day
 function AdvanceDay()
     daysPassed = daysPassed + 0.5
-
-    --dialogManager:show(daysPassed)
-
-
-    -- tigger nightly updates
-    TriggerUpdates()
 
 end
 
@@ -47,9 +43,10 @@ function NightSky()
     
     -- Show a night message using Dialove
     -- Push the night message to the dialog manager
-    dialogManager:show('Good night, the day has ended!') -- stores dialog
-    --dialogManager:show('days passed')
-    --dialogManager:pop() -- requests the first pushed dialog to be shown on screen
+    dialogManager:show(d.goodnight) -- stores dialog
+
+    -- tigger nightly updates
+    TriggerUpdates()
 
     --add sleeping emotes?
 end
@@ -58,31 +55,40 @@ end
 function DaySky()
 
     --day message
-    dialogManager:show('Good morning!') -- stores dialog
-    --dialogManager:push(daysPassed) -- requests the first pushed dialog to be shown on screen
+    dialogManager:show(d.goodmorning) -- stores dialog
 
-    --flash any urgent messages
+    -- tigger nightly updates
+    TriggerUpdates()
+
+    --send update message
+    dialogManager:push(d.morningstats)
 end
 
 --method to update things throughout the night
 function TriggerUpdates(dt)
 
     --check for attack
-    if daysPassed == waspDay then
+    if daysPassed == waspDay+0.5 then
         --trigger wasp event
         waspGo = true
-    elseif daysPassed == badgerDay then
+       dialogManager:push(d.waspmessage)
+    elseif daysPassed == badgerDay+0.5 then
         --trigger badger eent
         badgerGo = true
+        dialogManager:push(d.badgermessage)
     
     end
-    --update bee count
-    --update hive
-    --update flowers
-    --update pollen
+
     --update health meters
+    --[[
+    if hive.beeCount >= 1 then
+        
+    end
+]]
     --update tools integrity
     --update...
+
+    
 end
 
 -- applys a tint over everything using a transparent rectangle
