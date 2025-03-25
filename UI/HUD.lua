@@ -19,7 +19,9 @@ function HUD:load()
             local canvas = love.graphics.newCanvas(itemSize, itemSize)
             love.graphics.setCanvas(canvas) -- Switch drawing to canvas
             love.graphics.clear(0, 0, 0, 0) -- Make new canvas transparent
-            love.graphics.draw(item.image, 0, 0, 0, canvas:getWidth() / item.image:getWidth(), canvas:getHeight() / item.image:getHeight()) -- Draw image onto canvas
+            love.graphics.draw(item.image, 0, 0, 0, 
+                                canvas:getWidth() / item.image:getWidth(), 
+                                canvas:getHeight() / item.image:getHeight()) -- Draw image onto canvas
             love.graphics.setCanvas() -- Swtich back to screen
 
             table.insert(self.canvases, canvas) -- Add canvas to table
