@@ -69,6 +69,9 @@ function MainState:enter()
     local wall = world:newRectangleCollider(80, 225, 120, 135 )
     wall:setType('static')
 
+    -- Draw HUD overlay
+    HUD:draw()
+
 end
 
 -- helper functions from Poultry Profits
