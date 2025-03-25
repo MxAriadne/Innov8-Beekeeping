@@ -4,10 +4,8 @@
 local gameSaves = {}
 
 -- Import required modules
---local button = require "UI/button"
---require "UI/design"
-local button = require "states/button"
-require "states/design"
+local button = require "UI/button"
+require "UI/design"
 
 -- Design elements
 local textBoxColor = colors.grey
@@ -33,10 +31,16 @@ function gameSaves:enter()
     return self.buttons
 end
 
+function gameSaves:update(dt)
+    if love.keyboard.isDown("escape") then
+        GameStateManager:revertState()
+    end
+end
+
 -- Function to render the save files screen
 function gameSaves:draw()
     love.graphics.setBackgroundColor(menuBackgroundColor)
-    
+
     -- Draw UI elements
     local textBox, searchButton = self.buttons[1], self.buttons[2]
     textBox:draw(textBoxColor, smallFont, menuTextColor)
