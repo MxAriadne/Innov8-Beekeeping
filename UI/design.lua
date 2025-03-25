@@ -17,8 +17,12 @@ margin = 10
 
 -- Fonts used on main menu screen
 smallFont = love.graphics.newFont(24) -- Font for text and notes
-mediumFont = love.graphics.newFont(32) -- Font for button text
-largeFont = love.graphics.newFont(72) -- Font for game title
+smallFont:setFilter("nearest", "nearest")
+mediumFont = love.graphics.newFont(36) -- Font for button text
+mediumFont:setFilter("nearest", "nearest")
+largeFont = love.graphics.newFont(84) -- Font for game title
+largeFont:setFilter("nearest", "nearest")
+
 
 -- Main menu colors
 menuBackgroundColor = colors.tan

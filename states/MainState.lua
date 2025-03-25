@@ -17,11 +17,6 @@ GameConfig = {}
 
 function MainState:enter()
     Object = require "classic"
-    require "bee"
-    require "flower"
-    require "hive"
-    require "wasp"
-    require "honeybadger"
 
     --table for flowers
     flowers = {flower}
@@ -33,7 +28,6 @@ function MainState:enter()
     dialogManager = Dialove.init({
         font = love.graphics.newFont('libraries/fonts/comic-neue/ComicNeue-Bold.ttf', 16)
     })
-
 
     --base size for the game right now
     --will put everything into variables later so it can be more easily resized
@@ -65,13 +59,23 @@ function MainState:enter()
         end
     end
 
+    --creating the entities instance variables
+    self.hive = Hive()
+    self.bee = Bee()
+    self.flower = Flower()
+    self.honeybadger = HoneyBadger()
+    self.wasp = Wasp()
+
+    --assigning the instances to global variables for accessibility
+    hive = self.hive
+    bee = self.bee
+    flower = self.flower
+    honeybadger = self.honeybadger
+    wasp = self.wasp
+
     --collider for the beehive itself
     local wall = world:newRectangleCollider(80, 225, 120, 135 )
     wall:setType('static')
-
-    -- Draw HUD overlay
-    HUD:draw()
-
 end
 
 -- helper functions from Poultry Profits
@@ -124,6 +128,15 @@ function MainState:update(dt)
         GameStateManager:revertState()
     end
 
+    --updating the entities (making them move) IF they exist
+    if self.wasp then self.wasp:update(dt) end
+    if self.bee then self.bee:update(dt) end
+    if self.honeybadger then self.honeybadger:update(dt) end
+    --updating the entities (making them move) IF they exist
+    if self.wasp then self.wasp:update(dt) end
+    if self.bee then self.bee:update(dt) end
+    if self.honeybadger then self.honeybadger:update(dt) end
+
     player.collider:setLinearVelocity(vx, vy)
 end
 
@@ -174,7 +187,18 @@ function MainState:draw()
     love.graphics.setColor(1, 1, 1, 1)
 
     map:draw(0, 0, 2, 2)
-    love.graphics.draw(hive, 200, 225, 0, -1, 1)
+
+    --drawing the entities if they exist
+    if self.bee then self.bee:draw() end
+    if self.flower then self.flower:draw() end
+    if self.wasp then self.wasp:draw() end
+    if self.honeybadger then self.honeybadger:draw() end
+    if self.hive then self.hive:draw() end
+
+    --debug mode
+    if debugMode and self.wasp then
+        self.wasp.pathfinding:drawDebug()
+    end
 
     world:draw()--makes the colliders visible, for debugging - comment out later
     love.graphics.circle("line", player.x, player.y, 20)
