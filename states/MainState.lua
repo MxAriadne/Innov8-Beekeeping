@@ -39,7 +39,7 @@ function MainState:enter()
     --base size for the game right now
     --will put everything into variables later so it can be more easily resized
     money = 0
-    hive = love.graphics.newImage('sprites/hive.png')
+    --hive = love.graphics.newImage('sprites/hive.png')
     map = sti('maps/TilesForBeekeepingGameTopBoundaries.lua')
     love.window.setMode(960, 640)
 

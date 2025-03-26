@@ -1,7 +1,7 @@
 --dayCycleScript.lua file
 --author: Elaina Vogel
 
--- TODO: update appropiate variables to show progression
+-- TODO: update appropiate variables to show progression (money and fence integrity)
 
 --[[This file handles the day cycle aspect of the game]]
 
@@ -30,11 +30,11 @@ waspGo = false
 badgerDay = 5 --10
 badgerGo = false
 
-
 --this function changes the day counter
 --after user is done updating their hive for the day
 function AdvanceDay()
     daysPassed = daysPassed + 0.5
+
 
 end
 
@@ -43,7 +43,13 @@ function NightSky()
     
     -- Show a night message using Dialove
     -- Push the night message to the dialog manager
-    dialogManager:show(d.goodnight) -- stores dialog
+    --dialogManager:show(d.goodnight) -- stores dialog
+
+    if hive then
+        dialogManager:show(hive.beeCount)  -- Safe access
+    else
+        dialogManager:show('bad')
+    end
 
     -- tigger nightly updates
     TriggerUpdates()
@@ -60,8 +66,13 @@ function DaySky()
     -- tigger nightly updates
     TriggerUpdates()
 
+    --load stat message with variables
+    local morningstats = {
+        text = string.format("Check out your stats:\nYour hive's health is at %d.\nYour hive's honey count is at %d.\nYour bee count is %d.\nYour fences are at %d strength.", hive.health, hive.honey, hive.beeCount, 0),
+        options = {} -- no choices, signals end of dialogue
+    }
     --send update message
-    dialogManager:push(d.morningstats)
+    dialogManager:push(morningstats)
 end
 
 --method to update things throughout the night

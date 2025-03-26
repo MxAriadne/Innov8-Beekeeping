@@ -1,13 +1,6 @@
 -- dialogs.lua: file contains the scripts for the dialogs
 -- author: Elaina Vogel
 
---TODO: fix ref to hive so that it pulls correct info
-
-Object = require "classic" 
-Hive = require("hive")  -- Loads the Hive classh
-hive = Hive()        -- Creates an instance
-
-
 local dialog = {
     goodnight = {
         text = "Time to go to bed! Tomorrow is a new day!",
@@ -15,10 +8,6 @@ local dialog = {
     },
     goodmorning = {
         text = "The sun is up! Let's work hard today!",
-        options = {} -- no choices, signals end of dialogue
-    },
-    morningstats = {
-        text = string.format("Check out your stats:\nYour hive's health is at %d.\nYour hive's honey count is at %d.\nYour bee count is %d.\nYour fences are at %d strength.", hive.health, hive.honey, hive.beeCount, 0),
         options = {} -- no choices, signals end of dialogue
     },
     waspmessage = {
