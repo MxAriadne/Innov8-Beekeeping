@@ -43,13 +43,7 @@ function NightSky()
     
     -- Show a night message using Dialove
     -- Push the night message to the dialog manager
-    --dialogManager:show(d.goodnight) -- stores dialog
-
-    if hive then
-        dialogManager:show(hive.beeCount)  -- Safe access
-    else
-        dialogManager:show('bad')
-    end
+    dialogManager:show(d.goodnight) -- stores dialog
 
     -- tigger nightly updates
     TriggerUpdates()
