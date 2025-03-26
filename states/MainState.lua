@@ -4,9 +4,9 @@ local MainState = {}
 local sti = require 'libraries/sti'
 local wf = require 'libraries/windfield'
 local HUD = require "UI/HUD"
+local Player = require "player"
 
 function MainState:enter()
-
     --base size for the game right now
     --will put everything into variables later so it can be more easily resized
     money = 0
@@ -15,16 +15,22 @@ function MainState:enter()
 
     world = wf.newWorld()
 
+    --defining collision classes
+    world:addCollisionClass('Player')
+    world:addCollisionClass('Wall')
+
     -- Load HUD overlay
     HUD:load()
 
-    --player creation and collider configuation
-    player = {}
-    player.collider = world:newBSGRectangleCollider(480, 340, 20, 20, 14)
-    player.collider:setFixedRotation(true)
-    player.x = 480
-    player.y = 320
-    player.speed = 300
+    --player instance and global reference
+    self.player = Player()
+    player = self.player
+    
+    --player collider configuration
+    self.player.collider = world:newBSGRectangleCollider(480, 340, 20, 20, 14)
+    self.player.collider:setFixedRotation(true)
+    self.player.collider:setObject(self.player)
+    self.player.collider:setCollisionClass('Player')
 
     --auto-getting and making the colliders from the objects created in Tiled
     walls = {}
@@ -32,6 +38,7 @@ function MainState:enter()
         for i, obj in pairs(map.layers["Walls"].objects) do
             local wall = world:newRectangleCollider(obj.x*2, obj.y*2, obj.width*2, obj.height*2)
             wall:setType('static')
+            wall:setCollisionClass('Wall')
             table.insert(walls, wall)
         end
     end
@@ -42,6 +49,10 @@ function MainState:enter()
     self.flower = Flower()
     self.honeybadger = HoneyBadger()
     self.wasp = Wasp()
+
+    --making the hive collider using values in hive.lua instead of hardcoding
+    local wall = world:newRectangleCollider(self.hive.x - self.hive.width/2, self.hive.y - self.hive.height/2, self.hive.width, self.hive.height)
+    wall:setType('static')
     
     --assigning the instances to global variables for accessibility
     hive = self.hive
@@ -49,47 +60,29 @@ function MainState:enter()
     flower = self.flower
     honeybadger = self.honeybadger
     wasp = self.wasp
-
-    --making the hive collider using values in hive.lua instead of hardcoding
-    local wall = world:newRectangleCollider(self.hive.x, self.hive.y, self.hive.width, self.hive.height)
-    wall:setType('static')
 end
 
 function MainState:update(dt)
-    --player movement with colliders
     world:update(dt)
-    player.x = player.collider:getX()
-    player.y = player.collider:getY()
-
-    local vx = 0
-    local vy = 0
-    if love.keyboard.isDown("right", 'd') then
-        vx = player.speed
+    
+    --update player
+    if self.player then 
+        self.player:update(dt)
+        
+        if love.mouse.isDown(1) then  --left click to attack
+            self.player:attack()
+        end
     end
-
-    if love.keyboard.isDown("left", 'a') then
-        vx = player.speed * -1
-    end
-
-    if love.keyboard.isDown("up", 'w') then
-        vy = player.speed * -1
-    end
-
-    if love.keyboard.isDown("down", 's') then
-        vy = player.speed
-    end
-
-    --updating the entities (making them move) IF they exist
+    
+    --update entities
     if self.wasp then self.wasp:update(dt) end
     if self.bee then self.bee:update(dt) end
     if self.honeybadger then self.honeybadger:update(dt) end
+    if self.hive then self.hive:update(dt) end
     
     if love.keyboard.isDown("escape") then
         GameStateManager:revertState()
     end
-
-    player.collider:setLinearVelocity(vx, vy)
-
 end
 
 --still making this
@@ -97,6 +90,9 @@ function MainState:keypressed(key)
    if (key == "e") then
       money = money + 5
       print(money)
+   elseif (key == "`") then
+      --toggle debug mode
+      debugMode = not debugMode
    end
 end
 
@@ -112,21 +108,16 @@ function MainState:draw()
     if self.wasp then self.wasp:draw() end
     if self.honeybadger then self.honeybadger:draw() end
     if self.hive then self.hive:draw() end
+    
+    --draw player
+    if self.player then self.player:draw() end
 
-    --debug mode
-    if debugMode and self.wasp then
-        self.wasp.pathfinding:drawDebug()
+    if debugMode then
+        world:draw()  --draw colliders in debug mode
     end
-
-
-    world:draw()--makes the colliders visible, for debugging - comment out later
-    love.graphics.circle("line", player.x, player.y, 20)
-    --hiveTagColor = {.3, 0, 0, 1}
-    --love.graphics.print({hiveTagColor, "Beehive: Level 1"}, 70, 195, 0, 1.5, 1.5)
 
     -- Draw HUD overlay
     HUD:draw()
-
 end
 
 return MainState

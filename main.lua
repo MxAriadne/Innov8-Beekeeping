@@ -1,3 +1,5 @@
+Object = require "classic" -- ran into issues without this first
+
 local DayCycle = require("dayCycleScript")
 local Beehive = require("libraries/beehive")
 local Jumper = require("libraries/jumper")
@@ -12,12 +14,12 @@ debugMode = false
 GameConfig = {}
 
 function love.load()
-    Object = require "classic"
     require "bee"
     require "flower"
     require "hive"
     require "wasp"
     require "honeybadger"
+    require "player"
     
     --table for flowers
     flowers = {flower}

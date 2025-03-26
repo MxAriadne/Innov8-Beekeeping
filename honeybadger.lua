@@ -55,6 +55,15 @@ function HoneyBadger:new()
     self.stealingFocus = 10  --how many bee stings before considering leaving, default 10
     self.stingsReceived = 0
     self.lootPriority = true  --prioritize stealing over fighting
+    
+    --type checking
+    self.is_honeybadger = true
+    
+    --combat variables
+    self.playerAttackRange = 60
+    self.playerAttackCooldown = 3
+    self.playerAttackTimer = 0
+    self.playerDamage = 5  --default 5
 end
 
 function HoneyBadger:update(dt)
@@ -148,6 +157,18 @@ function HoneyBadger:updateState(dt)
             self.x = 50
             self.y = math.random(100, 540)
             self:chooseNewState()
+        end
+    end
+
+    --combat logic for attacking player if within range and hb not fleeing
+    if player and self.state ~= "fleeing" and self.state ~= "returning" then
+        local dist = math.sqrt((self.x - player.x)^2 + (self.y - player.y)^2)
+        
+        if dist <= self.playerAttackRange then
+            self.playerAttackTimer = self.playerAttackTimer + dt
+            if self.playerAttackTimer >= self.playerAttackCooldown then
+                self:attackPlayer()
+            end
         end
     end
 end
@@ -263,8 +284,8 @@ end
 
 function HoneyBadger:draw()
     if self.visible then  --drawing if visible
-    love.graphics.draw(self.image, self.x, self.y, 0, self.scale, self.scale)
-
+        --drawing around center of png
+        love.graphics.draw(self.image, self.x, self.y, 0, self.scale, self.scale, self.image:getWidth() / 2, self.image:getHeight() / 2)
         if debugMode then
             --draw path
             if self.current_path then
@@ -298,5 +319,13 @@ function HoneyBadger:takeDamage(damage, attacker)
         
         self.stateTimer = 0
         self.idleTime = 1
+    end
+end
+
+--method for dealing damage to player and resetting attack timer after
+function HoneyBadger:attackPlayer()
+    if player then
+        player:takeDamage(self.playerDamage)
+        self.playerAttackTimer = 0
     end
 end
