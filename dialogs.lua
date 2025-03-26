@@ -8,7 +8,7 @@ Hive = require("hive")  -- Loads the Hive classh
 hive = Hive()        -- Creates an instance
 
 
-return {
+local dialog = {
     goodnight = {
         text = "Time to go to bed! Tomorrow is a new day!",
         options = {} -- no choices, signals end of dialogue
@@ -30,3 +30,23 @@ return {
         options = {} -- no choices, signals end of dialogue
     }
 }
+
+dialog.startup1 = {
+    text = "When you are ready for the next day, press SPACE. Be careful! Sometimes bee predators like to attack through the night! Press SPACE again after nightime. In the morning you will get see your updated stats. Press RETURN to continue.",
+    options = {}
+}
+
+dialog.startup2 = {
+    text = "More dialogue boxes will show up through out the game. Quick tip: pressing 'c' will finish typing the message. Pressing RETURN will exit the dialogue box. Don't forget to ext the dialogue box before continuing to the next day.",
+    options = {}
+}
+    
+dialog.startupM = {
+    text = "Welcome! The goal of this game is to build a good enviroment for your bees in order to collect money! To play EXPLAIN HOW TO USE INVENTORY. Press 'b' and 'n' to select an option. Then press RETURN.",
+    options = {
+        { 'Got it!', function() dialogManager:show(dialog.startup1) dialogManager:push(dialog.startup2) end },
+        { 'Skip Tutorial!', function() dialogManager:pop() end }
+    }
+}
+
+return dialog

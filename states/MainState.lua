@@ -8,6 +8,7 @@ local Dialove = require("libraries/Dialove.dialove")
 local DayCycle = require("dayCycleScript")
 local Beehive = require("libraries/beehive")
 local Jumper = require("libraries/jumper")
+local dialogs = require("dialogs")
 
 -- global variables
 tintEnabled = false
@@ -26,9 +27,14 @@ function MainState:enter()
     music:setLooping(true)  --music loop
     music:play()  --playing the music
 
+    --dialog library initilization
     dialogManager = Dialove.init({
         font = love.graphics.newFont('libraries/fonts/comic-neue/ComicNeue-Bold.ttf', 16)
     })
+
+    --setup tutorial dialogue at beginning of game.
+    dialogManager:show(dialogs.startupM);
+    
 
     --base size for the game right now
     --will put everything into variables later so it can be more easily resized
