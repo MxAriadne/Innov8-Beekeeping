@@ -1,7 +1,7 @@
 --dayCycleScript.lua file
 --author: Elaina Vogel
 
--- TODO: update appropiate variables to show progression (money and fence integrity)
+-- TODO: update appropiate variables to show progression (money and fence integrity), delay wasp attack so user has time to defend
 
 --[[This file handles the day cycle aspect of the game]]
 
@@ -25,9 +25,9 @@ daysPassed = 0.0;
 bgTint = {0.1, 0, .2} -- tint for background(r, g, b)
 
 -- days for attacks
-waspDay = 2 --5
+waspDay = 1 --5
 waspGo = false
-badgerDay = 5 --10
+badgerDay = 2 --10
 badgerGo = false
 
 --this function changes the day counter
@@ -77,6 +77,7 @@ function TriggerUpdates(dt)
         --trigger wasp event
         waspGo = true
        dialogManager:push(d.waspmessage)
+
     elseif daysPassed == badgerDay+0.5 then
         --trigger badger eent
         badgerGo = true
