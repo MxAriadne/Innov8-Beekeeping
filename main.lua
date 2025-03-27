@@ -52,7 +52,7 @@ function love.load()
 
     love.graphics.setDefaultFilter("nearest", "nearest")
 
-    GameStateManager:setState(creatorScreen)
+    GameStateManager:setState(MenuState)
 end
 
 function love.update(dt)
