@@ -13,7 +13,7 @@ function HoneyBadger:new()
     self.state = "hunting" --"hunting" default state
     self.stateTimer = 0
     self.idleTime = math.random(3, 6)
-    
+
     --combat properties
     self.isAggressive = true
     self.attackDamage = 3  --does more damage than wasps
@@ -25,29 +25,29 @@ function HoneyBadger:new()
     self.stealingTimer = 0
     self.maxLootCapacity = 5  --can carry more honey/larvae than wasps
     self.currentLoot = 0
-    
+
     --target selection
     self.target = nil
     self.targetType = nil  -- "hive" or "bee"
-    
+
     --pathfinding initialization
     self.pathfinding = Pathfinding
     self.pathfinding:initialize()
     self.current_path = nil
     self.current_path_index = 1
-    
+
     --home position (off-screen), at the left edge
     self.homeX = 0
     self.homeY = math.random(100, 540)
-    
+
     self.visible = true
-    
+
     self.health = 10
     self.maxHealth = 10 --default 10, might not be balanced?
     self.fleeingSpeed = 100
     self.normalSpeed = 45
     self.speed = self.normalSpeed
-    
+
     --honey badgers properties
     --playing with the idea that honey badgers can withstand bee stings due to their fur/skin
     --not making the honey badgers focus on fighting back but rather just stealing from the hive
@@ -75,20 +75,20 @@ function HoneyBadger:updateState(dt)
     end
 
     --honey badger will leave if it has enough loot or has been stung too many times
-    if (self.currentLoot >= self.maxLootCapacity or self.stingsReceived >= self.stealingFocus) 
+    if (self.currentLoot >= self.maxLootCapacity or self.stingsReceived >= self.stealingFocus)
         and self.state ~= "fleeing" then
         self.state = "returning"
         self.current_path = nil
     end
 
     self.stateTimer = self.stateTimer + dt
-    
+
     if self.state == "fleeing" then
         --moving to edge of screen when fleeing
         local dx = self.homeX - self.x
         local dy = self.homeY - self.y
         local distance = math.sqrt(dx * dx + dy * dy)
-        
+
         if distance > 2 then
             local angle = math.atan2(dy, dx)
             self.x = self.x + math.cos(angle) * self.speed * dt
@@ -124,7 +124,7 @@ function HoneyBadger:updateState(dt)
                     hive.health = math.max(0, hive.health - 5)  --dealing damage, default 5
                 end
             end
-            
+
             if self.currentLoot >= self.maxLootCapacity then
                 self.hasLoot = true
                 self.state = "returning"
@@ -138,7 +138,7 @@ function HoneyBadger:updateState(dt)
         local dx = self.homeX - self.x
         local dy = self.homeY - self.y
         local distance = math.sqrt(dx * dx + dy * dy)
-        
+
         if distance > 2 then
             local angle = math.atan2(dy, dx)
             self.x = self.x + math.cos(angle) * self.speed * dt
@@ -156,7 +156,7 @@ end
 
 function HoneyBadger:chooseNewState()
     self.stateTimer = 0
-    
+
     if self.isAggressive then
         local target, targetType = self:findNearestTarget()
         if target then
@@ -167,7 +167,7 @@ function HoneyBadger:chooseNewState()
             return
         end
     end
-    
+
     self.state = "idle"
     self.idleTime = math.random(3, 6)
 end
@@ -176,7 +176,7 @@ function HoneyBadger:findNearestTarget()
     local nearestDist = math.huge
     local nearestTarget = nil
     local targetType = nil
-    
+
     --honey badgers prioritize the hive rather than targeting bees
     if hive then
         local hiveDist = math.sqrt((self.x - hive.x)^2 + (self.y - hive.y)^2)
@@ -184,7 +184,7 @@ function HoneyBadger:findNearestTarget()
         nearestTarget = hive
         targetType = "hive"
     end
-    
+
     --only target bees that are very close to badger
     if bee and bee.alive then
         local beeDist = math.sqrt((self.x - bee.x)^2 + (self.y - bee.y)^2)
@@ -193,16 +193,16 @@ function HoneyBadger:findNearestTarget()
             targetType = "bee"
         end
     end
-    
+
     return nearestTarget, targetType
 end
 
 function HoneyBadger:updateCombat(dt)
     self.attackTimer = self.attackTimer + dt
-    
+
     if self.state == "hunting" and self.target then
         local dist = math.sqrt((self.x - self.target.x)^2 + (self.y - self.target.y)^2)
-        
+
         if dist <= self.attackRange and self.attackTimer >= self.attackCooldown then
             self:attack()
         end
@@ -211,12 +211,12 @@ end
 
 function HoneyBadger:attack()
     self.attackTimer = 0
-    
+
     --brown indicator for hb attacks
     love.graphics.setColor(0.7, 0.4, 0, 0.3)
     love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
     love.graphics.setColor(1, 1, 1, 1)
-    
+
     if self.targetType == "hive" then
         hive.honey = math.max(0, hive.honey - 2)
     elseif self.targetType == "bee" then
@@ -238,11 +238,11 @@ end
 function HoneyBadger:move(dt)
     if self.current_path and self.current_path_index <= #self.current_path then
         local target = self.current_path[self.current_path_index]
-        
+
         local dx = target.x - self.x
         local dy = target.y - self.y
         local distance = math.sqrt(dx * dx + dy * dy)
-        
+
         if distance > 2 then
             local angle = math.atan2(dy, dx)
             self.x = self.x + math.cos(angle) * self.speed * dt
@@ -278,7 +278,7 @@ function HoneyBadger:draw()
                 end
                 love.graphics.setColor(1, 1, 1, 1)
             end
-            
+
             --debug info including current state, aggression, and loot count
             love.graphics.print(string.format("State: %s\nAggressive: %s\nLoot: %d/%d", self.state, tostring(self.isAggressive), self.currentLoot, self.maxLootCapacity), self.x - 30, self.y - 40)
         end
@@ -290,14 +290,14 @@ function HoneyBadger:takeDamage(damage, attacker)
     --honey badger takes reduced damage from bees
     self.health = self.health - (damage * 0.5)  --honey badger takes half damage from bees
     self.stingsReceived = self.stingsReceived + 1
-    
+
     --small chance to target bees
     if math.random() < 0.1 and self.state == "stealing" then
         self.state = "fighting"
         self.target = attacker
         self.targetType = "bee"
         self.current_path = nil
-        
+
         self.stateTimer = 0
         self.idleTime = 1
     end

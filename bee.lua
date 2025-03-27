@@ -3,12 +3,13 @@ local Pathfinding = require("pathfinding")
 Bee = Object:extend()
 
 function Bee:new()
-    self.image = love.graphics.newImage("sprites/bee.png")
+    --self.image = love.graphics.newImage("sprites/bee.png")
+    self.animation = beeAnimation()
     self.x = 275
     self.y = 300
     self.scale = 0.4
-    self.width = self.image:getWidth() * self.scale
-    self.height = self.image:getHeight() * self.scale
+    self.width = 128
+    self.height = 128
     self.speed = 60      --slower than wasps and honey badgers
     self.state = "foraging"
     self.hasNectar = false
@@ -44,6 +45,12 @@ function Bee:new()
 end
 
 function Bee:update(dt)
+
+    self.animation.currentTime = self.animation.currentTime + dt
+    if self.animation.currentTime >= self.animation.duration then
+        self.animation.currentTime = self.animation.currentTime - self.animation.duration
+    end
+
     self:updateCombat(dt)
     self:updateState(dt)
     self:checkThreatLevel()
@@ -323,6 +330,17 @@ function Bee:followPath(dt)
             self.x = self.x + math.cos(angle) * self.speed * dt
             self.y = self.y + math.sin(angle) * self.speed * dt
         end
+
+        if dx > 0 then
+            self.direction = "right"
+        elseif dx < 0 then
+            self.direction = "left"
+        elseif dy > 0 then
+            self.direction = "down"
+        elseif dy < 0 then
+            self.direction = "up"
+        end
+
         return
     end
 
@@ -344,11 +362,28 @@ function Bee:followPath(dt)
     else
         self.current_path_index = self.current_path_index + 1
     end
+
+    if dx > 0 then
+        self.direction = "right"
+    elseif dx < 0 then
+        self.direction = "left"
+    elseif dy > 0 then
+        self.direction = "down"
+    elseif dy < 0 then
+        self.direction = "up"
+    end
 end
 
 function Bee:draw()
     if not self.isRetreating then
-        love.graphics.draw(self.image, self.x, self.y, 0, self.scale, self.scale)
+        --love.graphics.draw(self.image, self.x, self.y, 0, self.scale, self.scale)
+
+        local row = 0
+        if self.direction == "left" then row = 1
+        elseif self.direction == "right" then row = 2 end
+
+        local spriteNum = math.floor(self.animation.currentTime / self.animation.duration * 4) + 1 + row * 4
+        love.graphics.draw(self.animation.spritesheet, self.animation.quads[spriteNum], self.x, self.y, 0, 3)
 
         --debug, drawing the bee's path
         if debugMode then
@@ -373,4 +408,24 @@ function Bee:draw()
                 "State: %s\nHealth: %d/%d\nHas Nectar: %s", self.state, self.health, self.maxHealth, tostring(self.hasNectar)), self.x - 30, self.y - 40)
         end
     end
+end
+
+function beeAnimation()
+    local animation = {}
+    local height = 64
+    local width = 64
+    local duration = 2
+    animation.spritesheet = love.graphics.newImage("sprites/Bee_Walk.png")
+    animation.quads = {};
+
+    for y = 0, animation.spritesheet:getHeight() - height, height do
+        for x = 0, animation.spritesheet:getWidth() - width, width do
+            table.insert(animation.quads, love.graphics.newQuad(x, y, width, height, animation.spritesheet:getDimensions()))
+        end
+    end
+
+    animation.duration = duration
+    animation.currentTime = 0
+
+    return animation
 end

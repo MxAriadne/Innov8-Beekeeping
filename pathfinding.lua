@@ -35,16 +35,16 @@ end
 --finds a path from the wasp/hb's start position to the hive
 function Pathfinding:findPathToHive(start_x, start_y)
     if not hive then return nil end  --in the unlikely case that there is no hive
-    
+
     local start_grid_x, start_grid_y = self:worldToGrid(start_x, start_y)
     local hive_grid_x, hive_grid_y = self:worldToGrid(hive.x, hive.y)
-    
+
     --calculating the path from the start point to the hive
     local path = self.pathfinder:getPath(
         start_grid_x, start_grid_y,
         hive_grid_x, hive_grid_y
     )
-    
+
     --if a path is found, convert back to world coordinates and returning the list of coords
     if path then
         local world_path = {}
@@ -62,13 +62,13 @@ function Pathfinding:findPathToFlower(start_x, start_y, flower_x, flower_y)
     --converting world to grid coordinates
     local start_grid_x, start_grid_y = self:worldToGrid(start_x, start_y)
     local flower_grid_x, flower_grid_y = self:worldToGrid(flower_x, flower_y)
-    
+
     --getting a path to the flower
     local path = self.pathfinder:getPath(
         start_grid_x, start_grid_y,
         flower_grid_x, flower_grid_y
     )
-    
+
     --if a path is found, convert to world coordinates and return the list of coords
     if path then
         local world_path = {}
@@ -97,13 +97,13 @@ function Pathfinding:findPathToTarget(startX, startY, targetX, targetY)
     --converting world to grid coordinates
     local start_grid_x, start_grid_y = self:worldToGrid(startX, startY)
     local target_grid_x, target_grid_y = self:worldToGrid(targetX, targetY)
-    
+
     --getting a path to the target
     local path = self.pathfinder:getPath(
         start_grid_x, start_grid_y,
         target_grid_x, target_grid_y
     )
-    
+
     --if a path is found, convert to world coordinates and return the list of coords
     if path then
         local world_path = {}
@@ -116,4 +116,4 @@ function Pathfinding:findPathToTarget(startX, startY, targetX, targetY)
     return nil
 end
 
-return Pathfinding 
+return Pathfinding

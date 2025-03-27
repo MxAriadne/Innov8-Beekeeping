@@ -40,12 +40,12 @@ end
 function HUD:draw()
     --draw money
     love.graphics.setColor(self.colors.money)
-    love.graphics.print("Money: $" .. playerMoney, 800, 60)
+    love.graphics.print("Money: $" .. PlayerMoney, 800, 60)
 
     --draw build mode if active
-    if currentBuildMode then
+    if CurrentBuildMode then
         love.graphics.setColor(self.colors.buildMode)
-        local buildModeText = "Build Mode: " .. currentBuildMode
+        local buildModeText = "Build Mode: " .. CurrentBuildMode
         love.graphics.print(buildModeText, 800, 80)
         love.graphics.print("Right-click to place", 800, 100)
     end
@@ -55,9 +55,9 @@ function HUD:draw()
     love.graphics.setColor(self.colors.text)
     local controlsText = {
         "Controls:",
-        "F - Buy Hive ($" .. hiveCost .. ")",
-        "G - Buy Bee ($" .. beeCost .. ")",
-        "H - Buy Flower ($" .. flowerCost .. ")",
+        "F - Buy Hive ($" .. HiveCost .. ")",
+        "G - Buy Bee ($" .. BeeCost .. ")",
+        "H - Buy Flower ($" .. FlowerCost .. ")",
         "Left Click - Attack",
         "Space - Advance Day",
         "` - Toggle Debug"

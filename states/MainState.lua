@@ -12,17 +12,25 @@ local Jumper = require("libraries/jumper")
 local dialogs = require("dialogs")
 local Player = require "player"
 
--- global variables
-tintEnabled = false
-debugMode = false
-
-GameConfig = {}
-
 function MainState:enter()
-    Object = require "classic"
+    --base size for the game right now
+    --will put everything into variables later so it can be more easily resized
+    map = sti('maps/TilesForBeekeepingGameTopBoundaries.lua')
+    love.window.setMode(960, 640)
+
+    world = wf.newWorld()
+
+    --defining collision classes
+    world:addCollisionClass('Player')
+    world:addCollisionClass('Wall')
+    world:addCollisionClass('PlayerAttack')
+    world:addCollisionClass('Enemy')
+    world:addCollisionClass('Hive')
+
 
     --table for flowers
     flowers = {flower}
+    money = 0
 
     music = love.audio.newSource("tunes/Flowers.mp3", "stream")
     music:setVolume(0.3)
@@ -36,22 +44,6 @@ function MainState:enter()
 
     --setup tutorial dialogue at beginning of game.
     dialogManager:show(dialogs.startupM);
-
-    --base size for the game right now
-    --will put everything into variables later so it can be more easily resized
-    money = 0
-    --hive = love.graphics.newImage('sprites/hive.png')
-    map = sti('maps/TilesForBeekeepingGameTopBoundaries.lua')
-    love.window.setMode(960, 640)
-
-    world = wf.newWorld()
-
-    --defining collision classes
-    world:addCollisionClass('Player')
-    world:addCollisionClass('Wall')
-    world:addCollisionClass('PlayerAttack')
-    world:addCollisionClass('Enemy')
-    world:addCollisionClass('Hive')
 
     -- Load HUD overlay
     HUD:load()
@@ -117,6 +109,7 @@ function MainState:update(dt)
 
         if love.mouse.isDown(1) then  --left click to attack
             self.player:attack()
+
         end
     end
 
@@ -178,9 +171,9 @@ function love.keypressed(k)
         --pathfinding debug toggle
     --f key to build hive
     elseif k == "f" then
-        if playerMoney >= hiveCost then
-            playerMoney = playerMoney - hiveCost
-            currentBuildMode = "hive"
+        if PlayerMoney >= HiveCost then
+            PlayerMoney = PlayerMoney - HiveCost
+            CurrentBuildMode = "hive"
             print("You purchased a hive blueprint. Right-click to place!")
         else
             print("Not enough money for a hive!")
@@ -188,34 +181,38 @@ function love.keypressed(k)
 
     --g key to build bee
     elseif k == "g" then
-        if playerMoney >= beeCost then
-            playerMoney = playerMoney - beeCost
-            currentBuildMode = "bee"
+        if PlayerMoney >= BeeCost then
+            PlayerMoney = PlayerMoney - BeeCost
+            CurrentBuildMode = "bee"
             print("You purchased a bee. Right-click to place!")
         else
             print("Not enough money for a bee!")
         end
     --h key to build flower
     elseif k == "h" then
-        if playerMoney >= flowerCost then
-            playerMoney = playerMoney - flowerCost
-            currentBuildMode = "flower"
+        if PlayerMoney >= FlowerCost then
+            PlayerMoney = PlayerMoney - FlowerCost
+            CurrentBuildMode = "flower"
             print("You purchased a flower seed. Right-click to plant!")
         else
             print("Not enough money for a flower!")
         end
 
-    elseif (key == "e") then
-        playerMoney = playerMoney + 5
-        print(playerMoney)
+    elseif (k == "e") then
+        PlayerMoney = PlayerMoney + 5
+        print(PlayerMoney)
 
-    elseif (key == "`") then
+    elseif (k == "`") then
         --toggle debug mode
         debugMode = not debugMode
+        print("Debug mode: " .. (debugMode and "ON" or "OFF"))
     end
 end
 
 function love.keyreleased(k)
+    print("State Key released:", k)
+
+    player:keyreleased(k)
     -- Handle spacebar to adjust dialog speed
     if k == 's' then
         dialogManager:slower()
@@ -225,26 +222,26 @@ end
 -- build mode, right click
 function love.mousepressed(x, y, button)
     if button == 2 then
-        if currentBuildMode == "hive" then
+        if CurrentBuildMode == "hive" then
             local newHive = Hive()
             newHive.x, newHive.y = x, y
             table.insert(hives, newHive)
             hive = newHive
             print("Placed a new hive at (" .. x .. ", " .. y .. ")")
-        elseif currentBuildMode == "bee" then
+        elseif CurrentBuildMode == "bee" then
             local newBee = Bee()
             newBee.x, newBee.y = x, y
             table.insert(bees, newBee)
             bee = newBee
             print("Placed a new bee at (" .. x .. ", " .. y .. ")")
-        elseif currentBuildMode == "flower" then
+        elseif CurrentBuildMode == "flower" then
             local newFlower = Flower()
             newFlower.x, newFlower.y = x, y
             table.insert(flowers, newFlower)
             flower = newFlower
             print("Placed a new flower at (" .. x .. ", " .. y .. ")")
         end
-        currentBuildMode = nil
+        CurrentBuildMode = nil
     end
 end
 
@@ -275,12 +272,10 @@ function MainState:draw()
     --draw player
     if self.player then self.player:draw() end
 
-
-
     -- Draw HUD overlay
+    ApplyBGTint()
     HUD:draw()
     dialogManager:draw()
-    ApplyBGTint()
 end
 
 return MainState

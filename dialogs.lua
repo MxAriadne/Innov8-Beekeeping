@@ -31,7 +31,7 @@ dialog.startup2 = {
     text = "More dialogue boxes will show up through out the game. Quick tip: pressing 'c' will finish typing the message. Pressing RETURN will exit the dialogue box. Don't forget to ext the dialogue box before continuing to the next day.",
     options = {}
 }
-    
+
 dialog.startupM = {
     text = "Welcome! The goal of this game is to build a good enviroment for your bees in order to collect money! To play EXPLAIN HOW TO USE INVENTORY. When predators attack, get near the predator and RIGHT CLICK to fight them. Press 'b' and 'n' to select an option. Then press RETURN.",
     options = {

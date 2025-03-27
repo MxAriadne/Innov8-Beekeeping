@@ -4,7 +4,7 @@ function Hive:new()
     self.image = love.graphics.newImage("sprites/hive.png")
     self.x = 420
     self.y = 315
-    self.scale = 0.6 
+    self.scale = 0.6
     self.width = self.image:getWidth() * self.scale
     self.height = self.image:getHeight() * self.scale
     self.honey = 10
@@ -14,11 +14,11 @@ function Hive:new()
     --hive health variables
     self.health = 100
     self.maxHealth = 100
-    
+
     --type check flag
     self.is_hive = true
     self.visible = true
-    
+
     --taking damage effect
     self.flashTimer = 0
     self.flashDuration = 0.2
@@ -41,25 +41,25 @@ function Hive:draw()
     else
         love.graphics.setColor(1, 1, 1, 1)
     end
-    
+
     --drawing hive on the center of its png
     love.graphics.draw(self.image, self.x, self.y, 0, self.scale, self.scale, self.image:getWidth() / 2, self.image:getHeight() / 2)
     love.graphics.setColor(1, 1, 1, 1)
-    
+
     if debugMode then
         --drawing the health bar
         local barWidth = 50
         local barHeight = 5
         local healthPercentage = self.health / self.maxHealth
-        
+
         --red background
         love.graphics.setColor(1, 0, 0, 0.7)
         love.graphics.rectangle("fill", self.x - barWidth/2, self.y - 10 - self.height/2, barWidth, barHeight)
-        
+
         --green foreground
         love.graphics.setColor(0, 1, 0, 0.7)
         love.graphics.rectangle("fill", self.x - barWidth/2, self.y - 10 - self.height/2, barWidth * healthPercentage, barHeight)
-        
+
         --printing hive's debug info
         love.graphics.setColor(1, 1, 1, 1)
         love.graphics.print(string.format("Health: %d/%d\nHoney: %d\nBees: %d", self.health, self.maxHealth, self.honey, self.beeCount), self.x - 30, self.y - 40 - self.height/2)

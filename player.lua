@@ -2,6 +2,12 @@ local Player = Object:extend()
 
 function Player:new()
     --basic properties, formerly in MainState.lua
+    self.animations = {
+        idle = playerAnimation(love.graphics.newImage("sprites/chars/char8.png"), 32, 32, 0.5),
+        attack = playerAnimation(love.graphics.newImage("sprites/attacking/char8_sword.png"), 32, 32, 0.7)
+    }
+    self.animation = self.animations.idle    self.direction = "still"
+
     self.x = 480
     self.y = 320
     self.speed = 300
@@ -33,6 +39,32 @@ function Player:new()
 end
 
 function Player:update(dt)
+    -- Update the attack timer
+    if self.isAttacking then
+        -- Set attack animation
+        self.animation = self.animations.attack
+
+        -- Calculate remaining time for the attack
+        self.attackTimeLeft = self.animation.duration - self.animation.currentTime
+
+        -- Once the animation completes, stop the attack
+        if self.attackTimeLeft <= 0 then
+            self.animation.currentTime = 0  -- Reset the animation to the beginning
+            self.animation = self.animations.idle  -- Revert to idle animation
+            self.isAttacking = false  -- Stop the attack after completion
+        end
+    else
+        self.animation = self.animations.idle
+    end
+
+    -- Update the animation's currentTime
+    self.animation.currentTime = self.animation.currentTime + dt
+
+    -- If animation's currentTime exceeds duration, reset it
+    if self.animation.currentTime >= 1 then
+        self.animation.currentTime = 0  -- Reset the animation to the start
+    end
+
     if self.collider then
         --update position based on collider
         self.x = self.collider:getX()
@@ -58,19 +90,36 @@ function Player:update(dt)
     local vy = 0
     if love.keyboard.isDown("right", 'd') then
         vx = self.speed
+        self.direction = "right"
     end
     if love.keyboard.isDown("left", 'a') then
         vx = self.speed * -1
+        self.direction = "left"
     end
     if love.keyboard.isDown("up", 'w') then
         vy = self.speed * -1
+        self.direction = "up"
     end
     if love.keyboard.isDown("down", 's') then
         vy = self.speed
+        self.direction = "down"
     end
 
     if self.collider then
         self.collider:setLinearVelocity(vx, vy)
+    end
+
+
+end
+
+function Player:keyreleased(k)
+    print("Key released:", k)
+    print("Pre " .. self.direction)
+
+    if k == "w" or k == "a" or k == "s" or k == "d" or k == "up" or k == "left" or k == "down" or k == "right" then
+        self.direction = "still"
+        print(self.direction)
+
     end
 end
 
@@ -179,8 +228,46 @@ end
 
 function Player:draw()
     --player draw, formerly in MainState.lua
-    love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.circle("line", self.x, self.y, self.radius)
+    --love.graphics.setColor(1, 1, 1, 1)
+    --love.graphics.circle("line", self.x, self.y, self.radius)
+
+    -- Get mouse position
+    local mouseX, mouseY = love.mouse.getPosition()
+
+    -- Calculate direction based on mouse position
+    local dx, dy = mouseX - self.x, mouseY - self.y
+    local angle = math.atan2(dy, dx)  -- Get angle in radians
+
+    -- Determine direction based on angle
+    if angle >= -math.pi / 4 and angle <= math.pi / 4 then
+        self.direction = "right"
+    elseif angle > math.pi / 4 and angle <= 3 * math.pi / 4 then
+        self.direction = "down"
+    elseif angle < -math.pi / 4 and angle >= -3 * math.pi / 4 then
+        self.direction = "up"
+    else
+        self.direction = "left"
+    end
+
+    -- Assign row based on direction
+    local rowMapping = {
+        left = self.isAttacking and 3 or 6,
+        down = 0,
+        up = self.isAttacking and 1 or 2,
+        right = self.isAttacking and 2 or 4
+    }
+    local row = rowMapping[self.direction]
+
+    -- Determine sprite frame
+    if self.direction ~= "still" then
+        local spriteNum = math.floor(self.animation.currentTime / self.animation.duration * 4) + 1 + row * 4
+        if spriteNum > #self.animation.quads then
+            spriteNum = #self.animation.quads  -- Use the last frame if out of bounds
+        end
+        love.graphics.draw(self.animation.spritesheet, self.animation.quads[spriteNum], self.x - 48, self.y - 64, 0, 3)
+    else
+        love.graphics.draw(self.animation.spritesheet, self.animation.quads[1], self.x - 48, self.y - 64, 0, 3)
+    end
 
     --drawing damage effects
     for _, hit in ipairs(self.damageIndicator) do
@@ -266,6 +353,23 @@ function Player:draw()
 
         love.graphics.setColor(1, 1, 1, 1)  --reset color
     end
+end
+
+function playerAnimation(image, height, width, duration)
+    local animation = {}
+    animation.spritesheet = image
+    animation.quads = {};
+
+    for y = 0, animation.spritesheet:getHeight() - height, height do
+        for x = 0, animation.spritesheet:getWidth() - width, width do
+            table.insert(animation.quads, love.graphics.newQuad(x, y, width, height, animation.spritesheet:getDimensions()))
+        end
+    end
+
+    animation.duration = duration
+    animation.currentTime = 0
+
+    return animation
 end
 
 return Player

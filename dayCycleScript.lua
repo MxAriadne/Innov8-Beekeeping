@@ -40,7 +40,7 @@ end
 
 --method to change to night
 function NightSky()
-    
+
     -- Show a night message using Dialove
     -- Push the night message to the dialog manager
     dialogManager:show(d.goodnight) -- stores dialog
@@ -82,7 +82,7 @@ function TriggerUpdates(dt)
         --trigger badger eent
         badgerGo = true
         dialogManager:push(d.badgermessage)
-    
+
     end
 
     --update health meters
@@ -94,7 +94,7 @@ function TriggerUpdates(dt)
     --update tools integrity
     --update...
 
-    
+
 end
 
 -- applys a tint over everything using a transparent rectangle
@@ -110,6 +110,6 @@ function ApplyBGTint()
     love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
 
     -- Reset blend mode and color to prevent issues
-    love.graphics.setBlendMode("alpha") 
-    love.graphics.setColor(1, 1, 1, 1) 
+    love.graphics.setBlendMode("alpha")
+    love.graphics.setColor(1, 1, 1, 1)
 end

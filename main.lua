@@ -1,6 +1,3 @@
--- Game State Manager
-GameStateManager = require("libraries/gamestateManager")
-
 Object = require "classic"
 local DayCycle = require("dayCycleScript")
 local Beehive = require("libraries/beehive")
@@ -8,25 +5,32 @@ local Jumper = require("libraries/jumper")
 local MenuState = require("states/MenuState")
 local MainState = require("states/MainState")
 
+-- Game State Manager
+GameStateManager = require("libraries/gamestateManager")
+
 GameConfig = {}
 
 -------------------------------------------------------
  -- Money system + cost config
  -------------------------------------------------------
-playerMoney = 50
-hiveCost = 20
-beeCost = 5
-flowerCost = 3
+PlayerMoney = 50
+HiveCost = 20
+BeeCost = 5
+FlowerCost = 3
 
  -------------------------------------------------------
  -- Arrays to store multiple objects
  -------------------------------------------------------
-hives = {}
-bees = {}
-flowers = {}
+local hives = {}
+local bees = {}
+local flowers = {}
+
+-- global variables
+tintEnabled = false
+debugMode = false
 
 -- Current build mode: "hive", "bee", "flower", or nil
-currentBuildMode = nil
+CurrentBuildMode = nil
 
 function love.load()
     require "bee"
@@ -37,7 +41,7 @@ function love.load()
     require "player"
 
     --default flower, to be compatible with current implementation of enemy-behavior
-    flower = Flower()
+    local flower = Flower()
     table.insert(flowers, flower)
 
     love.window.setMode(960, 640)
@@ -48,7 +52,7 @@ function love.load()
 
     love.graphics.setDefaultFilter("nearest", "nearest")
 
-    GameStateManager:setState(MenuState)
+    GameStateManager:setState(creatorScreen)
 end
 
 function love.update(dt)
@@ -56,7 +60,7 @@ function love.update(dt)
     --converts honey to money
     for _, h in ipairs(hives) do
         if h.honey > 0 then
-            playerMoney = playerMoney + h.honey
+            PlayerMoney = PlayerMoney + h.honey
             h.honey = 0
         end
     end
