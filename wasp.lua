@@ -58,14 +58,22 @@ function Wasp:new()
     self.hitsTaken = 0
     self.combatEngagementRange = 50
     self.retreatHealthThreshold = 1  --lowest health at which a wasp will flee
+    
+    --type check
+    self.is_wasp = true
+    
+    --add player combat properties
+    self.stingCount = 0
+    self.maxStings = math.random(1, 4)  --random number of stings before fleeing
+    self.playerAttackRange = 50
+    self.playerAttackCooldown = 2  --cooldown between attacks
+    self.playerAttackTimer = 0
 end
 
 function Wasp:update(dt)
-    if waspGo then
-        self:updateState(dt)
-        self:updateCombat(dt)
-        self:move(dt)
-    end
+    self:updateState(dt)
+    self:updateCombat(dt)
+    self:move(dt)
 end
 
 --function that performs timer checking and transitioning between entity states
@@ -91,6 +99,7 @@ function Wasp:updateState(dt)
             self.y = self.y + math.sin(angle) * self.speed * dt
         else
             self.visible = false --hiding to appear 'off-screen'
+            self.health = self.maxHealth  --resetting health, might be neccessary later, might not
         end
         return  --skip other state checks when fleeing
     end
@@ -168,6 +177,18 @@ function Wasp:updateState(dt)
             self.y = self.y + math.sin(angle) * self.speed * dt
         else
             self.visible = false
+        end
+    end
+
+    --comabt logic for attacking player
+    if player and self.state ~= "fleeing" and self.state ~= "returning" then
+        local dist = math.sqrt((self.x - player.x)^2 + (self.y - player.y)^2)
+        
+        if dist <= self.playerAttackRange then
+            self.playerAttackTimer = self.playerAttackTimer + dt
+            if self.playerAttackTimer >= self.playerAttackCooldown and self.stingCount < self.maxStings then
+                self:attackPlayer()
+            end
         end
     end
 end
@@ -307,7 +328,8 @@ end
 
 function Wasp:draw()
     if self.visible then  --draw if visible = true
-    love.graphics.draw(self.image, self.x, self.y, 0, self.scale, self.scale)
+        --draw around center of png, could have probably done this a better way
+        love.graphics.draw(self.image, self.x, self.y, 0, self.scale, self.scale, self.image:getWidth() / 2, self.image:getHeight() / 2)
 
         if debugMode then
             --draw path
@@ -333,4 +355,18 @@ function Wasp:takeDamage(damage, attacker)
     self.isUnderAttack = true
     self.lastAttacker = attacker
     self.hitsTaken = self.hitsTaken + 1
+end
+
+--wasp function for attacking player
+function Wasp:attackPlayer()
+    if player then
+        player:takeDamage(1)  --dealing 1 damage per sting
+        self.stingCount = self.stingCount + 1
+        self.playerAttackTimer = 0
+        
+        if self.stingCount >= self.maxStings then --will sting a random amount of times between 1 and 4
+            self.state = "fleeing"                --flee after maxStings or when health is depleted
+            self.speed = self.fleeingSpeed
+        end
+    end
 end

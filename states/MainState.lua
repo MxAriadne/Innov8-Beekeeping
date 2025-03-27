@@ -1,6 +1,7 @@
 local MainState = {}
 
 --libraries import from libraries folder
+Object = require("classic")
 local sti = require 'libraries/sti'
 local wf = require 'libraries/windfield'
 local HUD = require "UI/HUD"
@@ -8,6 +9,8 @@ local Dialove = require("libraries/Dialove.dialove")
 local DayCycle = require("dayCycleScript")
 local Beehive = require("libraries/beehive")
 local Jumper = require("libraries/jumper")
+local dialogs = require("dialogs")
+local Player = require "player"
 
 -- global variables
 tintEnabled = false
@@ -26,29 +29,42 @@ function MainState:enter()
     music:setLooping(true)  --music loop
     music:play()  --playing the music
 
+    --dialog library initilization
     dialogManager = Dialove.init({
         font = love.graphics.newFont('libraries/fonts/comic-neue/ComicNeue-Bold.ttf', 16)
     })
 
+    --setup tutorial dialogue at beginning of game.
+    dialogManager:show(dialogs.startupM);
+
     --base size for the game right now
     --will put everything into variables later so it can be more easily resized
     money = 0
-    hive = love.graphics.newImage('sprites/hive.png')
+    --hive = love.graphics.newImage('sprites/hive.png')
     map = sti('maps/TilesForBeekeepingGameTopBoundaries.lua')
     love.window.setMode(960, 640)
 
     world = wf.newWorld()
 
+    --defining collision classes
+    world:addCollisionClass('Player')
+    world:addCollisionClass('Wall')
+    world:addCollisionClass('PlayerAttack')
+    world:addCollisionClass('Enemy')
+    world:addCollisionClass('Hive')
+
     -- Load HUD overlay
     HUD:load()
 
-    --player creation and collider configuation
-    player = {}
-    player.collider = world:newBSGRectangleCollider(480, 340, 20, 20, 14)
-    player.collider:setFixedRotation(true)
-    player.x = 480
-    player.y = 320
-    player.speed = 300
+    --player instance and global reference
+    self.player = Player()
+    player = self.player
+
+    --player collider configuration
+    self.player.collider = world:newBSGRectangleCollider(480, 340, 20, 20, 14)
+    self.player.collider:setFixedRotation(true)
+    self.player.collider:setObject(self.player)
+    self.player.collider:setCollisionClass('Player')
 
     --auto-getting and making the colliders from the objects created in Tiled
     walls = {}
@@ -56,16 +72,27 @@ function MainState:enter()
         for i, obj in pairs(map.layers["Walls"].objects) do
             local wall = world:newRectangleCollider(obj.x*2, obj.y*2, obj.width*2, obj.height*2)
             wall:setType('static')
+            wall:setCollisionClass('Wall')
             table.insert(walls, wall)
         end
     end
 
-    --creating the entities instance variables
+    --initializing entity tables if they don't exist
+    if not hives then hives = {} end
+    if not bees then bees = {} end
+    if not flowers then flowers = {} end
+
+    --creating the entities instance variables for initial game state
     self.hive = Hive()
     self.bee = Bee()
     self.flower = Flower()
     self.honeybadger = HoneyBadger()
     self.wasp = Wasp()
+
+    --making the hive collider using values in hive.lua instead of hardcoding
+    local wall = world:newRectangleCollider(self.hive.x - self.hive.width/2, self.hive.y - self.hive.height/2, self.hive.width, self.hive.height)
+    wall:setType('static')
+    wall:setCollisionClass('Hive')
 
     --assigning the instances to global variables for accessibility
     hive = self.hive
@@ -74,54 +101,42 @@ function MainState:enter()
     honeybadger = self.honeybadger
     wasp = self.wasp
 
-    --making the hive collider using values in hive.lua instead of hardcoding
-    local wall = world:newRectangleCollider(self.hive.x, self.hive.y, self.hive.width, self.hive.height)
-    wall:setType('static')
-end
-
--- helper functions from Poultry Profits
-function checkCollision(a, b)
-    return a.x < b.x + (b.width or b.size) and
-           a.x + (a.width or a.size) > b.x and
-           a.y < b.y + (b.height or b.size) and
-           a.y + (a.height or a.size) > b.y
-end
-
-function isInPickupRange(a, b)
-    local aCenterX = a.x + (a.width or a.size) / 2
-    local aCenterY = a.y + (a.height or a.size) / 2
-    local bCenterX = b.x + (b.width or b.size) / 2
-    local bCenterY = b.y + (b.height or b.size) / 2
-    local distance = math.sqrt((aCenterX - bCenterX)^2 + (aCenterY - bCenterY)^2)
-    local range = 50  -- Adjusted pickup range
-    return distance <= range
+    --adding the initial entities to their arrays
+    table.insert(hives, self.hive)
+    table.insert(bees, self.bee)
+    table.insert(flowers, self.flower)
 end
 
 function MainState:update(dt)
-
     dialogManager:update(dt) -- update dia system
+    world:update(dt) --player movement with colliders
 
-    --player movement with colliders
-    world:update(dt)
-    player.x = player.collider:getX()
-    player.y = player.collider:getY()
+    --update player
+    if self.player then
+        self.player:update(dt)
 
-    local vx = 0
-    local vy = 0
-    if love.keyboard.isDown("right", 'd') then
-        vx = player.speed
+        if love.mouse.isDown(1) then  --left click to attack
+            self.player:attack()
+        end
     end
 
-    if love.keyboard.isDown("left", 'a') then
-        vx = player.speed * -1
+    --update enemy entities
+    if self.wasp then self.wasp:update(dt) end
+    if self.honeybadger then self.honeybadger:update(dt) end
+
+    --update all hives, bees, and flowers
+    for _, h in ipairs(hives) do
+        h:update(dt)
     end
 
-    if love.keyboard.isDown("up", 'w') then
-        vy = player.speed * -1
+    for _, f in ipairs(flowers) do
+        if f.update then
+            f:update(dt)
+        end
     end
 
-    if love.keyboard.isDown("down", 's') then
-        vy = player.speed
+    for _, b in ipairs(bees) do
+        b:update(dt)
     end
 
     if love.keyboard.isDown("escape") then
@@ -133,12 +148,7 @@ function MainState:update(dt)
     if self.wasp then self.wasp:update(dt) end
     if self.bee then self.bee:update(dt) end
     if self.honeybadger then self.honeybadger:update(dt) end
-    --updating the entities (making them move) IF they exist
-    if self.wasp then self.wasp:update(dt) end
-    if self.bee then self.bee:update(dt) end
-    if self.honeybadger then self.honeybadger:update(dt) end
 
-    player.collider:setLinearVelocity(vx, vy)
 end
 
 function love.keypressed(k)
@@ -159,12 +169,49 @@ function love.keypressed(k)
         --dialogManager.queue = {} -- Force empty
     elseif k == 'c' then
         dialogManager:complete()
-    elseif k == 'f' then
-        dialogManager:faster()
+    -- elseif k == 'f' then
+    --     dialogManager:faster()
     elseif k == 'b' then
-        dialogManager:changeOption(1)  -- next one
+        dialogManager:changeOption(1)
     elseif k == 'n' then
         dialogManager:changeOption(-1) -- previous one
+        --pathfinding debug toggle
+    --f key to build hive
+    elseif k == "f" then
+        if playerMoney >= hiveCost then
+            playerMoney = playerMoney - hiveCost
+            currentBuildMode = "hive"
+            print("You purchased a hive blueprint. Right-click to place!")
+        else
+            print("Not enough money for a hive!")
+        end
+
+    --g key to build bee
+    elseif k == "g" then
+        if playerMoney >= beeCost then
+            playerMoney = playerMoney - beeCost
+            currentBuildMode = "bee"
+            print("You purchased a bee. Right-click to place!")
+        else
+            print("Not enough money for a bee!")
+        end
+    --h key to build flower
+    elseif k == "h" then
+        if playerMoney >= flowerCost then
+            playerMoney = playerMoney - flowerCost
+            currentBuildMode = "flower"
+            print("You purchased a flower seed. Right-click to plant!")
+        else
+            print("Not enough money for a flower!")
+        end
+
+    elseif (key == "e") then
+        playerMoney = playerMoney + 5
+        print(playerMoney)
+
+    elseif (key == "`") then
+        --toggle debug mode
+        debugMode = not debugMode
     end
 end
 
@@ -175,12 +222,30 @@ function love.keyreleased(k)
     end
 end
 
---still making this
-function MainState:keypressed(key)
-   if (key == "e") then
-      money = money + 5
-      print(money)
-   end
+-- build mode, right click
+function love.mousepressed(x, y, button)
+    if button == 2 then
+        if currentBuildMode == "hive" then
+            local newHive = Hive()
+            newHive.x, newHive.y = x, y
+            table.insert(hives, newHive)
+            hive = newHive
+            print("Placed a new hive at (" .. x .. ", " .. y .. ")")
+        elseif currentBuildMode == "bee" then
+            local newBee = Bee()
+            newBee.x, newBee.y = x, y
+            table.insert(bees, newBee)
+            bee = newBee
+            print("Placed a new bee at (" .. x .. ", " .. y .. ")")
+        elseif currentBuildMode == "flower" then
+            local newFlower = Flower()
+            newFlower.x, newFlower.y = x, y
+            table.insert(flowers, newFlower)
+            flower = newFlower
+            print("Placed a new flower at (" .. x .. ", " .. y .. ")")
+        end
+        currentBuildMode = nil
+    end
 end
 
 function MainState:draw()
@@ -190,21 +255,27 @@ function MainState:draw()
     map:draw(0, 0, 2, 2)
 
     --drawing the entities if they exist
-    if self.bee then self.bee:draw() end
-    if self.flower then self.flower:draw() end
-    if self.wasp then self.wasp:draw() end
-    if self.honeybadger then self.honeybadger:draw() end
-    if self.hive then self.hive:draw() end
-
-    --debug mode
-    if debugMode and self.wasp then
-        self.wasp.pathfinding:drawDebug()
+    --draw all hives, bees, and flowers
+    for _, h in ipairs(hives) do
+        h:draw()
     end
 
-    world:draw()--makes the colliders visible, for debugging - comment out later
-    love.graphics.circle("line", player.x, player.y, 20)
-    --hiveTagColor = {.3, 0, 0, 1}
-    --love.graphics.print({hiveTagColor, "Beehive: Level 1"}, 70, 195, 0, 1.5, 1.5)
+    for _, b in ipairs(bees) do
+        b:draw()
+    end
+
+    for _, f in ipairs(flowers) do
+        f:draw()
+    end
+
+    --drawing the special entities
+    if self.wasp then self.wasp:draw() end
+    if self.honeybadger then self.honeybadger:draw() end
+
+    --draw player
+    if self.player then self.player:draw() end
+
+
 
     -- Draw HUD overlay
     HUD:draw()

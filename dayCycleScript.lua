@@ -1,7 +1,7 @@
 --dayCycleScript.lua file
 --author: Elaina Vogel
 
--- TODO: update appropiate variables to show progression
+-- TODO: update appropiate variables to show progression (money and fence integrity), delay wasp attack so user has time to defend
 
 --[[This file handles the day cycle aspect of the game]]
 
@@ -25,16 +25,16 @@ daysPassed = 0.0;
 bgTint = {0.1, 0, .2} -- tint for background(r, g, b)
 
 -- days for attacks
-waspDay = 2 --5
+waspDay = 1 --5
 waspGo = false
-badgerDay = 5 --10
+badgerDay = 2 --10
 badgerGo = false
-
 
 --this function changes the day counter
 --after user is done updating their hive for the day
 function AdvanceDay()
     daysPassed = daysPassed + 0.5
+
 
 end
 
@@ -60,8 +60,13 @@ function DaySky()
     -- tigger nightly updates
     TriggerUpdates()
 
+    --load stat message with variables
+    local morningstats = {
+        text = string.format("Check out your stats:\nYour hive's health is at %d.\nYour hive's honey count is at %d.\nYour bee count is %d.\nYour fences are at %d strength.", hive.health, hive.honey, hive.beeCount, 0),
+        options = {} -- no choices, signals end of dialogue
+    }
     --send update message
-    dialogManager:push(d.morningstats)
+    dialogManager:push(morningstats)
 end
 
 --method to update things throughout the night
@@ -72,6 +77,7 @@ function TriggerUpdates(dt)
         --trigger wasp event
         waspGo = true
        dialogManager:push(d.waspmessage)
+
     elseif daysPassed == badgerDay+0.5 then
         --trigger badger eent
         badgerGo = true
