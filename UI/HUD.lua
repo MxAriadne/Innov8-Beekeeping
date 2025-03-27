@@ -30,10 +30,48 @@ function HUD:load()
             table.insert(self.canvases, canvas) -- Add canvas to table
         end
     end
-
+    
+    --set colors
+    self.colors = {
+        text = {.5, 0, .5, 1},
+        money = {1, 0.9, 0.2, 1},
+        buildMode = {0.5, 0.5, 1, 1}
+    }
 end
 
 function HUD:draw()
+    --draw money
+    love.graphics.setColor(self.colors.money)
+    love.graphics.print("Money: $" .. playerMoney, 800, 60)
+    
+    --draw build mode if active
+    if currentBuildMode then
+        love.graphics.setColor(self.colors.buildMode)
+        local buildModeText = "Build Mode: " .. currentBuildMode
+        love.graphics.print(buildModeText, 800, 80)
+        love.graphics.print("Right-click to place", 800, 100)
+    end
+    
+
+    --print controls
+    love.graphics.setColor(self.colors.text)
+    local controlsText = {
+        "Controls:",
+        "F - Buy Hive ($" .. hiveCost .. ")",
+        "G - Buy Bee ($" .. beeCost .. ")",
+        "H - Buy Flower ($" .. flowerCost .. ")",
+        "Left Click - Attack",
+        "Space - Advance Day",
+        "` - Toggle Debug"
+    }
+    
+    for i, line in ipairs(controlsText) do
+        love.graphics.print(line, 800, 250 - (#controlsText - i + 1) * (12 + 2) - 10)
+    end
+    
+    --color reset
+    love.graphics.setColor(1, 1, 1, 1)
+
     -- Determine position and size of hotbar / item image
     local hotbarX = GameConfig.windowW / 2 - ((self.hotbarSize / 2) * itemSize)
     local hotbarY = GameConfig.windowH - itemSize - tileSize

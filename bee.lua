@@ -356,17 +356,8 @@ end
 
 function Bee:draw()
     if not self.isRetreating then
-        -- Draw bee centered on its coordinates
-        love.graphics.draw(
-            self.image, 
-            self.x, 
-            self.y, 
-            0, 
-            self.scale, 
-            self.scale,
-            self.image:getWidth() / 2,  -- offset x by half the image width
-            self.image:getHeight() / 2  -- offset y by half the image height
-        )
+        --drawing the bee on the center of its png, was there a better way to do this? probably. 
+        love.graphics.draw(self.image, self.x, self.y, 0, self.scale, self.scale, self.image:getWidth() / 2, self.image:getHeight() / 2)
         
         --debug, drawing the bee's path
         if debugMode then

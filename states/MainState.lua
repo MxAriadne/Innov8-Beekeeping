@@ -18,6 +18,9 @@ function MainState:enter()
     --defining collision classes
     world:addCollisionClass('Player')
     world:addCollisionClass('Wall')
+    world:addCollisionClass('PlayerAttack')
+    world:addCollisionClass('Enemy')
+    world:addCollisionClass('Hive')
 
     -- Load HUD overlay
     HUD:load()
@@ -43,7 +46,12 @@ function MainState:enter()
         end
     end
 
-    --creating the entities instance variables
+    --initializing entity tables if they don't exist
+    if not hives then hives = {} end
+    if not bees then bees = {} end
+    if not flowers then flowers = {} end
+
+    --creating the entities instance variables for initial game state
     self.hive = Hive()
     self.bee = Bee()
     self.flower = Flower()
@@ -53,6 +61,7 @@ function MainState:enter()
     --making the hive collider using values in hive.lua instead of hardcoding
     local wall = world:newRectangleCollider(self.hive.x - self.hive.width/2, self.hive.y - self.hive.height/2, self.hive.width, self.hive.height)
     wall:setType('static')
+    wall:setCollisionClass('Hive')
     
     --assigning the instances to global variables for accessibility
     hive = self.hive
@@ -60,6 +69,11 @@ function MainState:enter()
     flower = self.flower
     honeybadger = self.honeybadger
     wasp = self.wasp
+    
+    --adding the initial entities to their arrays
+    table.insert(hives, self.hive)
+    table.insert(bees, self.bee)
+    table.insert(flowers, self.flower)
 end
 
 function MainState:update(dt)
@@ -74,11 +88,24 @@ function MainState:update(dt)
         end
     end
     
-    --update entities
+    --update enemy entities
     if self.wasp then self.wasp:update(dt) end
-    if self.bee then self.bee:update(dt) end
     if self.honeybadger then self.honeybadger:update(dt) end
-    if self.hive then self.hive:update(dt) end
+    
+    --update all hives, bees, and flowers
+    for _, h in ipairs(hives) do
+        h:update(dt)
+    end
+    
+    for _, b in ipairs(bees) do
+        b:update(dt)
+    end
+    
+    for _, f in ipairs(flowers) do
+        if f.update then
+            f:update(dt)
+        end
+    end
     
     if love.keyboard.isDown("escape") then
         GameStateManager:revertState()
@@ -88,8 +115,8 @@ end
 --still making this
 function MainState:keypressed(key)
    if (key == "e") then
-      money = money + 5
-      print(money)
+      playerMoney = playerMoney + 5
+      print(playerMoney)
    elseif (key == "`") then
       --toggle debug mode
       debugMode = not debugMode
@@ -102,12 +129,22 @@ function MainState:draw()
 
     map:draw(0, 0, 2, 2)
     
-    --drawing the entities if they exist
-    if self.bee then self.bee:draw() end
-    if self.flower then self.flower:draw() end
+    --draw all hives, bees, and flowers
+    for _, h in ipairs(hives) do
+        h:draw()
+    end
+    
+    for _, b in ipairs(bees) do
+        b:draw()
+    end
+    
+    for _, f in ipairs(flowers) do
+        f:draw()
+    end
+    
+    --drawing the special entities
     if self.wasp then self.wasp:draw() end
     if self.honeybadger then self.honeybadger:draw() end
-    if self.hive then self.hive:draw() end
     
     --draw player
     if self.player then self.player:draw() end
