@@ -71,12 +71,12 @@ function HUD:draw()
     love.graphics.setColor(1, 1, 1, 1)
 
     -- Determine position and size of hotbar / item image
-    local hotbarX = GameConfig.windowW / 2 - ((self.hotbarSize / 2) * itemSize)
-    local hotbarY = GameConfig.windowH - itemSize - tileSize
+    local hotbarX = GameConfig.windowW - itemSize
+    local hotbarY = GameConfig.windowH / 2 - ((self.hotbarSize / 2) * itemSize)
 
     -- Draw empty hotbar
     for i = 0, self.hotbarSize do
-        local slot = love.graphics.rectangle("line", hotbarX + i * itemSize, hotbarY, itemSize, itemSize)
+        local slot = love.graphics.rectangle("line", hotbarX, hotbarY + i * itemSize, itemSize, itemSize)
         table.insert(self.hotbar, slot)
     end
 
@@ -84,7 +84,7 @@ function HUD:draw()
     if self.canvases then
         love.graphics.setBlendMode("alpha")
         for i, canvas in ipairs(self.canvases) do
-            love.graphics.draw(canvas, hotbarX + (i-1) * itemSize, hotbarY)
+            love.graphics.draw(canvas, hotbarX, hotbarY + (i-1) * itemSize)
         end
     end
 end
