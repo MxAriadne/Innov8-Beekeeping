@@ -13,7 +13,7 @@ GameConfig = {}
 -------------------------------------------------------
  -- Money system + cost config
  -------------------------------------------------------
-PlayerMoney = 50
+PlayerMoney = 100
 HiveCost = 20
 BeeCost = 5
 FlowerCost = 3
