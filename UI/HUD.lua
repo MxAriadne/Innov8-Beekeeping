@@ -19,6 +19,7 @@ function HUD:load()
             local canvas = love.graphics.newCanvas(itemSize, itemSize)
             love.graphics.setCanvas(canvas) -- Switch drawing to canvas
             love.graphics.clear(0, 0, 0, 0) -- Make new canvas transparent
+            love.graphics.setColor(1,1,1) -- Set color back to default
             love.graphics.draw(item.image, 0, 0, 0,
                                 canvas:getWidth() / item.image:getWidth(),
                                 canvas:getHeight() / item.image:getHeight()) -- Draw image onto canvas
