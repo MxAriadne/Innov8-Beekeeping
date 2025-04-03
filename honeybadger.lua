@@ -4,7 +4,7 @@ HoneyBadger = Object:extend()
 
 function HoneyBadger:new()
     self.image = love.graphics.newImage("sprites/honey-badger.png")
-    self.x = 600
+    self.x = 970 --start offscreen
     self.y = 150
     self.scale = 0.5
     self.width = self.image:getWidth() * self.scale
@@ -40,7 +40,7 @@ function HoneyBadger:new()
     self.homeX = 0
     self.homeY = math.random(100, 540)
 
-    self.visible = true
+    self.visible = false
 
     self.health = 10
     self.maxHealth = 10 --default 10, might not be balanced?
@@ -59,6 +59,7 @@ end
 
 function HoneyBadger:update(dt)
     if badgerGo then
+        self.visible = true
         self:updateState(dt)
         self:updateCombat(dt)
         self:move(dt)

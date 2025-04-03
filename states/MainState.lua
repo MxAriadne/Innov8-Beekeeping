@@ -278,4 +278,13 @@ function MainState:draw()
     dialogManager:draw()
 end
 
+-- function to activate enemies (needed func in an early file)
+function TrigB()
+    badgerGo = true;
+end
+
+function TrigW()
+    waspGo = true;
+end
+
 return MainState

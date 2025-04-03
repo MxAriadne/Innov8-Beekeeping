@@ -27,7 +27,7 @@ bgTint = {0.1, 0, .2} -- tint for background(r, g, b)
 -- days for attacks
 waspDay = 1 --5
 waspGo = false
-badgerDay = 2 --10
+badgerDay = 3 --10
 badgerGo = false
 
 --this function changes the day counter
@@ -74,13 +74,12 @@ function TriggerUpdates(dt)
 
     --check for attack
     if daysPassed == waspDay+0.5 then
-        --trigger wasp event
-        waspGo = true
-       dialogManager:push(d.waspmessage)
+        
+        dialogManager:push(d.waspmessage)
+       
 
     elseif daysPassed == badgerDay+0.5 then
-        --trigger badger eent
-        badgerGo = true
+
         dialogManager:push(d.badgermessage)
 
     end

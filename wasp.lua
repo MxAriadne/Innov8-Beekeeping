@@ -5,7 +5,7 @@ Wasp = Object:extend()
 function Wasp:new()
 	--setting sprite png, location, scale, and state
     self.image = love.graphics.newImage("sprites/wasp.png")
-    self.x = 700
+    self.x = 987 --start off screen
     self.y = 250
     self.scale = 0.08
     self.width = self.image:getWidth() * self.scale
@@ -42,7 +42,7 @@ function Wasp:new()
     self.homeX = 960
     self.homeY = math.random(100, 540)
     
-    self.visible = true
+    self.visible = false
     
     --health and speed
     self.health = 2    --default 3
@@ -71,9 +71,12 @@ function Wasp:new()
 end
 
 function Wasp:update(dt)
-    self:updateState(dt)
-    self:updateCombat(dt)
-    self:move(dt)
+    if waspGo then
+        self.visible = true
+        self:updateState(dt)
+        self:updateCombat(dt)
+        self:move(dt)
+    end
 end
 
 --function that performs timer checking and transitioning between entity states
