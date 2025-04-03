@@ -30,8 +30,17 @@ local dialog = {
     }
 }
 
+dialog.startup0 = {
+    text = [[To play use the money earned from collecting honey to buy new tools. 
+    Type 'f' to buy a hive. 'g' to buy a bee. And 'h' to buy a flower.
+    Once you buy something, RIGHT CLICK to place the object where the mouse is.
+    These new hives, flowers, or bees will increase your productivity and help you withstand predator attacks. 
+     ]],
+    options = {}
+}
+
 dialog.startup1 = {
-    text = "When you are ready for the next day, press SPACE. Be careful! Sometimes bee predators like to attack through the night! Press SPACE again after nightime. In the morning you will get see your updated stats. Press RETURN to continue.",
+    text = "When you are ready for the next day, press SPACE. Be careful! Sometimes bee predators like to attack through the night! When predators attack, get near the predator and LEFT CLICK to fight them. Press SPACE again after nightime. In the morning you will get see your updated stats. Press RETURN to continue.",
     options = {}
 }
 
@@ -41,9 +50,10 @@ dialog.startup2 = {
 }
 
 dialog.startupM = {
-    text = "Welcome! The goal of this game is to build a good enviroment for your bees in order to collect money! To play EXPLAIN HOW TO USE INVENTORY. When predators attack, get near the predator and RIGHT CLICK to fight them. Press 'b' and 'n' to select an option. Then press RETURN.",
+    text = [[Welcome! The goal of this game is to build a good enviroment for your bees in order to collect money! 
+    Quick Tip: Press 'b' or 'n' to select an option. Then press RETURN.]],
     options = {
-        { 'Got it!', function() dialogManager:show(dialog.startup1) dialogManager:push(dialog.startup2) end },
+        { 'Tell Me How To Play!', function() dialogManager:show(dialog.startup0) dialogManager:push(dialog.startup1) dialogManager:push(dialog.startup2) end },
         { 'Skip Tutorial!', function() dialogManager:pop() end }
     }
 }
