@@ -1,7 +1,7 @@
 --dayCycleScript.lua file
 --author: Elaina Vogel
 
--- TODO: update appropiate variables to show progression (money and fence integrity), delay wasp attack so user has time to defend
+-- TODO: update appropiate variables to show progression (tool and fence integrity), add shop trigger in daycycle
 
 --[[This file handles the day cycle aspect of the game]]
 
@@ -40,6 +40,7 @@ end
 
 --method to change to night
 function NightSky()
+    --stop shop keys functionality?
 
     -- Show a night message using Dialove
     -- Push the night message to the dialog manager
@@ -48,7 +49,6 @@ function NightSky()
     -- tigger nightly updates
     TriggerUpdates()
 
-    --add sleeping emotes?
 end
 
 --method to change to day
@@ -57,23 +57,25 @@ function DaySky()
     --day message
     dialogManager:show(d.goodmorning) -- stores dialog
 
-    -- tigger nightly updates
-    TriggerUpdates()
-
     --load stat message with variables
     local morningstats = {
-        text = string.format("Check out your stats:\nYour hive's health is at %d.\nYour hive's honey count is at %d.\nYour bee count is %d.\nYour fences are at %d strength.", hive.health, hive.honey, hive.beeCount, 0),
+        text = string.format("Check out your stats: You have $%d.\nYour hive's health is at %d.\nYour hive's honey count is at %d. \nYour bee count is %d. \nYour sword is at %d strength. \nYour fences are at %d strength.", PlayerMoney, hive.health, hive.honey, #bees, 0, 0),
         options = {} -- no choices, signals end of dialogue
     }
     --send update message
     dialogManager:push(morningstats)
+
+    --shop populates
+
+    -- tigger nightly updates
+    TriggerUpdates()
 end
 
 --method to update things throughout the night
 function TriggerUpdates(dt)
 
     --check for attack
-    if daysPassed == waspDay+0.5 then
+    if daysPassed == waspDay then
         
         dialogManager:push(d.waspmessage)
        
@@ -83,16 +85,6 @@ function TriggerUpdates(dt)
         dialogManager:push(d.badgermessage)
 
     end
-
-    --update health meters
-    --[[
-    if hive.beeCount >= 1 then
-        
-    end
-]]
-    --update tools integrity
-    --update...
-
 
 end
 

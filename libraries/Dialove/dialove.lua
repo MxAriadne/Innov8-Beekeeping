@@ -216,7 +216,7 @@ function dialove:push(data)
   local lineWasInserted = false
 
   local wordsToInsert = {}
-  for word in string.gmatch(content, '([^( |\n)]+)') do
+  for word in string.gmatch(content, '([^( |)]+)') do -- \n
     table.insert(wordsToInsert, word)
   end
 

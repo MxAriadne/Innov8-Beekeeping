@@ -13,14 +13,14 @@ local dialog = {
         options = {} -- no choices, signals end of dialogue
     },
     waspmessage = {
-        text = "Oh no! Wasps are attacking!\nWasps are a natural predator to honey bees. Paper wasps build open-comb in paper nests in trees. They attack weak hives and hunt bees mid-flight.",
+        text = "Oh no! Wasps are attacking! Wasps are a natural predator to honey bees. Paper wasps build open-comb in paper nests in trees. They attack weak hives and hunt bees mid-flight.",
         options = { 
             {
                 "Time to defend the hive!",  -- Option label (text displayed to the player)
                 function() TrigW() end 
             }}
     },badgermessage = {
-        text = "Oh no! A honey badger is attacking!\nBadgers are tough and aggressive predators. They can tear open bee hives with their powerful claws in order to feast on the honey, wax, and bee larvae. They withstand any bee stings through their thick, loose skin.",
+        text = "Oh no! A honey badger is attacking! Badgers are tough and aggressive predators. They can tear open bee hives with their powerful claws in order to feast on the honey, wax, and bee larvae. They withstand any bee stings through their thick, loose skin.",
         options = {
             {
                 "Time to defend the hive!",  -- Option label (text displayed to the player)
