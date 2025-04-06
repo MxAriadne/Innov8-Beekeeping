@@ -11,6 +11,8 @@ local Beehive = require("libraries/beehive")
 local Jumper = require("libraries/jumper")
 local dialogs = require("dialogs")
 local Player = require "player"
+local SaveManager = require "save_manager"
+local game_Data = require "game_data"
 
 function MainState:enter()
     --base size for the game right now
@@ -134,6 +136,7 @@ function MainState:update(dt)
 
     if love.keyboard.isDown("escape") then
         music:stop()
+        SaveManager.save(game_Data.gameData) -- save game
         GameStateManager:revertState()
     end
 
