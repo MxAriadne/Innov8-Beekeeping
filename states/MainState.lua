@@ -42,7 +42,9 @@ function MainState:enter()
     })
 
     --setup tutorial dialogue at beginning of game.
-    DialogManager:show(dialogs.startupM);
+    if FirstRun then
+        DialogManager:show(dialogs.startupM);
+    end
 
     -- Load HUD overlay
     HUD:load()
@@ -143,7 +145,7 @@ function MainState:update(dt)
 
 end
 
-function love.keypressed(k)
+function MainState:keypressed(k)
     -- Handle spacebar for day cycle
     if k == "space" then
         AdvanceDay()  -- Call the trigger updates function from dayCycleScript.lua
@@ -214,10 +216,14 @@ function love.keypressed(k)
         --toggle debug mode
         DebugMode = not DebugMode
         print("Debug mode: " .. (DebugMode and "ON" or "OFF"))
+
+    -- Press "tab" to open shop screen
+    elseif (k == "tab") then
+        GameStateManager:setState(shopScreen)
     end
 end
 
-function love.keyreleased(k)
+function MainState:keyreleased(k)
     print("State Key released:", k)
 
     player:keyreleased(k)
@@ -228,7 +234,7 @@ function love.keyreleased(k)
 end
 
 -- build mode, right click
-function love.mousepressed(x, y, button)
+function MainState:mousepressed(x, y, button)
     if button == 2 then
         if CurrentBuildMode == "hive" then
             local newHive = Hive()

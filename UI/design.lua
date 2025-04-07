@@ -10,12 +10,15 @@ colors = {
     grey = {.83, .83, .83},
     white = {1, 1, 1},
     black = {0, 0, 0},
+    red = {1, 0, 0},
 }
 
 -- Space between buttons on menu
 margin = 10
 
 -- Fonts used on main menu screen
+XSfont = love.graphics.newFont(12) -- Font for item descriptions
+XSfont:setFilter("nearest", "nearest")
 smallFont = love.graphics.newFont(24) -- Font for text and notes
 smallFont:setFilter("nearest", "nearest")
 mediumFont = love.graphics.newFont(36) -- Font for button text

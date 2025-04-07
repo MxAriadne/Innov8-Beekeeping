@@ -1,4 +1,5 @@
 -- This file contains all shop items available for purchase in game
+-- Author: Amelia Reiss
 
 -- Tools
 local tools = { 
@@ -38,16 +39,33 @@ local flowers = {
     flameLily = {name = "Flame Lily",
                 image = love.graphics.newImage("sprites/flame_lily.png"),
                 price = 10,
-                description = "Known for its distinct shape and color pattern"
+                description = "Unique flower that resembles a flame.",
+                extra = "Known for its distinct shape and color pattern"
                 .. "that resembles fire, the flame lily is a highly poisonous flower.",
                 },
     orchid = {name = "Orchid",
                 image = love.graphics.newImage("sprites/orchid.png"),
                 price = 15,
-                description = "There are over 25,000 species of orchids in the world, and"
+                description = "Attracts many bees.",
+                extra = "There are over 25,000 species of orchids in the world, and"
                             .. "they can be found on every continent, except Antarctica.",
             },
 }
 
-local shopItems = {tools = tools, hives = hives , flowers = flowers}
+local bees = {
+    -- queenBee = {name = "Queen Bee",
+    --             image = love.graphics.newImage("sprites/queen_bee.png"),
+    --             price = 50,
+    --             description = "Rules the hive."
+
+    --             },
+    -- basicBee = {name = "Basic Bee",
+    --             image = love.graphics.newImage("sprites/basic_bee.png"),
+    --             price = 10,
+    --             description = "Classic worker bee."
+    --             },
+}
+
+local shopItems = {tools = tools, hives = hives , flowers = flowers, bees = bees}
+
 return shopItems

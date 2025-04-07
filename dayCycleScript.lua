@@ -116,7 +116,7 @@ end
 
 -- applys a tint over everything using a transparent rectangle
 function ApplyBGTint()
-    if not tintEnabled then return end -- If tint is disabled, do nothing
+    if not TintEnabled then return end -- If tint is disabled, do nothing
 
     love.graphics.setColor(bgTint[1], bgTint[2], bgTint[3], 0.5) -- Add semi-transparent tint
 
