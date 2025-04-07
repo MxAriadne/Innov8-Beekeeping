@@ -7,7 +7,7 @@ function Bee:new()
     self.animation = beeAnimation()
     self.x = 275
     self.y = 300
-    self.scale = 0.4
+    self.scale = 1
     self.width = 40
     self.height = 40
     self.speed = 60      --slower than wasps and honey badgers
@@ -390,7 +390,7 @@ function Bee:draw()
         elseif self.direction == "right" then row = 2 end
 
         local spriteNum = math.floor(self.animation.currentTime / self.animation.duration * 4) + 1 + row * 4
-        love.graphics.draw(self.animation.spritesheet, self.animation.quads[spriteNum], self.x, self.y, 0, 3)
+        love.graphics.draw(self.animation.spritesheet, self.animation.quads[spriteNum], self.x-40, self.y-40, 0, 2)
 
         --debug, drawing the bee's path
         if DebugMode then

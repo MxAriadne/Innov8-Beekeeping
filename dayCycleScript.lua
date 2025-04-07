@@ -41,9 +41,9 @@ end
 --method to change to night
 function NightSky()
     -- lock space
-    pressSpaceAllowed = false
+    PressSpaceAllowed = false
     print("before update")
-    print(pressSpaceAllowed)
+    print(PressSpaceAllowed)
 
     -- update timer
     Timer = 0;
@@ -67,7 +67,7 @@ end
 --method to change to day
 function DaySky()
     -- lock space
-    pressSpaceAllowed = false
+    PressSpaceAllowed = false
 
     -- update timer
     Timer = 0;
@@ -80,7 +80,7 @@ function DaySky()
 
     --load stat message with variables
     local morningstats = {
-        text = string.format("Check out your stats: You have $%d.\nYour hive's health is at %d.\nYour hive's honey count is at %d. \nYour bee count is %d. \nYour sword is at %d strength. \nYour fences are at %d strength.", PlayerMoney, hive.health, hive.honey, #bees, 0, 0),
+        text = string.format("Check out your stats: You have $%d.\nYour hive's health is at %d.\nYour hive's honey count is at %d. \nYour bee count is %d. \nYour sword is at %d strength. \nYour fences are at %d strength.", PlayerMoney, hive.health, hive.honey, #Bees, 0, 0),
         options = {} -- no choices, signals end of dialogue
     }
     --send update message
@@ -108,7 +108,7 @@ function TriggerUpdates(dt)
         DialogManager:push(d.badgermessage)
 
     else
-        pressSpaceAllowed = true
+        PressSpaceAllowed = true
     end
 
 

@@ -1,4 +1,4 @@
-Object = require "classic"
+Object = require "libraries.classic"
 local DayCycle = require("dayCycleScript")
 local Beehive = require("libraries/beehive")
 local Jumper = require("libraries/jumper")
@@ -30,6 +30,11 @@ local flowers = {}
 TintEnabled = false
 DebugMode = false
 FirstRun = true
+Timer = 0
+Interval = 30 -- how long user has each day/night before cycling
+LastTrigger = 0
+PressSpaceAllowed = true --locking mechanism so you cannot skip attacks
+
 
 -- Current build mode: "hive", "bee", "flower", or nil
 CurrentBuildMode = nil
@@ -60,6 +65,15 @@ end
 
 function love.update(dt)
     GameStateManager:update(dt)
+
+    --timer for daycycle (overridden by "space")
+    Timer = Timer + dt
+    if math.floor(Timer / Interval) > math.floor(LastTrigger / Interval) then
+        print("Timer hit a multiple of Interval seconds: " .. math.floor(Timer))
+        love.keypressed("space")
+        LastTrigger = Timer
+    end
+
     --converts honey to money
     for _, h in ipairs(hives) do
         if h.honey > 0 then

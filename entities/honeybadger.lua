@@ -66,9 +66,12 @@ function HoneyBadger:new()
 end
 
 function HoneyBadger:update(dt)
-    self:updateState(dt)
-    self:updateCombat(dt)
-    self:move(dt)
+    if badgerGo then
+        self.visible = true
+        self:updateState(dt)
+        self:updateCombat(dt)
+        self:move(dt)
+    end
 end
 
 function HoneyBadger:updateState(dt)

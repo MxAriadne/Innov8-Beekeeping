@@ -72,7 +72,7 @@ end
 function Hive:updateHoneyProduction()
     --if queen bee
     local hasQueen = false
-    for _, b in ipairs(bees) do
+    for _, b in ipairs(Bees) do
         if b.is_queen then
             hasQueen = true
             break
