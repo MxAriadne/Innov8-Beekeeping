@@ -210,6 +210,16 @@ function love.keypressed(k)
         --toggle debug mode
         debugMode = not debugMode
         print("Debug mode: " .. (debugMode and "ON" or "OFF"))
+    --[[
+    elseif k == "p" then
+        SaveManager.save(gameData)
+        
+    elseif k == "l" then
+        local loadedData = SaveManager.load()
+        if loadedData then
+            gameData = loadedData
+        end
+    ]]
     end
 end
 
