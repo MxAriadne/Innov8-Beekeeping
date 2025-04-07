@@ -57,9 +57,6 @@ function HUD:draw()
     love.graphics.setColor(self.colors.text)
     local controlsText = {
         "Controls:",
-        "F - Buy Hive ($" .. HiveCost .. ")",
-        "G - Buy Bee ($" .. BeeCost .. ")",
-        "H - Buy Flower ($" .. FlowerCost .. ")",
         "Left Click - Attack",
         "Space - Advance Day",
         "` - Toggle Debug"

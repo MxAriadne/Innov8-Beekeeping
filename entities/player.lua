@@ -1,10 +1,32 @@
 local Player = Object:extend()
 
+Spritesheet = {
+    "sprites/chars/char8.png",
+    "sprites/chars/char7.png",
+    "sprites/chars/char6.png",
+    "sprites/chars/char5.png",
+    "sprites/chars/char4.png",
+    "sprites/chars/char3.png",
+    "sprites/chars/char2.png",
+    "sprites/chars/char1.png"
+}
+
+AttackingSheet = {
+    "sprites/attacking/char8_sword.png",
+    "sprites/attacking/char7_sword.png",
+    "sprites/attacking/char6_sword.png",
+    "sprites/attacking/char5_sword.png",
+    "sprites/attacking/char4_sword.png",
+    "sprites/attacking/char3_sword.png",
+    "sprites/attacking/char2_sword.png",
+    "sprites/attacking/char1_sword.png"
+}
+
 function Player:new()
     --basic properties, formerly in MainState.lua
     self.animations = {
-        idle = playerAnimation(love.graphics.newImage("sprites/chars/char8.png"), 32, 32, 0.5),
-        attack = playerAnimation(love.graphics.newImage("sprites/attacking/char8_sword.png"), 32, 32, 0.7)
+        idle = playerAnimation(love.graphics.newImage(Spritesheet[Character]), 32, 32, 0.5),
+        attack = playerAnimation(love.graphics.newImage(AttackingSheet[Character]), 32, 32, 0.7)
     }
     self.animation = self.animations.idle    self.direction = "still"
 

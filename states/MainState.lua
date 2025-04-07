@@ -13,6 +13,7 @@ local Jumper = require("libraries/jumper")
 local dialogs = require("dialogs")
 local Player = require "entities.player"
 local shopScreen = require "states/shopScreen"
+local MainMenu = require "states/MainMenu"
 local SaveManager = require "save_manager"
 local game_Data = require "game_data"
 
@@ -106,9 +107,6 @@ function MainState:enter()
         end
     end
 
-
-
-
     -- Create a collider for the hive
     local wall = World:newRectangleCollider(
         self.hive.x - self.hive.width/2,
@@ -159,7 +157,7 @@ function MainState:update(dt)
     if love.keyboard.isDown("escape") then
         Music:stop()
         SaveManager.save(game_Data.gameData)
-        GameStateManager:revertState()
+        GameStateManager:setState(MainMenu)
     end
 
     -- Re-update enemies (this appears to be a redundant block)
@@ -192,42 +190,6 @@ function MainState:keypressed(k)
     elseif k == 'n' then
         -- Previous dialogue option
         DialogManager:changeOption(-1)
-    elseif k == "f" then
-        -- Purchase hive
-        if PlayerMoney >= HiveCost then
-            PlayerMoney = PlayerMoney - HiveCost
-            CurrentBuildMode = "hive"
-            print("You purchased a hive blueprint. Right-click to place!")
-        else
-            print("Not enough money for a hive!")
-        end
-    elseif k == "g" then
-        -- Purchase bee
-        if PlayerMoney >= BeeCost then
-            PlayerMoney = PlayerMoney - BeeCost
-            CurrentBuildMode = "bee"
-            print("You purchased a bee. Right-click to place!")
-        else
-            print("Not enough money for a bee!")
-        end
-    elseif k == "q" then
-        -- Purchase queen bee
-        if PlayerMoney >= QueenBeeCost then
-            PlayerMoney = PlayerMoney - QueenBeeCost
-            CurrentBuildMode = "queenbee"
-            print("You purchased a queen bee. Right-click to place!")
-        else
-            print("Not enough money for a queen bee!")
-        end
-    elseif k == "h" then
-        -- Purchase flower
-        if PlayerMoney >= FlowerCost then
-            PlayerMoney = PlayerMoney - FlowerCost
-            CurrentBuildMode = "flower"
-            print("You purchased a flower seed. Right-click to plant!")
-        else
-            print("Not enough money for a flower!")
-        end
     elseif k == "e" then
         -- Debug money cheat
         PlayerMoney = PlayerMoney + 5
@@ -256,44 +218,35 @@ function MainState:keyreleased(k)
     end
 end
 
+BuildOptions = {
+    LangstrothHive = function(x, y)
+        local h = Hive(); h.x = x; h.y = y; table.insert(Hives, h)
+    end,
+    LogHive = function(x, y)
+        local h = Hive(); h.x = x; h.y = y; table.insert(Hives, h)
+    end,
+    TopBarHive = function(x, y)
+        local h = Hive(); h.x = x; h.y = y; table.insert(Hives, h)
+    end,
+    Orchid = function(x, y)
+        local f = Flower(); f.x = x; f.y = y; table.insert(Flowers, f)
+    end,
+    Bee = function(x, y)
+        local b = Bee(); b.x = x; b.y = y; table.insert(Bees, b)
+    end,
+    QueenBee = function(x, y)
+        local b = QueenBee(); b.x = x; b.y = y; table.insert(Bees, b)
+        if hive then
+             hive:updateHoneyProduction()
+             hive.beeCount = hive.beeCount + 1
+        end
+    end
+}
+
 -- Called when mouse is clicked
 function MainState:mousepressed(x, y, button)
-    if button == 2 then  -- Right click
-        if CurrentBuildMode == "hive" then
-            local newHive = Hive()
-            newHive.x, newHive.y = x, y
-            table.insert(Hives, newHive)
-            hive = newHive
-            print("Placed a new hive at (" .. x .. ", " .. y .. ")")
-        elseif CurrentBuildMode == "bee" then
-            local newBee = Bee()
-            newBee.x, newBee.y = x, y
-            table.insert(Bees, newBee)
-            bee = newBee
-            print("Placed a new bee at (" .. x .. ", " .. y .. ")")
-        elseif CurrentBuildMode == "flower" then
-            local newFlower = Flower()
-            newFlower.x, newFlower.y = x, y
-            table.insert(Flowers, newFlower)
-            flower = newFlower
-            print("Placed a new flower at (" .. x .. ", " .. y .. ")")
-        elseif CurrentBuildMode == "queenbee" then
-            local newQueenBee = QueenBee()
-            newQueenBee.x = x
-            newQueenBee.y = y
-            table.insert(Bees, newQueenBee)
-            queenBee = newQueenBee
-
-            if hive then
-                hive:updateHoneyProduction()
-                hive.beeCount = hive.beeCount + 1
-            end
-
-            print("placed a new queen bee at (" .. x .. "," .. y .. ")")
-            CurrentBuildMode = nil
-        end
-
-        -- Clear build mode after placing
+    if button == 2 and BuildOptions[CurrentBuildMode] then  -- Right click
+        BuildOptions[CurrentBuildMode](x, y)
         CurrentBuildMode = nil
     end
 end

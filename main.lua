@@ -4,6 +4,7 @@ local Beehive = require("libraries/beehive")
 local Jumper = require("libraries/jumper")
 local MainMenu = require("states/MainMenu")
 local MainState = require("states/MainState")
+local modal = require("UI/modal")
 
 -- Game State Manager
 GameStateManager = require("libraries/gamestateManager")
@@ -85,6 +86,7 @@ end
 
 function love.draw()
     GameStateManager:draw()
+    modal:draw()
 end
 
 
@@ -93,6 +95,7 @@ function love.mousepressed(x, y, b)
     if current and current.mousepressed then
         current:mousepressed(x, y, b)
     end
+    if modal:mousepressed(x, y, b) then return end
 end
 
 function love.keypressed(k)

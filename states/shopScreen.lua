@@ -7,6 +7,7 @@ local shopScreen = {}
 local shop = require "shopItems"
 local button = require "UI/button"
 local design = require "UI/design"
+local modal  = require "UI/modal"
 
 -- ***** Import player info here *******
 local player = {money = 500, 
@@ -43,7 +44,8 @@ function shopScreen:enter()
         tabButtons[i] = button:new(pages[i], 
                                     function()
                                         selectedPage = pageKeys[i]
-                                        currentPage = 1 
+                                        currentPage = 1
+                                        shopScreen:enter()
                                     end, 150, 50, x, 60)
     end
 
@@ -51,11 +53,37 @@ function shopScreen:enter()
     scrollButtons.up = button:new("^", 
                                     function()
                                         currentPage = math.max(currentPage - 1, 1)
+                                        shopScreen:enter()
                                     end, 40, 40, 700, 440)
     scrollButtons.down = button:new("v", 
                                     function()
                                         currentPage = currentPage + 1
+                                        shopScreen:enter()
                                     end, 40, 40, 700, 440)
+
+
+    -- Create item Buy buttons
+    local page = shop[selectedPage]
+    local keys = {}
+    for key in pairs(page) do table.insert(keys, key) end
+
+    local startIndex = (currentPage - 1) * itemsPerPage + 1
+    local endIndex = math.min(startIndex + itemsPerPage - 1, #keys)
+    local displayY = 180
+    local spacing = 160
+
+    for i = startIndex, endIndex do
+        local item = page[keys[i]]
+        local y = displayY + (i - startIndex) * spacing
+
+        local buyButton = button:new("Buy - " .. item.price,
+            function()
+                BuyItem(item)
+            end, 150, 50, 700, y + 30)
+
+        table.insert(buttons, buyButton)
+    end
+
 end
 
 function shopScreen:update(dt)
@@ -67,7 +95,7 @@ end
 -- Function to draw screen
 function shopScreen:draw()
     -- Set background
-    love.graphics.setBackgroundColor(colors.tan)    
+    love.graphics.setBackgroundColor(colors.tan)
 
     -- Draw header
     exitButton:draw(colors.red, smallFont, colors.black)
@@ -76,11 +104,11 @@ function shopScreen:draw()
     love.graphics.print("Money: " .. tostring(player.money), 700, 10)
 
     -- Draw page tabs
-    for i, tab in ipairs(tabButtons) do 
+    for i, tab in ipairs(tabButtons) do
         local isSelected = selectedPage == pageKeys[i]
         local bgColor = isSelected and colors.darkYellow or colors.yellow
-        tab:draw(bgColor, mediumFont, colors.black) 
-        
+        tab:draw(bgColor, mediumFont, colors.black)
+
         -- Underline current tab
         if isSelected then
             love.graphics.setColor(colors.black)
@@ -123,12 +151,8 @@ function shopScreen:draw()
         love.graphics.printf(item.description, 230, y + 40, 340)
 
         -- Buy button
-        local buyButton = button:new("Buy - " .. item.price, 
-                                    function()
-                                        BuyItem(item)
-                                    end, 150, 50, 700, y + 30)
-        buyButton:draw(colors.yellow, smallFont, colors.black)
-        table.insert(buttons, buyButton)
+        buttons[i - startIndex + 1]:draw(colors.yellow, smallFont, colors.black)
+
     end
 
     -- Draw scroll buttons
@@ -156,7 +180,20 @@ end
 
 -- ****** BUY ITEM ******
 function BuyItem(item)
-    print("You bought " .. item.name)
+    if PlayerMoney >= item.price then
+        PlayerMoney = PlayerMoney - item.price
+        CurrentBuildMode = string.gsub(item.name, "%s+", "")
+
+        modal:show("Success!", "You've bought a " .. item.name .. "!\nPress RIGHT-CLICK to place!", {
+            { label = "Continue", action = function() GameStateManager:revertState() end }
+        })
+
+    else
+        modal:show("Not Enough Money!", "You don't have enough to buy this!", {
+            { label = "Continue", action = function() print("Closed") end }
+        })
+    end
+
     -- check if player has enough money
     -- Print error message if not enough money
     -- change player money count

@@ -4,8 +4,8 @@
 -- Import required modules
 require "UI/design"
 local button = require "UI/button"
+local CharacterSelector = require "UI/CharacterSelector"
 local gameSaves = require "states/loadFilesScreen"
-local MainState = require("states/MainState")
 local Settings = require("states/Settings")
 
 local MainMenu = {}
@@ -86,8 +86,7 @@ function exitGame()
 end
 
 function newGame()
-    GameStateManager:setState(MainState)
-    FirstRun = false
+    GameStateManager:setState(CharacterSelector)
 end
 
 -- TODO: add function to change game state to gameSaves

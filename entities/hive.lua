@@ -75,6 +75,7 @@ function Hive:updateHoneyProduction()
     for _, b in ipairs(Bees) do
         if b.is_queen then
             hasQueen = true
+            self.QueenBee = b
             break
         end
     end
@@ -83,11 +84,11 @@ function Hive:updateHoneyProduction()
     if hasQueen then
         self.honeyProductionRate = 1.0
         --basing productivity off queen's health and age
-        local queenHealthFactor = queenBee.health * 0.5
-        local queenAgeFactor = math.max(0, 100 - queenBee.age) * 0.2
+        local queenHealthFactor = self.QueenBee.health * 0.5
+        local queenAgeFactor = math.max(0, 100 - self.QueenBee.age) * 0.2
 
-        local healthPercentage = queenBee.health / queenBee.maxHealth
-        local ageImpact = 1 - (queenBee.age / queenBee.maxAge) * 0.5
+        local healthPercentage = self.QueenBee.health / self.QueenBee.maxHealth
+        local ageImpact = 1 - (self.QueenBee.age / self.QueenBee.maxAge) * 0.5
         self.honeyProductionRate = 1.0 * healthPercentage * ageImpact
     else
         self.honeyProductionRate = 0.4 --decreased production rate without queen

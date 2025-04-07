@@ -53,18 +53,18 @@ local flowers = {
 }
 
 local bees = {
-    -- queenBee = {name = "Queen Bee",
-    --             image = love.graphics.newImage("sprites/queen_bee.png"),
-    --             price = 50,
-    --             description = "Rules the hive."
+     queenBee = {name = "Queen Bee",
+                 image = love.graphics.newImage("sprites/bee.png"),
+                 price = 50,
+                 description = "Rules the hive."
 
-    --             },
-    -- basicBee = {name = "Basic Bee",
-    --             image = love.graphics.newImage("sprites/basic_bee.png"),
-    --             price = 10,
-    --             description = "Classic worker bee."
-    --             },
-}
+                 },
+     basicBee = {name = "Basic Bee",
+                 image = love.graphics.newImage("sprites/bee.png"),
+                 price = 10,
+                 description = "Classic worker bee."
+                 }
+    }
 
 local shopItems = {tools = tools, hives = hives , flowers = flowers, bees = bees}
 
