@@ -25,6 +25,9 @@ function Hive:new()
 end
 
 function Hive:update(dt)
+
+    self:updateHoneyProduction()
+
     --update damage flash effect
     if self.flashTimer > 0 then
         self.flashTimer = self.flashTimer - dt
@@ -46,7 +49,7 @@ function Hive:draw()
     love.graphics.draw(self.image, self.x, self.y, 0, self.scale, self.scale, self.image:getWidth() / 2, self.image:getHeight() / 2)
     love.graphics.setColor(1, 1, 1, 1)
 
-    if debugMode then
+    if DebugMode then
         --drawing the health bar
         local barWidth = 50
         local barHeight = 5
@@ -64,6 +67,36 @@ function Hive:draw()
         love.graphics.setColor(1, 1, 1, 1)
         love.graphics.print(string.format("Health: %d/%d\nHoney: %d\nBees: %d", self.health, self.maxHealth, self.honey, self.beeCount), self.x - 30, self.y - 40 - self.height/2)
     end
+end
+
+function Hive:updateHoneyProduction()
+    --if queen bee
+    local hasQueen = false
+    for _, b in ipairs(bees) do
+        if b.is_queen then
+            hasQueen = true
+            break
+        end
+    end
+
+    --if there is a queen, calculate the production rate
+    if hasQueen then
+        self.honeyProductionRate = 1.0
+        --basing productivity off queen's health and age
+        local queenHealthFactor = queenBee.health * 0.5
+        local queenAgeFactor = math.max(0, 100 - queenBee.age) * 0.2
+
+        local healthPercentage = queenBee.health / queenBee.maxHealth
+        local ageImpact = 1 - (queenBee.age / queenBee.maxAge) * 0.5
+        self.honeyProductionRate = 1.0 * healthPercentage * ageImpact
+    else
+        self.honeyProductionRate = 0.4 --decreased production rate without queen
+    end
+end
+
+function Hive:depositNectar()
+    self.honey = self.honey + (1 * (self.honeyProductionRate or 1.0))
+    return false
 end
 
 --function that handles taking damage

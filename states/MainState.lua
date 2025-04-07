@@ -148,12 +148,12 @@ function love.keypressed(k)
     -- Handle spacebar for day cycle
     if k == "space" then
         AdvanceDay()  -- Call the trigger updates function from dayCycleScript.lua
-        if tintEnabled == false then --tintEnabled
+        if TintEnabled == false then --tintEnabled
             NightSky()
-            tintEnabled = true
+            TintEnabled = true
         else
             DaySky()
-            tintEnabled = false
+            TintEnabled = false
         end
     -- Handle dialog flow controls
     elseif k == 'return' then
@@ -188,6 +188,15 @@ function love.keypressed(k)
         else
             print("Not enough money for a bee!")
         end
+    --g key to build bee
+    elseif k == "q" then
+        if PlayerMoney >= QueenBeeCost then
+            PlayerMoney = PlayerMoney - QueenBeeCost
+            CurrentBuildMode = "queenbee"
+            print("You purchased a queen bee. Right-click to place!")
+        else
+            print("Not enough money for a queen bee!")
+        end
     --h key to build flower
     elseif k == "h" then
         if PlayerMoney >= FlowerCost then
@@ -204,8 +213,8 @@ function love.keypressed(k)
 
     elseif (k == "`") then
         --toggle debug mode
-        debugMode = not debugMode
-        print("Debug mode: " .. (debugMode and "ON" or "OFF"))
+        DebugMode = not DebugMode
+        print("Debug mode: " .. (DebugMode and "ON" or "OFF"))
     end
 end
 
@@ -240,6 +249,21 @@ function love.mousepressed(x, y, button)
             table.insert(flowers, newFlower)
             flower = newFlower
             print("Placed a new flower at (" .. x .. ", " .. y .. ")")
+        elseif CurrentBuildMode == "queenbee" then
+            local newQueenBee = QueenBee()
+            newQueenBee.x = x
+            newQueenBee.y = y
+            table.insert(bees, newQueenBee)
+
+            queenBee = newQueenBee
+
+            if hive then
+                  hive:updateHoneyProduction()
+                  hive.beeCount = hive.beeCount + 1
+            end
+
+            print("placed a new queen bee at (" .. x .. "," .. y .. ")")
+            CurrentBuildMode = nil
         end
         CurrentBuildMode = nil
     end

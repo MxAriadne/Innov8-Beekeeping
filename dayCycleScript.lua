@@ -99,7 +99,7 @@ function TriggerUpdates(dt)
 
     --check for attack
     if daysPassed == waspDay then
-        
+        TintEnabled = true
         dialogManager:push(d.waspmessage)
        
 
