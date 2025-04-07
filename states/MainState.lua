@@ -11,6 +11,7 @@ local Beehive = require("libraries/beehive")
 local Jumper = require("libraries/jumper")
 local dialogs = require("dialogs")
 local Player = require "player"
+local shopScreen = require "states/shopScreen"
 
 function MainState:enter()
     --base size for the game right now
@@ -206,6 +207,10 @@ function love.keypressed(k)
         --toggle debug mode
         debugMode = not debugMode
         print("Debug mode: " .. (debugMode and "ON" or "OFF"))
+
+    -- Press "tab" to open shop screen
+    elseif (k == "tab") then
+        GameStateManager:setState(shopScreen)
     end
 end
 
@@ -220,7 +225,7 @@ function love.keyreleased(k)
 end
 
 -- build mode, right click
-function love.mousepressed(x, y, button)
+function MainState:mousepressed(x, y, button)
     if button == 2 then
         if CurrentBuildMode == "hive" then
             local newHive = Hive()

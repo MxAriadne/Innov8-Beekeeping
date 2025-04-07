@@ -44,7 +44,7 @@ function gameSaves:draw()
     -- Draw UI elements
     local textBox, searchButton = self.buttons[1], self.buttons[2]
     textBox:draw(textBoxColor, smallFont, menuTextColor)
-    searchButton:draw(searchButton.color, smallFont, menuTextColor)
+    searchButton:draw(colors.yellow, smallFont, menuTextColor)
 
     -- Display message prompt
     local prompt = "Enter your account username:"

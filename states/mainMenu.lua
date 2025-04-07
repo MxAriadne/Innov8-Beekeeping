@@ -28,11 +28,21 @@ function mainMenu:enter()
         button.yPos = button.yPos - button.height + i * (button.height + margin)
     end
 
-    -- Generate title and honeycomb
-    self.title = "Bizzy Beez"
-    love.graphics.setColor(gameTitleColor)
-    self.titleW = largeFont:getWidth(self.title)
-    self.honeycomb = love.graphics.newImage("sprites/honeycomb.png")
+    -- Generate logo
+    self.logo = love.graphics.newImage("sprites/logo.png")
+    self.logoCanvas = love.graphics.newCanvas(280, 280)
+    love.graphics.setCanvas(self.logoCanvas) -- Switch drawing to canvas
+    love.graphics.clear(0, 0, 0, 0) -- Make new canvas transparent
+    love.graphics.setColor(1,1,1) -- Set color back to default
+    love.graphics.draw(self.logo, 0, 0, 0,
+                        self.logoCanvas:getWidth() / self.logo:getWidth(),
+                        self.logoCanvas:getHeight() / self.logo:getHeight()) -- Draw image onto canvas
+    love.graphics.setCanvas() -- Swtich back to screen
+
+    -- self.title = "Bizzy Beez"
+    -- love.graphics.setColor(gameTitleColor)
+    -- self.titleW = largeFont:getWidth(self.title)
+    -- self.honeycomb = love.graphics.newImage("sprites/honeycomb.png")
 
 end
 
@@ -42,16 +52,23 @@ function mainMenu:draw()
     love.graphics.setBackgroundColor(menuBackgroundColor)
 
     -- Draw title centered to top of window
-    love.graphics.print(self.title, largeFont, (GameConfig.windowW-self.titleW) / 2, 100)
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.draw(self.logoCanvas, (GameConfig.windowW - self.logoCanvas:getWidth()) / 2, 10)
 
     -- Draw honeycomb image
-    love.graphics.setColor(1,1,1)
-    love.graphics.draw(self.honeycomb, -80, GameConfig.windowH - 280)
-    love.graphics.draw(self.honeycomb, GameConfig.windowW - 280, 85)
+    -- love.graphics.setColor(1,1,1)
+    -- love.graphics.draw(self.honeycomb, -80, GameConfig.windowH - 280)
+    -- love.graphics.draw(self.honeycomb, GameConfig.windowW - 280, 85)
 
     -- Draw the buttons
     for _, button in ipairs(self.buttons) do
-        button:draw(button.color, mediumFont, menuTextColor)
+        button:draw(menuButtonColor, mediumFont, menuTextColor)
+    end
+end
+
+function mainMenu:mousepressed(x, y, b)
+    for _, button in ipairs(self.buttons) do
+        button:mousepressed(x, y, b)
     end
 end
 

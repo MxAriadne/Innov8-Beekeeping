@@ -1,7 +1,7 @@
 Flower = Object:extend()
 
 function Flower:new()
-    self.image = love.graphics.newImage("sprites/flame_lily.png")
+    self.image = love.graphics.newImage("sprites/orchid.png")
     self.x = 600
     self.y = 400
     self.scale = 0.1

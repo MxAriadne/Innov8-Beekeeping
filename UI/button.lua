@@ -12,10 +12,7 @@ function button:new(text, func, width, height, x, y)
         height = height,
         -- by default, center button to window
         xPos = x or GameConfig.windowW / 2 - width / 2,
-        yPos = y or GameConfig.windowH / 2 - height / 2,
-        -- Determines if clicked
-        clicked = false,
-        last = false,
+        yPos = y or GameConfig.windowH / 2 - height / 2, 
     }
 
     -- Allow button to inherit other functions defined
@@ -31,41 +28,38 @@ function button:draw(buttonColor, font, textColor)
     local font = font or mediumFont
     local textColor = textColor or colors.black
 
+    -- Highlight button when hovered
+    local cursorX, cursorY = love.mouse.getPosition()
+    if self:hovering(cursorX, cursorY) then
+        buttonColor = highlightedButtonColor or colors.yellow
+    end
+
     -- Draw the button
     love.graphics.setColor(buttonColor)
     love.graphics.rectangle("fill", self.xPos, self.yPos, self.width, self.height, 15, 15)
 
-    -- Add text to button (center by default)
+    -- Draw text
     love.graphics.setColor(textColor)
     local textW = font:getWidth(self.text)
     local textH = font:getHeight(self.text)
     love.graphics.print(self.text, font,
                         self.xPos + (self.width - textW) / 2,
                         self.yPos + (self.height - textH) / 2)
-
-    -- Update so button is not repeatedly clicked
-    button.last = button.clicked
-
-    -- Highlight button if mouse is hovering
-    self.color = menuButtonColor -- reset color when not hovering
-    local cursorX, cursorY = love.mouse.getPosition()
-    local hovering = self:hovering(cursorX, cursorY)
-    if hovering then
-        self.color = highlightedButtonColor
-    end
-
-    -- Execute function if the button is clicked
-    self.clicked = love.mouse.isDown(1)
-    if self.clicked and not self.last and hovering then
-        self.func()
-    end
 end
 
 -- This function returns true if the cursor is hovering over the button and false otherwise
 function button:hovering(cursorX, cursorY)
-    local hovering = cursorX > self.xPos and cursorX < self.xPos + self.width and
-                cursorY > self.yPos and cursorY < self.yPos + self.height
-    return hovering
+    -- local hovering = cursorX > self.xPos and cursorX < self.xPos + self.width and
+    --             cursorY > self.yPos and cursorY < self.yPos + self.height
+    -- return hovering
+    return cursorX > self.xPos and cursorX < self.xPos + self.width and
+            cursorY > self.yPos and cursorY < self.yPos + self.height
+end
+
+function button:mousepressed(x, y, mouseButton)
+    if mouseButton == 1 and self:hovering(x, y) then
+        self.func()
+    end
 end
 
 -- This is a placeholder function

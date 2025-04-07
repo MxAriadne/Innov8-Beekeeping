@@ -4,6 +4,7 @@ local Beehive = require("libraries/beehive")
 local Jumper = require("libraries/jumper")
 local MenuState = require("states/MenuState")
 local MainState = require("states/MainState")
+local mainMenu = require("states/mainMenu")
 
 -- Game State Manager
 GameStateManager = require("libraries/gamestateManager")
@@ -52,7 +53,7 @@ function love.load()
 
     love.graphics.setDefaultFilter("nearest", "nearest")
 
-    GameStateManager:setState(MenuState)
+    GameStateManager:setState(mainMenu)
 end
 
 function love.update(dt)
@@ -68,4 +69,11 @@ end
 
 function love.draw()
     GameStateManager:draw()
+end
+
+function love.mousepressed(x, y, b)
+    local current = GameStateManager:getState()
+    if current and current.mousepressed then
+        current:mousepressed(x, y, b)
+    end
 end
