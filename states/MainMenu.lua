@@ -4,9 +4,7 @@
 -- Import required modules
 require "UI/design"
 local button = require "UI/button"
-local CharacterSelector = require "UI/CharacterSelector"
 local gameSaves = require "states/loadFilesScreen"
-local Settings = require("states/Settings")
 
 local MainMenu = {}
 
@@ -62,7 +60,7 @@ function MainMenu:draw()
 
     -- Draw the buttons
     for _, button in ipairs(self.buttons) do
-        button:draw(button.color, mediumFont, menuTextColor)
+        button:draw(colors.yellow, mediumFont, menuTextColor)
     end
 end
 

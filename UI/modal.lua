@@ -56,10 +56,10 @@ function modal:draw()
     love.graphics.setLineWidth(3)
     love.graphics.rectangle("line", x, y, self.width, self.height, 10, 10)
 
-    love.graphics.setFont(smallFont or love.graphics.newFont(18))
+    love.graphics.setFont(love.graphics.newFont("UI/JetBrainsMono-Regular.ttf", 18))
     love.graphics.printf(self.title, x + 20, y + 20, self.width - 40, "center")
 
-    love.graphics.setFont(XSfont or love.graphics.newFont(14))
+    love.graphics.setFont(love.graphics.newFont("UI/JetBrainsMono-Regular.ttf", 14))
     love.graphics.printf(self.message, x + 20, y + 80, self.width - 40, "center")
 
     for _, b in ipairs(self.buttons) do

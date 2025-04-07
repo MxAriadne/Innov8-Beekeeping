@@ -5,28 +5,28 @@ local gameSaves = {}
 
 -- Import required modules
 local button = require "UI/button"
+local textbox = require "UI/textbox"
 require "UI/design"
 
--- Design elements
 local textBoxColor = colors.grey
+local lastSearch = nil
+
 
 -- Function to load UI elements for the save files screen
 function gameSaves:enter()
     -- Create text box and search button
-    self.buttons = {}
     local textBoxW = GameConfig.windowW / 2
     local textBoxH = GameConfig.windowH / 16
-
-    local textBox = button:new("", temp, textBoxW, textBoxH)
-    local searchButton = button:new("Search", search, textBoxW / 3, textBoxH)
-
-    table.insert(self.buttons, textBox)
-    table.insert(self.buttons, searchButton)
+    self.textBox = textbox:new(textBoxW, textBoxH)
+    self.searchButton = button:new("Search", 
+                                function()
+                                    gameSaves:search(self.textBox.text)
+                                end, textBoxW / 3, textBoxH)
 
     -- Calculate position on screen
-    textBox.yPos = textBox.yPos - textBox.height * 5
-    searchButton.yPos = textBox.yPos
-    searchButton.xPos = textBox.xPos + textBox.width + margin
+    self.textBox.yPos = self.textBox.yPos - self.textBox.height * 5
+    self.searchButton.yPos = self.textBox.yPos
+    self.searchButton.xPos = self.textBox.xPos + self.textBox.width + margin
 
     return self.buttons
 end
@@ -35,6 +35,8 @@ function gameSaves:update(dt)
     if love.keyboard.isDown("escape") then
         GameStateManager:revertState()
     end
+
+    self.textBox:update(dt)
 end
 
 -- Function to render the save files screen
@@ -42,19 +44,43 @@ function gameSaves:draw()
     love.graphics.setBackgroundColor(menuBackgroundColor)
 
     -- Draw UI elements
-    local textBox, searchButton = self.buttons[1], self.buttons[2]
-    textBox:draw(textBoxColor, smallFont, menuTextColor)
-    searchButton:draw(colors.yellow, smallFont, menuTextColor)
+    self.textBox:draw(smallFont)
+    self.searchButton:draw(colors.yellow, smallFont, menuTextColor)
 
     -- Display message prompt
     local prompt = "Enter your account username:"
     love.graphics.setColor(gameTitleColor)
-    love.graphics.print(prompt, smallFont, textBox.xPos, textBox.yPos - (textBox.height + margin))
+    love.graphics.print(prompt, smallFont, self.textBox.xPos, self.textBox.yPos - (self.textBox.height + margin))
+
+    -- Display message after search
+    if lastSearch and lastSearch ~= "" then
+        love.graphics.setColor(menuTextColor)
+        love.graphics.setFont(mediumFont)
+        local message = string.format("Results for \"%s\":", lastSearch)
+        love.graphics.print(message, self.textBox.xPos / 2, self.textBox.yPos + 70)
+    end
+
+    
 end
 
--- Placeholder function for search functionality
-function search()
-    print(string.format("Searching for %s's save file", "test"))
+function gameSaves:mousepressed(x, y, b)
+    self.textBox:mousepressed(x, y, b)
+    self.searchButton:mousepressed(x, y, b)
+end
+
+function gameSaves:textinput(t)
+    self.textBox:textinput(t)
+end
+
+function gameSaves:keypressed(k)
+    self.textBox:keypressed(k)
+end
+
+-- ****** search for save file ******
+function gameSaves:search(name)
+    lastSearch = name
+    print(string.format("Searching for %s's save file", lastSearch))
+                   
 end
 
 return gameSaves

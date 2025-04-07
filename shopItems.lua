@@ -22,7 +22,7 @@ local hives = {
             price = 50,
             description = "Simple, but prone to pests.",
             },
-    topBar = {name = "Top-Bar Hive",
+    topBar = {name = "Top Bar Hive",
                 image = love.graphics.newImage("sprites/top_bar_hive.png"),
                 price = 100,
                 description = "Sturdier than the Log Hive, but yields less honey.",
@@ -59,7 +59,7 @@ local bees = {
                  description = "Rules the hive."
 
                  },
-     basicBee = {name = "Basic Bee",
+     basicBee = {name = "Bee",
                  image = love.graphics.newImage("sprites/bee.png"),
                  price = 10,
                  description = "Classic worker bee."

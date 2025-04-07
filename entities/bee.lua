@@ -128,7 +128,7 @@ function Bee:updateState(dt)
         if self:isAtHive() then
             --deposit nectar, default 1
             if hive then
-                hive.honey = hive.honey + 1
+                hive:depositNectar()
             end
             self.hasNectar = false
             self.state = "foraging"
@@ -260,6 +260,7 @@ end
 function Bee:isAtHive()
     if not hive then return false end
     local dist = math.sqrt((self.x - hive.x)^2 + (self.y - hive.y)^2)
+
     return dist < 5
 end
 

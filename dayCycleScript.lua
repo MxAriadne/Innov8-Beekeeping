@@ -20,6 +20,7 @@
 ]]
 
 local d = require("dialogs")
+local tips = require("tips")
 
 daysPassed = 0.0;
 bgTint = {0.1, 0, .2} -- tint for background(r, g, b)
@@ -34,12 +35,12 @@ badgerGo = false
 --after user is done updating their hive for the day
 function AdvanceDay()
     daysPassed = daysPassed + 0.5
-
-
 end
 
 --method to change to night
 function NightSky()
+    honeyTemp = TotalHoney
+
     -- lock space
     PressSpaceAllowed = false
     print("before update")
@@ -60,8 +61,6 @@ function NightSky()
     -- tigger nightly updates
     TriggerUpdates()
 
-    
-
 end
 
 --method to change to day
@@ -71,7 +70,7 @@ function DaySky()
 
     -- update timer
     Timer = 0;
-    
+
     -- pop any old messages
     DialogManager:clearDialogs()
 
@@ -83,15 +82,45 @@ function DaySky()
         text = string.format("Check out your stats: You have $%d.\nYour hive's health is at %d.\nYour hive's honey count is at %d. \nYour bee count is %d. \nYour sword is at %d strength. \nYour fences are at %d strength.", PlayerMoney, hive.health, hive.honey, #Bees, 0, 0),
         options = {} -- no choices, signals end of dialogue
     }
+
+    modal:show("Dawn of Day " .. daysPassed .. "!", string.format(
+                                                        "You have %d money!\n" ..
+                                                        "Remember to press TAB to purchase new equipment!\n\n\n\n" ..
+                                                        "Check out your stats:\n\n" ..
+                                                        "%-25s %5s\n" ..
+                                                        "%-25s %5d\n" ..
+                                                        "%-25s %5d\n" ..
+                                                        "%-25s %5d\n" ..
+                                                        "%-25s %5d\n" ..
+                                                        "%-25s %5d\n" ..
+                                                        "%-25s %5d",
+                                                        PlayerMoney,
+                                                        "Money:", PlayerMoney,
+                                                        "Hive Health:", hive.health,
+                                                        "Honey Count:", TotalHoney,
+                                                        "Your bees produced ", (TotalHoney - honeyTemp),
+                                                        "Bee Count:", #Bees,
+                                                        "Sword Strength:", 0,
+                                                        "Fence Strength:", 0
+                                                    ) .. "\n\n\n" .. tips[math.random(1, #tips)],
+    {
+        {
+            label = "Continue", action =
+            function()
+                modal:close()
+            end
+        }
+    }, 512, 512)
+
     --send update message
-    DialogManager:push(morningstats)
+    --DialogManager:push(morningstats)
 
     --shop populates
 
     -- tigger nightly updates
     TriggerUpdates()
 
-    
+
 end
 
 --method to update things throughout the night
@@ -101,7 +130,7 @@ function TriggerUpdates(dt)
     if daysPassed == waspDay then
         TintEnabled = true
         DialogManager:push(d.waspmessage)
-       
+
 
     elseif daysPassed == badgerDay+0.5 then
 

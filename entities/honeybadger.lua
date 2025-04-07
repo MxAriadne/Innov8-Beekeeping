@@ -283,7 +283,7 @@ end
 
 function HoneyBadger:draw()
     if self.visible then  --drawing if visible
-    love.graphics.draw(self.image, self.x, self.y, 0, self.scale, self.scale)
+    love.graphics.draw(self.image, self.x-48, self.y-48, 0, self.scale, self.scale)
 
         if DebugMode then
             --draw path

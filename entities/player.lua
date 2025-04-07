@@ -135,13 +135,8 @@ function Player:update(dt)
 end
 
 function Player:keyreleased(k)
-    print("Key released:", k)
-    print("Pre " .. self.direction)
-
     if k == "w" or k == "a" or k == "s" or k == "d" or k == "up" or k == "left" or k == "down" or k == "right" then
         self.direction = "still"
-        print(self.direction)
-
     end
 end
 

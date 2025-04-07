@@ -12,8 +12,6 @@ local Beehive = require("libraries/beehive")
 local Jumper = require("libraries/jumper")
 local dialogs = require("dialogs")
 local Player = require "entities.player"
-local shopScreen = require "states/shopScreen"
---local MainMenu = require "states/MainMenu"
 local SaveManager = require "save_manager"
 local game_Data = require "game_data"
 
@@ -40,6 +38,7 @@ function MainState:enter()
     self.flower = Flower()
     self.honeybadger = HoneyBadger()
     self.wasp = Wasp()
+    self.player = Player()
 
     -- Assign instances to globals for other modules to access
     hive = self.hive
@@ -47,6 +46,8 @@ function MainState:enter()
     flower = self.flower
     honeybadger = self.honeybadger
     wasp = self.wasp
+    player = self.player
+    player.isAttacking = false
 
     -- Ensure entity tables exist before inserting
     if not Hives then Hives = {} end
@@ -72,6 +73,9 @@ function MainState:enter()
         -- Start tutorial dialog
         DialogManager:show(dialogs.startupM)
 
+        -- Init honey total
+        TotalHoney = 0
+
         -- Add created entities to their respective tables
         table.insert(Hives, self.hive)
         table.insert(Bees, self.bee)
@@ -85,10 +89,6 @@ function MainState:enter()
 
     -- Load HUD
     HUD:load()
-
-    -- Create a player instance and make it global
-    self.player = Player()
-    player = self.player
 
     -- Set up player collider
     self.player.collider = World:newBSGRectangleCollider(480, 340, 20, 20, 14)
@@ -123,23 +123,18 @@ function MainState:update(dt)
     DialogManager:update(dt)
     World:update(dt)
 
-    if self.player then
-        self.player:update(dt)
-
-        -- Left-click to attack
-        if love.mouse.isDown(1) then
-            self.player:attack()
-        end
-    end
-
-    -- Update enemies if they exist
-    if self.wasp then self.wasp:update(dt) end
-    if self.honeybadger then self.honeybadger:update(dt) end
+    -- Update player if init worked
+    if self.player then self.player:update(dt) end
 
     -- Update all hives
+    local sum = 0
     for _, h in ipairs(Hives) do
         h:update(dt)
+        sum = sum + h.honey
     end
+
+    TotalHoney = sum
+    print(TotalHoney)
 
     -- Update all flowers
     for _, f in ipairs(Flowers) do
@@ -164,6 +159,14 @@ function MainState:update(dt)
     if self.wasp then self.wasp:update(dt) end
     if self.bee then self.bee:update(dt) end
     if self.honeybadger then self.honeybadger:update(dt) end
+
+    --converts honey to money
+    for _, h in ipairs(Hives) do
+        if h.honey > 0 then
+            PlayerMoney = PlayerMoney + h.honey
+            h.honey = 0
+        end
+    end
 end
 
 -- Called when a key is pressed
@@ -248,6 +251,10 @@ function MainState:mousepressed(x, y, button)
     if button == 2 and BuildOptions[CurrentBuildMode] then  -- Right click
         BuildOptions[CurrentBuildMode](x, y)
         CurrentBuildMode = nil
+    end
+
+    if button == 1 then
+        self.player:attack()
     end
 end
 
