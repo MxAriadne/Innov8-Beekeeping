@@ -125,3 +125,10 @@ function love.keypressed(k)
         current:keypressed(k)
     end
 end
+
+function love.textinput(t)
+    local current = GameStateManager:getState()
+    if current and current.textinput then
+        current:textinput(t)
+    end
+end
