@@ -277,7 +277,7 @@ function Player:draw()
 
     love.graphics.setColor(1, 1, 1, 1)
 
-    if debugMode then
+    if DebugMode then
         --draw health
         love.graphics.setColor(1, 0, 0, 0.7)
         love.graphics.print(string.format("Health: %d/%d", self.health, self.maxHealth), self.x - 30, self.y - 40)
@@ -330,7 +330,7 @@ function Player:draw()
         end
     end
 
-    if debugMode then
+    if DebugMode then
         --DEBUG VARIABLE PRINT FOR ENTITIES
         love.graphics.setColor(1, 1, 1, 1)
         love.graphics.print("ENTITY DEBUG:", 10, 10)

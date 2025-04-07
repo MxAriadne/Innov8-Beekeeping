@@ -59,6 +59,7 @@ function HUD:draw()
         "Controls:",
         "F - Buy Hive ($" .. HiveCost .. ")",
         "G - Buy Bee ($" .. BeeCost .. ")",
+        "Q - Buy Queen Bee ($" .. QueenBeeCost .. ")",
         "H - Buy Flower ($" .. FlowerCost .. ")",
         "Left Click - Attack",
         "Space - Advance Day",

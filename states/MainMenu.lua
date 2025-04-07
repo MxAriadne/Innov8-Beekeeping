@@ -6,11 +6,12 @@ require "UI/design"
 local button = require "UI/button"
 local gameSaves = require "states/loadFilesScreen"
 local MainState = require("states/MainState")
+local Settings = require("states/Settings")
 
-local mainMenu = {}
+local MainMenu = {}
 
 -- This function generates and returns the buttons for the main menu
-function mainMenu:enter()
+function MainMenu:enter()
     self.buttons = {} -- Table of buttons for menu screen
 
     -- Variables for button placement and dimensions
@@ -37,7 +38,7 @@ function mainMenu:enter()
 end
 
 -- This function draws the created buttons on the screen
-function mainMenu:draw()
+function MainMenu:draw()
     -- Set background color
     love.graphics.setBackgroundColor(menuBackgroundColor)
 
@@ -57,7 +58,7 @@ end
 
 -- This function displays the settings screen
 function loadSettings()
-    -- TODO
+    GameStateManager:setState(Settings)
     print ("Loading settings")
 end
 
@@ -68,16 +69,12 @@ function exitGame()
 end
 
 function newGame()
-    print("Current State Before:", GameStateManager:getState())
     GameStateManager:setState(MainState)
-    print("Current State After:", GameStateManager:getState())
 end
 
 -- TODO: add function to change game state to gameSaves
 function loadGame()
-    print("Current State Before:", GameStateManager:getState())
     GameStateManager:setState(gameSaves)
-    print("Current State After:", GameStateManager:getState())
 end
 
-return mainMenu
+return MainMenu

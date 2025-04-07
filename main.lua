@@ -16,6 +16,7 @@ GameConfig = {}
 PlayerMoney = 100
 HiveCost = 20
 BeeCost = 5
+QueenBeeCost = 25
 FlowerCost = 3
 
  -------------------------------------------------------
@@ -26,8 +27,8 @@ local bees = {}
 local flowers = {}
 
 -- global variables
-tintEnabled = false
-debugMode = false
+TintEnabled = false
+DebugMode = false
 
 -- Current build mode: "hive", "bee", "flower", or nil
 CurrentBuildMode = nil
@@ -39,6 +40,7 @@ function love.load()
     require "wasp"
     require "honeybadger"
     require "player"
+    require "queenBee"
 
     --default flower, to be compatible with current implementation of enemy-behavior
     local flower = Flower()

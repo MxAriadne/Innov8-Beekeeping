@@ -47,7 +47,7 @@ local dialove = {
     [';'] = 0.5,
     [','] = 0.3
   },
-  typingSound = love.audio.newSource('libraries/Dialove/assets/typing-sound.ogg', 'static'),
+  typingSound = love.audio.newSource(BASE .. 'assets/typing-sound.ogg', 'static'),
   backgroundTypes = {
     normal = 1,
     tiled = 2,
@@ -216,7 +216,7 @@ function dialove:push(data)
   local lineWasInserted = false
 
   local wordsToInsert = {}
-  for word in string.gmatch(content, '([^( |\n)]+)') do
+  for word in string.gmatch(content, '([^( |)]+)') do -- \n
     table.insert(wordsToInsert, word)
   end
 
@@ -401,6 +401,12 @@ function dialove:draw()
     utils.printOptions(self, dialog)
   end
   love.graphics.pop()
+end
+
+-- added to clear dialog list
+function dialove:clearDialogs()
+  self.activeDialogListMap = {}  -- Resets the dialog list
+  self.activeDialog = nil        -- Clears the active dialog
 end
 
 return dialove

@@ -8,11 +8,14 @@ function Bee:new()
     self.x = 275
     self.y = 300
     self.scale = 0.4
-    self.width = 128
-    self.height = 128
+    self.width = 40
+    self.height = 40
     self.speed = 60      --slower than wasps and honey badgers
     self.state = "foraging"
     self.hasNectar = false
+    self.visible = true
+
+    self.is_bee = true
 
     --initalizing pathfinding
     self.pathfinding = Pathfinding
@@ -107,7 +110,7 @@ function Bee:updateState(dt)
             self.state = "collecting"
             self.nectarTimer = 0
             self.current_path = nil  --clearing path
-            print("collecting nectar") --debug
+            --print("collecting nectar") --debug
         else
             self:followPath(dt)
         end
@@ -273,11 +276,15 @@ function Bee:moveToHive(dt)
         self.x = self.x + math.cos(angle) * self.speed * dt
         self.y = self.y + math.sin(angle) * self.speed * dt
     else
-        --bee reaches hive
-        self.visible = false
-        --decreasing beeCount
-        if hive.beeCount then
-            hive.beeCount = hive.beeCount - 1
+        --there was a bug with the bee dying and decrementing the bee count indefinitely
+        if self.visible then
+            --making the bee disappear
+            self.visible = false
+
+            if hive and hive.beeCount then
+                --beeCount can't be below 0
+                hive.beeCount = math.max(0, hive.beeCount - 1)
+            end
         end
     end
 end
@@ -386,7 +393,7 @@ function Bee:draw()
         love.graphics.draw(self.animation.spritesheet, self.animation.quads[spriteNum], self.x, self.y, 0, 3)
 
         --debug, drawing the bee's path
-        if debugMode then
+        if DebugMode then
             if self.current_path then
                 love.graphics.setColor(0, 1, 0, 0.5)
                 for i = 1, #self.current_path - 1 do
@@ -407,6 +414,26 @@ function Bee:draw()
             love.graphics.print(string.format(
                 "State: %s\nHealth: %d/%d\nHas Nectar: %s", self.state, self.health, self.maxHealth, tostring(self.hasNectar)), self.x - 30, self.y - 40)
         end
+    end
+end
+
+--bee's take damage function
+function Bee:takeDamage(damage, attacker)
+    self.health = math.max(0, self.health - damage)
+    --print("bee dealt " .. damage .. " damage, health is now: " .. self.health)
+
+    --switching to defensive state if attacked
+    if self.state ~= "defending" and self.state ~= "retreating" then
+        self.previousState = self.state
+        self.state = "defending"
+        self.target = attacker
+        self.isAggressive = true
+    end
+
+    --retreating if health is low
+    if self.health <= 2 and self.state ~= "retreating" then
+        self.state = "retreating"
+        self.target = nil
     end
 end
 
