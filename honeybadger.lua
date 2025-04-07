@@ -3,10 +3,10 @@ local Pathfinding = require("pathfinding")
 HoneyBadger = Object:extend()
 
 function HoneyBadger:new()
-    self.image = love.graphics.newImage("sprites/honey-badger.png")
+    self.image = love.graphics.newImage("sprites/honey_badger.png")
     self.x = 600
     self.y = 150
-    self.scale = 0.5
+    self.scale = 0.2
     self.width = self.image:getWidth() * self.scale
     self.height = self.image:getHeight() * self.scale
     self.speed = 45  --slower than wasps

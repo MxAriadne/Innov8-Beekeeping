@@ -1,10 +1,10 @@
 Hive = Object:extend()
 
 function Hive:new()
-    self.image = love.graphics.newImage("sprites/hive.png")
-    self.x = 420
+    self.image = love.graphics.newImage("sprites/log_hive.png")
+    self.x = 200
     self.y = 315
-    self.scale = 0.6
+    self.scale = 0.3
     self.width = self.image:getWidth() * self.scale
     self.height = self.image:getHeight() * self.scale
     self.honey = 10

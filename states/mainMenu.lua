@@ -28,7 +28,12 @@ function mainMenu:enter()
         button.yPos = button.yPos - button.height + i * (button.height + margin)
     end
 
-    return self.buttons
+    -- Generate title and honeycomb
+    self.title = "Bizzy Beez"
+    love.graphics.setColor(gameTitleColor)
+    self.titleW = largeFont:getWidth(self.title)
+    self.honeycomb = love.graphics.newImage("sprites/honeycomb.png")
+
 end
 
 -- This function draws the created buttons on the screen
@@ -37,10 +42,12 @@ function mainMenu:draw()
     love.graphics.setBackgroundColor(menuBackgroundColor)
 
     -- Draw title centered to top of window
-    local title = "Bizzy Beez"
-    love.graphics.setColor(gameTitleColor)
-    local titleW = largeFont:getWidth(title)
-    love.graphics.print(title, largeFont, (GameConfig.windowW-titleW) / 2, margin)
+    love.graphics.print(self.title, largeFont, (GameConfig.windowW-self.titleW) / 2, 100)
+
+    -- Draw honeycomb image
+    love.graphics.setColor(1,1,1)
+    love.graphics.draw(self.honeycomb, -80, GameConfig.windowH - 280)
+    love.graphics.draw(self.honeycomb, GameConfig.windowW - 280, 85)
 
     -- Draw the buttons
     for _, button in ipairs(self.buttons) do

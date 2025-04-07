@@ -4,7 +4,7 @@
 local HUD = {}
 local tileSize = 32
 local itemSize = tileSize * 1.5 -- 1.5 times dimension of tile
-local items = require "items"
+local shopItems = require "shopItems"
 
 function HUD:load()
     -- images of items in hotbar will be attributed to each tool
@@ -13,12 +13,14 @@ function HUD:load()
     self.canvases = {} -- Canvases for current items
 
     -- Check if player has items in hotbar
+    local items = {shopItems.tools.basicSword}
     if items then
         -- Create canvas for each item
         for i, item in ipairs(items) do
             local canvas = love.graphics.newCanvas(itemSize, itemSize)
             love.graphics.setCanvas(canvas) -- Switch drawing to canvas
             love.graphics.clear(0, 0, 0, 0) -- Make new canvas transparent
+            love.graphics.setColor(1,1,1) -- Set color back to default
             love.graphics.draw(item.image, 0, 0, 0,
                                 canvas:getWidth() / item.image:getWidth(),
                                 canvas:getHeight() / item.image:getHeight()) -- Draw image onto canvas
@@ -71,12 +73,12 @@ function HUD:draw()
     love.graphics.setColor(1, 1, 1, 1)
 
     -- Determine position and size of hotbar / item image
-    local hotbarX = GameConfig.windowW / 2 - ((self.hotbarSize / 2) * itemSize)
-    local hotbarY = GameConfig.windowH - itemSize - tileSize
+    local hotbarX = GameConfig.windowW - itemSize
+    local hotbarY = GameConfig.windowH / 2 - ((self.hotbarSize / 2) * itemSize)
 
     -- Draw empty hotbar
     for i = 0, self.hotbarSize do
-        local slot = love.graphics.rectangle("line", hotbarX + i * itemSize, hotbarY, itemSize, itemSize)
+        local slot = love.graphics.rectangle("line", hotbarX, hotbarY + i * itemSize, itemSize, itemSize)
         table.insert(self.hotbar, slot)
     end
 
@@ -84,7 +86,7 @@ function HUD:draw()
     if self.canvases then
         love.graphics.setBlendMode("alpha")
         for i, canvas in ipairs(self.canvases) do
-            love.graphics.draw(canvas, hotbarX + (i-1) * itemSize, hotbarY)
+            love.graphics.draw(canvas, hotbarX, hotbarY + (i-1) * itemSize)
         end
     end
 end
