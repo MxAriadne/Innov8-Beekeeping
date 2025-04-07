@@ -72,6 +72,10 @@ function HoneyBadger:updateState(dt)
         self.state = "fleeing"
         self.speed = self.fleeingSpeed
         self.current_path = nil
+
+        -- IMPORTANT ADDITION: unlock space to skip
+        pressSpaceAllowed = true
+
         return
     end
 

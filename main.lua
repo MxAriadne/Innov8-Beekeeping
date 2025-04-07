@@ -31,6 +31,7 @@ debugMode = false
 Timer = 0
 Interval = 30 -- how long user has each day/night before cycling
 LastTrigger = 0
+pressSpaceAllowed = true --locking mechanism so you cannot skip attacks
 
 -- Current build mode: "hive", "bee", "flower", or nil
 CurrentBuildMode = nil

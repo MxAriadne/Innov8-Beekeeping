@@ -86,6 +86,10 @@ function Wasp:updateState(dt)
         self.state = "fleeing"
         self.speed = self.fleeingSpeed
         self.current_path = nil --clearing the wasps current path so that the wasps can flee instead 
+
+        -- IMPORTANT ADDITION: unlock space to skip
+        pressSpaceAllowed = true
+
         return
     end
 

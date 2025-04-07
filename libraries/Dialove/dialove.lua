@@ -403,4 +403,10 @@ function dialove:draw()
   love.graphics.pop()
 end
 
+-- added to clear dialog list
+function dialove:clearDialogs()
+  self.activeDialogListMap = {}  -- Resets the dialog list
+  self.activeDialog = nil        -- Clears the active dialog
+end
+
 return dialove

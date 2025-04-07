@@ -40,6 +40,17 @@ end
 
 --method to change to night
 function NightSky()
+    -- lock space
+    pressSpaceAllowed = false
+    print("before update")
+    print(pressSpaceAllowed)
+
+    -- update timer
+    Timer = 0;
+
+    -- pop any old messages
+    dialogManager:clearDialogs()
+
     --stop shop keys functionality?
 
     -- Show a night message using Dialove
@@ -49,10 +60,20 @@ function NightSky()
     -- tigger nightly updates
     TriggerUpdates()
 
+    
+
 end
 
 --method to change to day
 function DaySky()
+    -- lock space
+    pressSpaceAllowed = false
+
+    -- update timer
+    Timer = 0;
+    
+    -- pop any old messages
+    dialogManager:clearDialogs()
 
     --day message
     dialogManager:show(d.goodmorning) -- stores dialog
@@ -69,6 +90,8 @@ function DaySky()
 
     -- tigger nightly updates
     TriggerUpdates()
+
+    
 end
 
 --method to update things throughout the night
@@ -84,7 +107,10 @@ function TriggerUpdates(dt)
 
         dialogManager:push(d.badgermessage)
 
+    else
+        pressSpaceAllowed = true
     end
+
 
 end
 

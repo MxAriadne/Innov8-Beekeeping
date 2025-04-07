@@ -149,7 +149,7 @@ end
 
 function love.keypressed(k)
     -- Handle spacebar for day cycle
-    if k == "space" then
+    if k == "space" and pressSpaceAllowed then
         AdvanceDay()  -- Call the trigger updates function from dayCycleScript.lua
         if tintEnabled == false then --tintEnabled
             NightSky()
@@ -158,6 +158,7 @@ function love.keypressed(k)
             DaySky()
             tintEnabled = false
         end
+
     -- Handle dialog flow controls
     elseif k == 'return' then
     -- exit dialogue box
