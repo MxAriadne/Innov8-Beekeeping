@@ -34,13 +34,13 @@ DebugMode = false
 CurrentBuildMode = nil
 
 function love.load()
-    require "bee"
-    require "flower"
-    require "hive"
-    require "wasp"
-    require "honeybadger"
-    require "player"
-    require "queenBee"
+    require "entities.bee"
+    require "entities.flower"
+    require "entities.hive"
+    require "entities.wasp"
+    require "entities.honeybadger"
+    require "entities.player"
+    require "entities.queenBee"
 
     --default flower, to be compatible with current implementation of enemy-behavior
     local flower = Flower()

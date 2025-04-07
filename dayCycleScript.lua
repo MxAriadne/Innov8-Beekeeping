@@ -49,13 +49,13 @@ function NightSky()
     Timer = 0;
 
     -- pop any old messages
-    dialogManager:clearDialogs()
+    DialogManager:clearDialogs()
 
     --stop shop keys functionality?
 
     -- Show a night message using Dialove
     -- Push the night message to the dialog manager
-    dialogManager:show(d.goodnight) -- stores dialog
+    DialogManager:show(d.goodnight) -- stores dialog
 
     -- tigger nightly updates
     TriggerUpdates()
@@ -73,10 +73,10 @@ function DaySky()
     Timer = 0;
     
     -- pop any old messages
-    dialogManager:clearDialogs()
+    DialogManager:clearDialogs()
 
     --day message
-    dialogManager:show(d.goodmorning) -- stores dialog
+    DialogManager:show(d.goodmorning) -- stores dialog
 
     --load stat message with variables
     local morningstats = {
@@ -84,7 +84,7 @@ function DaySky()
         options = {} -- no choices, signals end of dialogue
     }
     --send update message
-    dialogManager:push(morningstats)
+    DialogManager:push(morningstats)
 
     --shop populates
 
@@ -100,12 +100,12 @@ function TriggerUpdates(dt)
     --check for attack
     if daysPassed == waspDay then
         TintEnabled = true
-        dialogManager:push(d.waspmessage)
+        DialogManager:push(d.waspmessage)
        
 
     elseif daysPassed == badgerDay+0.5 then
 
-        dialogManager:push(d.badgermessage)
+        DialogManager:push(d.badgermessage)
 
     else
         pressSpaceAllowed = true

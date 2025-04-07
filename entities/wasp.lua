@@ -1,4 +1,4 @@
-local Pathfinding = require("pathfinding")
+local Pathfinding = require("libraries.pathfinding")
 
 Wasp = Object:extend()
 

@@ -1,5 +1,5 @@
-local Pathfinding = require("pathfinding")
-require "bee"
+local Pathfinding = require("libraries.pathfinding")
+require "entities.bee"
 QueenBee = Bee:extend()
 
 function QueenBee:new()

@@ -53,8 +53,8 @@ dialog.startupM = {
     text = [[Welcome! The goal of this game is to build a good enviroment for your bees in order to collect money! 
     Quick Tip: Press 'b' or 'n' to select an option. Then press RETURN.]],
     options = {
-        { 'Tell Me How To Play!', function() dialogManager:show(dialog.startup0) dialogManager:push(dialog.startup1) dialogManager:push(dialog.startup2) end },
-        { 'Skip Tutorial!', function() dialogManager:pop() end }
+        { 'Tell Me How To Play!', function() DialogManager:show(dialog.startup0) DialogManager:push(dialog.startup1) DialogManager:push(dialog.startup2) end },
+        { 'Skip Tutorial!', function() DialogManager:pop() end }
     }
 }
 

@@ -1,4 +1,4 @@
-local Pathfinding = require("pathfinding")
+local Pathfinding = require("libraries.pathfinding")
 
 Bee = Object:extend()
 
