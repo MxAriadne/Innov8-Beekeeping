@@ -13,7 +13,7 @@ local Jumper = require("libraries/jumper")
 local dialogs = require("dialogs")
 local Player = require "entities.player"
 local shopScreen = require "states/shopScreen"
-local MainMenu = require "states/MainMenu"
+--local MainMenu = require "states/MainMenu"
 local SaveManager = require "save_manager"
 local game_Data = require "game_data"
 
