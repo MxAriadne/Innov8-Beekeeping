@@ -45,7 +45,7 @@ function shopScreen:enter()
     -- Create page tabs
     for i, pageName in ipairs(pageKeys) do
         local x = 100 + (i-1) * 200
-        tabButtons[i] = button:new(pages[i], 
+        tabButtons[i] = button:new(pages[i],
                                     function()
                                         selectedPage = pageKeys[i]
                                         currentPage = 1
@@ -54,12 +54,12 @@ function shopScreen:enter()
     end
 
     -- Create scroll buttons
-    scrollButtons.up = button:new("^", 
+    scrollButtons.up = button:new("^",
                                     function()
                                         currentPage = math.max(currentPage - 1, 1)
                                         shopScreen:enter()
                                     end, 40, 40, 700, 440)
-    scrollButtons.down = button:new("v", 
+    scrollButtons.down = button:new("v",
                                     function()
                                         currentPage = currentPage + 1
                                         shopScreen:enter()
@@ -82,7 +82,7 @@ function shopScreen:enter()
 
         local buyButton = button:new(item.price .. " KSh",
             function()
-                BuyItem(item)
+                BuyItem(item, selectedPage)
             end, 150, 50, 700, y + 30)
 
         table.insert(buttons, buyButton)
@@ -179,19 +179,25 @@ end
 function CloseShop()
     print("Closed Shop Screen")
     GameStateManager:revertState()
-    
+
 end
 
 -- ****** BUY ITEM ******
-function BuyItem(item)
-    if PlayerMoney >= item.price then
+function BuyItem(item, selectedPage)
+    if PlayerMoney >= item.price and selectedPage ~= "tools" then
         PlayerMoney = PlayerMoney - item.price
         CurrentBuildMode = string.gsub(item.name, "%s+", "")
 
         modal:show("Success!", "You've bought a " .. item.name .. "!\nPress RIGHT-CLICK to place!", {
             { label = "Continue", action = function() GameStateManager:revertState() end }
         })
+    elseif PlayerMoney >= item.price then
+        PlayerMoney = PlayerMoney - item.price
+        table.insert(player.items, item)
 
+        modal:show("Success!", "You've bought a " .. item.name .. "!\nIt is now in your inventory", {
+          { label = "Continue", action = function() GameStateManager:revertState() end }
+        })
     else
         modal:show("Not Enough Money!", "You don't have enough to buy this!", {
             { label = "Continue", action = function() print("Closed") end }
