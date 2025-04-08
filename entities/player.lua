@@ -51,8 +51,8 @@ function Player:new()
     self.equippedWeapon = "hands"
     self.weapons = {
         hands = {
-            damage = {wasp = 4, honeybadger = 3, bee = 5, hive = 10},
-            hitChance = {wasp = 0.50, honeybadger = 0.85, bee = 0.70, hive = 1.0}
+            damage = {wasp = 4, honeybadger = 3, bee = 5, hive = 10, flower = 10},
+            hitChance = {wasp = 0.50, honeybadger = 0.85, bee = 0.70, hive = 1.0, flower = 1.0}
         }
     }
 
@@ -152,21 +152,15 @@ function Player:isTargetInRange(target)
     local pCenterY = self.y
 
     --getting the center of the target
-    local tCenterX = target.x + (target.width or 40)/2
-    local tCenterY = target.y + (target.height or 40)/2
-
-    local tWidth = target.width or 40
-    local tHeight = target.height or 40
-
-    if target.is_bee then tWidth, tHeight = 40, 40 end
-    if target.is_hive then tWidth, tHeight = 80, 80 end
+    local tCenterX = target.x + target.width/2
+    local tCenterY = target.y + target.height/2
 
     --calculate distance between the center of player and target
     local distX = math.abs(pCenterX - tCenterX)
     local distY = math.abs(pCenterY - tCenterY)
 
     --check if within attack range
-    return distX <= (self.attackRange + tWidth/2) and distY <= (self.attackRange + tHeight/2)
+    return distX <= (self.attackRange + target.width/2) and distY <= (self.attackRange + target.height/2)
 end
 
 function Player:addHitFeedback(x, y)
@@ -198,14 +192,25 @@ function Player:attack()
             print("HoneyBadger in range")
         end
 
-        if bee and bee.visible and self:isTargetInRange(bee) then
-            table.insert(targets, {obj = bee, type = "bee"})
-            print("Bee in range")
+        for _, bee in ipairs(Bees) do
+            if bee.visible and self:isTargetInRange(bee) then
+                table.insert(targets, {obj = bee, type = "bee"})
+                print("Bee in range")
+            end
         end
 
-        if hive and hive.visible and self:isTargetInRange(hive) then
-            table.insert(targets, {obj = hive, type = "hive"})
-            print("Hive in range")
+        for _, hive in ipairs(Hives) do
+            if hive.visible and self:isTargetInRange(hive) then
+                table.insert(targets, {obj = hive, type = "hive"})
+                print("Hive in range")
+            end
+        end
+
+        for _, flower in ipairs(Flowers) do
+            if flower.visible and self:isTargetInRange(flower) then
+                table.insert(targets, {obj = flower, type = "flower"})
+                print("flower in range")
+            end
         end
 
         --applying damage to the targets in range
@@ -317,31 +322,34 @@ function Player:draw()
         local targets = {
             {obj = wasp, type = "wasp", color = {1, 1, 0}},
             {obj = honeybadger, type = "honeybadger", color = {0.7, 0.4, 0}},
-            {obj = bee, type = "bee", color = {1, 0.8, 0}},
-            {obj = hive, type = "hive", color = {0.8, 0.6, 0.2}}
+            {obj = Bees, type = "bee", color = {1, 0.8, 0}},
+            {obj = Hives, type = "hive", color = {0.8, 0.6, 0.2}},
+            {obj = Flowers, type = "flower", color = {0.8, 0.6, 0.2}}
         }
 
         for _, target in ipairs(targets) do
-            if target.obj and target.obj.visible then
-                --drawing the hitboxes
-                love.graphics.setColor(target.color[1], target.color[2], target.color[3], 0.7)
+            for _, entity in ipairs(target.obj) do
+                if entity and entity.visible then
+                    --drawing the hitboxes
+                    love.graphics.setColor(target.color[1], target.color[2], target.color[3], 0.7)
 
-                --getting size
-                local width = target.obj.width
-                local height = target.obj.height
+                    --getting size
+                    local width = entity.width
+                    local height = entity.height
 
-                --drawing rectange shape centered around png
-                love.graphics.rectangle("line", target.obj.x - width/2, target.obj.y - height/2, width, height)
+                    --drawing rectange shape centered around png
+                    love.graphics.rectangle("line", entity.x - width/2, entity.y - height/2, width, height)
 
-                --checking if target is in range
-                if self:isTargetInRange(target.obj) then
-                    --color hitbox green if in range
-                    love.graphics.setColor(0, 1, 0, 0.3)
-                    love.graphics.rectangle("fill", target.obj.x - width/2, target.obj.y - height/2, width, height)
-                else
-                    --not in range, color yellow
-                    love.graphics.setColor(1, 1, 0, 0.3)
-                    love.graphics.rectangle("line", target.obj.x - width/2, target.obj.y - height/2, width, height)
+                    --checking if target is in range
+                    if self:isTargetInRange(entity) then
+                        --color hitbox green if in range
+                        love.graphics.setColor(0, 1, 0, 0.3)
+                        love.graphics.rectangle("fill", entity.x - width/2, entity.y - height/2, width, height)
+                    else
+                        --not in range, color yellow
+                        love.graphics.setColor(1, 1, 0, 0.3)
+                        love.graphics.rectangle("line", entity.x - width/2, entity.y - height/2, width, height)
+                    end
                 end
             end
         end
@@ -356,16 +364,8 @@ function Player:draw()
             love.graphics.print("Wasp: x=" .. math.floor(wasp.x) .. " y=" .. math.floor(wasp.y) .. " Health=" .. (wasp.health or "N/A"), 10, 30)
         end
 
-        if bee then
-            love.graphics.print("Bee: x=" .. math.floor(bee.x) .. " y=" .. math.floor(bee.y) .. " Health=" .. (bee.health or "N/A"), 10, 50)
-        end
-
         if honeybadger then
             love.graphics.print("HoneyBadger: x=" .. math.floor(honeybadger.x) .. " y=" .. math.floor(honeybadger.y) .. " Health=" .. (honeybadger.health or "N/A"), 10, 70)
-        end
-
-        if hive then
-            love.graphics.print("Hive: x=" .. math.floor(hive.x) .. " y=" .. math.floor(hive.y) .. " Health=" .. (hive.health or "N/A") .." Bees: " .. (hive.beeCount or 0), 10, 90)
         end
 
         love.graphics.setColor(1, 1, 1, 1)  --reset color

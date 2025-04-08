@@ -2,16 +2,18 @@ local Pathfinding = require("libraries.pathfinding")
 require "entities.bee"
 QueenBee = Bee:extend()
 
-function QueenBee:new()
+function QueenBee:new(home, x, y)
     Bee.new(self) --parent constructor
 
     --overriding
     self.image = love.graphics.newImage("sprites/bee.png") --different sprite
-    self.x = 400
-    self.y = 300
+    self.x = x
+    self.y = y
     self.scale = 0.5 --queen bee is larger
     self.width = self.image:getWidth() * self.scale
     self.height = self.image:getHeight() * self.scale
+
+    self.homeHive = home or hive
 
     --combat properties
     self.attackDamage = 3 --more damage than worker bees
@@ -36,8 +38,8 @@ function QueenBee:new()
     --movement
     self.state = "moving" --initially moves to hive
     self.wanderRadius = 50 --stays close to hive
-    self.targetX = hive.x
-    self.targetY = hive.y
+    self.targetX = self.homeHive.x
+    self.targetY = self.homeHive.y
 end
 
 function QueenBee:update(dt)
@@ -66,7 +68,7 @@ function QueenBee:update(dt)
 end
 
 function QueenBee:updateState(dt)
-    if not hive then return end
+    if not self.homeHive then return end
 
     self.stateTimer = (self.stateTimer or 0) + dt
 
@@ -75,8 +77,8 @@ function QueenBee:updateState(dt)
         if self.stateTimer > 5 then
             local angle = math.random() * math.pi * 2
             local distance = math.random() * self.wanderRadius
-            self.targetX = hive.x + math.cos(angle) * distance
-            self.targetY = hive.y + math.sin(angle) * distance
+            self.targetX = self.homeHive.x + math.cos(angle) * distance
+            self.targetY = self.homeHive.y + math.sin(angle) * distance
             self.state = "moving"
             self.stateTimer = 0
         end

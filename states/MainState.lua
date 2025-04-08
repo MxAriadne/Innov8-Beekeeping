@@ -32,22 +32,13 @@ function MainState:enter()
         font = love.graphics.newFont('libraries/fonts/comic-neue/ComicNeue-Bold.ttf', 16)
     })
 
-    -- Create instances of main entities
-    self.hive = Hive()
-    self.bee = Bee()
-    self.flower = Flower()
-    self.honeybadger = HoneyBadger()
-    self.wasp = Wasp()
-    self.player = Player()
-
     -- Assign instances to globals for other modules to access
-    hive = self.hive
-    bee = self.bee
-    flower = self.flower
-    honeybadger = self.honeybadger
-    wasp = self.wasp
-    player = self.player
-    player.isAttacking = false
+    hive = Hive()
+    bee = Bee(hive, 275, 300)
+    flower = Flower()
+    honeybadger = HoneyBadger()
+    wasp = Wasp()
+    player = Player()
 
     -- Ensure entity tables exist before inserting
     if not Hives then Hives = {} end
@@ -65,6 +56,19 @@ function MainState:enter()
         World:addCollisionClass('Enemy')
         World:addCollisionClass('Hive')
 
+        -- Create a collider for the first hive
+        local wall = World:newRectangleCollider(
+            hive.x - hive.width/2,
+            hive.y - hive.height/2,
+            hive.width,
+            hive.height
+        )
+
+        wall:setType('static')
+        wall:setCollisionClass('Hive')
+
+        hive.collider = wall
+
         -- Load and play background music
         Music:setVolume(0.3)
         Music:setLooping(true)
@@ -77,9 +81,9 @@ function MainState:enter()
         TotalHoney = 0
 
         -- Add created entities to their respective tables
-        table.insert(Hives, self.hive)
-        table.insert(Bees, self.bee)
-        table.insert(Flowers, self.flower)
+        table.insert(Hives, hive)
+        table.insert(Bees, bee)
+        table.insert(Flowers, flower)
     else
         Music:stop()
         Music:setVolume(0.3)
@@ -91,10 +95,10 @@ function MainState:enter()
     HUD:load()
 
     -- Set up player collider
-    self.player.collider = World:newBSGRectangleCollider(480, 340, 20, 20, 14)
-    self.player.collider:setFixedRotation(true)
-    self.player.collider:setObject(self.player)
-    self.player.collider:setCollisionClass('Player')
+    player.collider = World:newBSGRectangleCollider(480, 340, 20, 20, 14)
+    player.collider:setFixedRotation(true)
+    player.collider:setObject(player)
+    player.collider:setCollisionClass('Player')
 
     -- Create colliders for each wall tile
     walls = {}
@@ -106,17 +110,10 @@ function MainState:enter()
             table.insert(walls, wall)
         end
     end
+end
 
-    -- Create a collider for the hive
-    local wall = World:newRectangleCollider(
-        self.hive.x - self.hive.width/2,
-        self.hive.y - self.hive.height/2,
-        self.hive.width,
-        self.hive.height
-    )
-
-    wall:setType('static')
-    wall:setCollisionClass('Hive')
+function round(num, numDecimalPlaces)
+  return tonumber(string.format("%." .. (numDecimalPlaces or 0) .. "f", num))
 end
 
 function MainState:update(dt)
@@ -124,23 +121,27 @@ function MainState:update(dt)
     World:update(dt)
 
     -- Update player if init worked
-    if self.player then self.player:update(dt) end
+    if player then player:update(dt) end
 
     -- Update all hives
     local sum = 0
     for _, h in ipairs(Hives) do
         h:update(dt)
-        sum = sum + h.honey
+        if not h.visible then
+            h = nil
+        end
     end
-
-    TotalHoney = sum
-    print(TotalHoney)
 
     -- Update all flowers
     for _, f in ipairs(Flowers) do
         if f.update then
             f:update(dt)
         end
+
+        if not f.visible then
+            f = nil
+        end
+
     end
 
     -- Update all bees
@@ -155,15 +156,11 @@ function MainState:update(dt)
         GameStateManager:setState(MainMenu)
     end
 
-    -- Re-update enemies (this appears to be a redundant block)
-    if self.wasp then self.wasp:update(dt) end
-    if self.bee then self.bee:update(dt) end
-    if self.honeybadger then self.honeybadger:update(dt) end
-
     --converts honey to money
     for _, h in ipairs(Hives) do
         if h.honey > 0 then
-            PlayerMoney = PlayerMoney + h.honey
+            TotalHoney = round(TotalHoney + h.honey, 2)
+            PlayerMoney = round(PlayerMoney + h.honey, 2)
             h.honey = 0
         end
     end
@@ -223,25 +220,99 @@ end
 
 BuildOptions = {
     LangstrothHive = function(x, y)
-        local h = Hive(); h.x = x; h.y = y; table.insert(Hives, h)
+        local h = LangstrothHive(); h.x = x; h.y = y;
+        -- Create a collider for the hive
+        local wall = World:newRectangleCollider(
+            h.x - h.width/2,
+            h.y - h.height/2,
+            h.width,
+            h.height
+        )
+
+        wall:setType('static')
+        wall:setCollisionClass('Hive')
+
+        h.collider = wall
+
+        table.insert(Hives, h)
     end,
     LogHive = function(x, y)
-        local h = Hive(); h.x = x; h.y = y; table.insert(Hives, h)
+        local h = Hive(); h.x = x; h.y = y;
+        -- Create a collider for the hive
+        local wall = World:newRectangleCollider(
+            h.x - h.width/2,
+            h.y - h.height/2,
+            h.width,
+            h.height
+        )
+
+        wall:setType('static')
+        wall:setCollisionClass('Hive')
+
+        h.collider = wall
+
+        table.insert(Hives, h)
     end,
     TopBarHive = function(x, y)
-        local h = Hive(); h.x = x; h.y = y; table.insert(Hives, h)
+        local h = TopBarHive(); h.x = x; h.y = y;
+        -- Create a collider for the hive
+        local wall = World:newRectangleCollider(
+            h.x - h.width/2,
+            h.y - h.height/2,
+            h.width,
+            h.height
+        )
+
+        wall:setType('static')
+        wall:setCollisionClass('Hive')
+
+        h.collider = wall
+
+        table.insert(Hives, h)
     end,
     Orchid = function(x, y)
         local f = Flower(); f.x = x; f.y = y; table.insert(Flowers, f)
     end,
+    GoldenDewdrops = function(x, y)
+        local f = GoldenDewdrops(); f.x = x; f.y = y; table.insert(Flowers, f)
+    end,
+    CommonLantana = function(x, y)
+        local f = CommonLantana(); f.x = x; f.y = y; table.insert(Flowers, f)
+    end,
     Bee = function(x, y)
-        local b = Bee(); b.x = x; b.y = y; table.insert(Bees, b)
+        local closestHive = nil
+        for _, hive in pairs(Hives) do
+            if closestHive == nil then
+                closestHive = hive
+            else
+                if (x - hive.x) * (x - hive.x) + (y - hive.y) * (y - hive.y) < (x - closestHive.x) * (x - closestHive.x) + (y - closestHive.y) * (y - closestHive.y) then
+                    closestHive = hive
+                end
+            end
+        end
+
+        if closestHive then
+             closestHive:updateHoneyProduction()
+             local b = Bee(closestHive, x, y); table.insert(Bees, b)
+             closestHive.beeCount = closestHive.beeCount + 1
+        end
     end,
     QueenBee = function(x, y)
-        local b = QueenBee(); b.x = x; b.y = y; table.insert(Bees, b)
-        if hive then
-             hive:updateHoneyProduction()
-             hive.beeCount = hive.beeCount + 1
+        local closestHive = nil
+        for _, hive in pairs(Hives) do
+            if closestHive == nil then
+                closestHive = hive
+            else
+                if (x - hive.x) * (x - hive.x) + (y - hive.y) * (y - hive.y) < (x - closestHive.x) * (x - closestHive.x) + (y - closestHive.y) * (y - closestHive.y) then
+                    closestHive = hive
+                end
+            end
+        end
+
+        if closestHive then
+             closestHive:updateHoneyProduction()
+             local b = QueenBee(closestHive, x, y); table.insert(Bees, b)
+             closestHive.beeCount = closestHive.beeCount + 1
         end
     end
 }
@@ -254,7 +325,7 @@ function MainState:mousepressed(x, y, button)
     end
 
     if button == 1 then
-        self.player:attack()
+        player:attack()
     end
 end
 
@@ -283,11 +354,11 @@ function MainState:draw()
     end
 
     -- Draw enemies if they exist
-    if self.wasp then self.wasp:draw() end
-    if self.honeybadger then self.honeybadger:draw() end
+    if wasp then wasp:draw() end
+    if honeybadger then honeybadger:draw() end
 
     -- Draw the player
-    if self.player then self.player:draw() end
+    if player then player:draw() end
 
     -- Apply tint and draw HUD
     ApplyBGTint()

@@ -10,8 +10,12 @@ local design = require "UI/design"
 local modal  = require "UI/modal"
 
 -- ***** Import player info here *******
-local player = {money = 500, 
-                items = {shop.tools.basicSword}}
+local player = {
+    items =
+    {
+         shop.tools.basicSword
+    }
+}
 
 -- Setup
 local itemsPerPage = 3
@@ -76,7 +80,7 @@ function shopScreen:enter()
         local item = page[keys[i]]
         local y = displayY + (i - startIndex) * spacing
 
-        local buyButton = button:new("Buy - " .. item.price,
+        local buyButton = button:new(item.price .. " KSh",
             function()
                 BuyItem(item)
             end, 150, 50, 700, y + 30)
@@ -101,7 +105,7 @@ function shopScreen:draw()
     exitButton:draw(colors.red, smallFont, colors.black)
     love.graphics.setColor(0, 0, 0)
     love.graphics.setFont(smallFont)
-    love.graphics.print("Money: " .. tostring(player.money), 700, 10)
+    love.graphics.print("Money: " .. tostring(PlayerMoney) .. " KSh", 700, 10)
 
     -- Draw page tabs
     for i, tab in ipairs(tabButtons) do
@@ -148,7 +152,7 @@ function shopScreen:draw()
         love.graphics.setColor(0, 0, 0)
         love.graphics.rectangle("line", 220, y, 400, 100)
         love.graphics.setFont(XSfont)
-        love.graphics.printf(item.description, 230, y + 40, 340)
+        love.graphics.printf(item.description .. "\n\n" .. item.extra, 230, y+10, 340)
 
         -- Buy button
         buttons[i - startIndex + 1]:draw(colors.yellow, smallFont, colors.black)
@@ -193,11 +197,6 @@ function BuyItem(item)
             { label = "Continue", action = function() print("Closed") end }
         })
     end
-
-    -- check if player has enough money
-    -- Print error message if not enough money
-    -- change player money count
-    -- enter build mode
 end
 
 return shopScreen

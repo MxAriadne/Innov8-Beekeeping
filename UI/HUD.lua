@@ -42,7 +42,7 @@ end
 function HUD:draw()
     --draw money
     love.graphics.setColor(self.colors.money)
-    love.graphics.print("Money: $" .. PlayerMoney, 800, 60)
+    love.graphics.print("Money: " .. PlayerMoney .. " KSh ", 800, 60)
 
     --draw build mode if active
     if CurrentBuildMode then

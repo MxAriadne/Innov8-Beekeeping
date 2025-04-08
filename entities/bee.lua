@@ -2,11 +2,11 @@ local Pathfinding = require("libraries.pathfinding")
 
 Bee = Object:extend()
 
-function Bee:new()
+function Bee:new(home, x, y)
     --self.image = love.graphics.newImage("sprites/bee.png")
     self.animation = beeAnimation()
-    self.x = 275
-    self.y = 300
+    self.x = x
+    self.y = y
     self.scale = 1
     self.width = 40
     self.height = 40
@@ -15,6 +15,16 @@ function Bee:new()
     self.hasNectar = false
     self.visible = true
 
+    -- The hive closest to the Bee when placed is calculated and assigned.
+    -- This means the bee will always return nectar here.
+    self.homeHive = home or hive
+    -- The closest flower to the Bee is calculated on update based on the path they take.
+    self.closestFlower = flower
+    -- The last flower they harvested.
+    -- We keep this value so we can determine how much honey should be produced since flower type impacts rate.
+    self.lastFlower = nil
+
+    -- Class identifier
     self.is_bee = true
 
     --initalizing pathfinding
@@ -76,8 +86,8 @@ function Bee:updateState(dt)
     end
 
     --becoming defensive if there are threats near the hive
-    if self.state ~= "defending" and hive then
-        local distToHive = math.sqrt((self.x - hive.x)^2 + (self.y - hive.y)^2)
+    if self.state ~= "defending" and self.homeHive then
+        local distToHive = math.sqrt((self.x - self.homeHive.x)^2 + (self.y - self.homeHive.y)^2)
         if distToHive < self.hiveProtectionRange then
             local threat = self:findNearestThreat()
             if threat then
@@ -107,6 +117,7 @@ function Bee:updateState(dt)
 
     if self.state == "foraging" then
         if self:isAtFlower() then
+            self.lastFlower = self.closestFlower
             self.state = "collecting"
             self.nectarTimer = 0
             self.current_path = nil  --clearing path
@@ -127,8 +138,8 @@ function Bee:updateState(dt)
     elseif self.state == "returning" then
         if self:isAtHive() then
             --deposit nectar, default 1
-            if hive then
-                hive:depositNectar()
+            if self.homeHive then
+                self.homeHive:depositNectar(self.lastFlower)
             end
             self.hasNectar = false
             self.state = "foraging"
@@ -169,7 +180,7 @@ function Bee:updateState(dt)
 end
 
 function Bee:checkThreatLevel()
-    if not hive then return end
+    if not self.homeHive then return end
 
     --checking if hive is being attacked
     local threats = self:findThreats()
@@ -252,24 +263,24 @@ function Bee:attack(target)
 end
 
 function Bee:isAtFlower()
-    if not flower then return false end
-    local dist = math.sqrt((self.x - flower.x)^2 + (self.y - flower.y)^2)
+    if not self.closestFlower then return false end
+    local dist = math.sqrt((self.x - self.closestFlower.x)^2 + (self.y - self.closestFlower.y)^2)
     return dist < 5
 end
 
 function Bee:isAtHive()
-    if not hive then return false end
-    local dist = math.sqrt((self.x - hive.x)^2 + (self.y - hive.y)^2)
+    if not self.homeHive then return false end
+    local dist = math.sqrt((self.x - self.homeHive.x)^2 + (self.y - self.homeHive.y)^2)
 
     return dist < 5
 end
 
 --bee moves to hive when they are 'retreating' and they will despawn here/'die'
 function Bee:moveToHive(dt)
-    if not hive then return end
+    if not self.homeHive then return end
 
-    local dx = hive.x - self.x
-    local dy = (hive.y - 30) - self.y
+    local dx = self.homeHive.x - self.x
+    local dy = (self.homeHive.y - 30) - self.y
     local distance = math.sqrt(dx * dx + dy * dy)
 
     if distance > 2 then
@@ -282,9 +293,9 @@ function Bee:moveToHive(dt)
             --making the bee disappear
             self.visible = false
 
-            if hive and hive.beeCount then
+            if self.homeHive and self.homeHive.beeCount then
                 --beeCount can't be below 0
-                hive.beeCount = math.max(0, hive.beeCount - 1)
+                self.homeHive.beeCount = math.max(0, self.homeHive.beeCount - 1)
             end
         end
     end
@@ -292,20 +303,20 @@ end
 
 function Bee:followPath(dt)
     if not self.current_path then
-        if self.state == "foraging" and flower then
+        if self.state == "foraging" and self.closestFlower then
             --check if flower is in valid grid position
-            local flowerGridX = math.floor(flower.x / 23)
-            local flowerGridY = math.floor(flower.y / 22)
+            local flowerGridX = math.floor(self.closestFlower.x / 23)
+            local flowerGridY = math.floor(self.closestFlower.y / 22)
             if flowerGridX >= 1 and flowerGridX <= 42 and flowerGridY >= 1 and flowerGridY <= 30 then
-                self.current_path = self.pathfinding:findPathToFlower(self.x, self.y, flower.x, flower.y)
+                self.current_path = self.pathfinding:findPathToFlower(self.x, self.y, self.closestFlower.x, self.closestFlower.y)
                 self.current_path_index = 1
             else
                 return
             end
         elseif self.state == "returning" and hive then
             --check if hive is in valid grid position
-            local hiveGridX = math.floor(hive.x / 23)
-            local hiveGridY = math.floor(hive.y / 22)
+            local hiveGridX = math.floor(self.homeHive.x / 23)
+            local hiveGridY = math.floor(self.homeHive.y / 22)
             if hiveGridX >= 1 and hiveGridX <= 42 and hiveGridY >= 1 and hiveGridY <= 30 then
                 self.current_path = self.pathfinding:findPathToHive(self.x, self.y)
                 self.current_path_index = 1
@@ -318,11 +329,22 @@ function Bee:followPath(dt)
     end
 
     if self.current_path_index >= #self.current_path then
+        self.closestFlower = nil
+        for _, f in pairs(Flowers) do
+            if self.closestFlower == nil then
+                self.closestFlower = f
+            else
+                if (self.x - f.x) * (self.x - f.x) + (self.y - f.y) * (self.y - f.y) < (self.x - self.closestFlower.x) * (self.x - self.closestFlower.x) + (self.y - self.closestFlower.y) * (self.y - self.closestFlower.y) then
+                    self.closestFlower = f
+                end
+            end
+        end
+
         local finalX, finalY
-        if self.state == "foraging" and flower then
-            finalX, finalY = flower.x, flower.y
-        elseif self.state == "returning" and hive then
-            finalX, finalY = hive.x, hive.y
+        if self.state == "foraging" and self.closestFlower then
+            finalX, finalY = self.closestFlower.x, self.closestFlower.y
+        elseif self.state == "returning" and self.homeHive then
+            finalX, finalY = self.homeHive.x, self.homeHive.y
         else
             self.current_path = nil
             self.current_path_index = 1
@@ -361,6 +383,7 @@ function Bee:followPath(dt)
 
     local dx = target.x - self.x
     local dy = target.y - self.y
+
     local distance = math.sqrt(dx * dx + dy * dy)
 
     if distance > 2 then
@@ -391,10 +414,11 @@ function Bee:draw()
         elseif self.direction == "right" then row = 2 end
 
         local spriteNum = math.floor(self.animation.currentTime / self.animation.duration * 4) + 1 + row * 4
-        love.graphics.draw(self.animation.spritesheet, self.animation.quads[spriteNum], self.x-40, self.y-40, 0, 2)
+        love.graphics.draw(self.animation.spritesheet, self.animation.quads[spriteNum], self.x-48, self.y-48, 0, 2)
 
         --debug, drawing the bee's path
         if DebugMode then
+            -- Draw the bee's path
             if self.current_path then
                 love.graphics.setColor(0, 1, 0, 0.5)
                 for i = 1, #self.current_path - 1 do
@@ -404,16 +428,16 @@ function Bee:draw()
                 end
             end
 
-            --drawing threat detection range, a circle
-            if self.isAggressive then
-                love.graphics.setColor(1, 0, 0, 0.2)
-                love.graphics.circle("line", self.x, self.y, self.threatDetectionRange)
-            end
+            -- Draw the bee's hitbox
+            love.graphics.setColor(1, 0, 0, 0.3)
+            love.graphics.rectangle("fill", self.x - self.width / 2, self.y - self.height / 2, self.width, self.height)
 
-            --debug info
+            -- Draw the threat detection range
+            love.graphics.setColor(1, 1, 0, 0.2)
+            love.graphics.circle("fill", self.x, self.y, self.threatDetectionRange)
+
+            -- Reset color
             love.graphics.setColor(1, 1, 1, 1)
-            love.graphics.print(string.format(
-                "State: %s\nHealth: %d/%d\nHas Nectar: %s", self.state, self.health, self.maxHealth, tostring(self.hasNectar)), self.x - 30, self.y - 40)
         end
     end
 end
@@ -435,6 +459,10 @@ function Bee:takeDamage(damage, attacker)
     if self.health <= 2 and self.state ~= "retreating" then
         self.state = "retreating"
         self.target = nil
+    end
+
+    if self.health <= 0 then
+        self.visible = false
     end
 end
 

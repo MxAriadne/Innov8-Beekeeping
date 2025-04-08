@@ -79,26 +79,21 @@ function DaySky()
 
     --load stat message with variables
     local morningstats = {
-        text = string.format("Check out your stats: You have $%d.\nYour hive's health is at %d.\nYour hive's honey count is at %d. \nYour bee count is %d. \nYour sword is at %d strength. \nYour fences are at %d strength.", PlayerMoney, hive.health, hive.honey, #Bees, 0, 0),
+        text = string.format("Check out your stats: You have %d KSh.\nYour hive's health is at %d.\nYour hive's honey count is at %d. \nYour bee count is %d. \nYour sword is at %d strength. \nYour fences are at %d strength.", PlayerMoney, hive.health, hive.honey, #Bees, 0, 0),
         options = {} -- no choices, signals end of dialogue
     }
 
     modal:show("Dawn of Day " .. daysPassed .. "!", string.format(
-                                                        "You have %d money!\n" ..
-                                                        "Remember to press TAB to purchase new equipment!\n\n\n\n" ..
+                                                        "You have %d KSh!\n" ..
+                                                        "Remember to press TAB to purchase new equipment!\n\n\n" ..
+                                                        "Your bees produced " .. (TotalHoney - honeyTemp) .. " grams of honey today!\n\n\n" ..
                                                         "Check out your stats:\n\n" ..
-                                                        "%-25s %5s\n" ..
-                                                        "%-25s %5d\n" ..
-                                                        "%-25s %5d\n" ..
                                                         "%-25s %5d\n" ..
                                                         "%-25s %5d\n" ..
                                                         "%-25s %5d\n" ..
                                                         "%-25s %5d",
                                                         PlayerMoney,
-                                                        "Money:", PlayerMoney,
-                                                        "Hive Health:", hive.health,
                                                         "Honey Count:", TotalHoney,
-                                                        "Your bees produced ", (TotalHoney - honeyTemp),
                                                         "Bee Count:", #Bees,
                                                         "Sword Strength:", 0,
                                                         "Fence Strength:", 0

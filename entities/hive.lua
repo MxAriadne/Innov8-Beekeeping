@@ -22,6 +22,9 @@ function Hive:new()
     --taking damage effect
     self.flashTimer = 0
     self.flashDuration = 0.2
+
+    --collider data
+    self.collider = nil
 end
 
 function Hive:update(dt)
@@ -35,9 +38,21 @@ function Hive:update(dt)
             self.flashTimer = 0
         end
     end
+
+    if self.health <= 0 then
+        self.visible = false
+        if self.collider ~= nil then
+            self.collider:destroy()
+            self.collider = nil
+        end
+        table.remove(Hives, Hives[self])
+
+    end
+
 end
 
 function Hive:draw()
+    if not self.visible then return end
     --draw with damage flash effect if being damaged
     if self.flashTimer > 0 then
         love.graphics.setColor(1, 0.5, 0.5, 1)  --reddish tint
@@ -95,8 +110,8 @@ function Hive:updateHoneyProduction()
     end
 end
 
-function Hive:depositNectar()
-    self.honey = self.honey + (1 * (self.honeyProductionRate or 1.0))
+function Hive:depositNectar(flowerHarvested)
+    self.honey = self.honey + (flowerHarvested.modifier * (self.honeyProductionRate or 1.0))
     return false
 end
 

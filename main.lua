@@ -44,6 +44,10 @@ function love.load()
     require "entities.honeybadger"
     require "entities.player"
     require "entities.queenBee"
+    require "entities.langstrothhive"
+    require "entities.topbarhive"
+    require "entities.lantana"
+    require "entities.dewdrop"
 
     love.window.setMode(960, 640)
 
