@@ -1,42 +1,45 @@
+-- Config table, contains window related variables
+GameConfig = { windowW = 960, windowH = 640, filter = "nearest" }
+
+-- Game State Manager
+GameStateManager = require("libraries/gamestateManager")
+
+-- Object library
 Object = require "libraries.classic"
-local DayCycle = require("dayCycleScript")
-local Beehive = require("libraries/beehive")
-local Jumper = require("libraries/jumper")
 
 -- Globally declare the modal helper class so we can use it in any state.
 modal = require("UI/modal")
 
 -- Declare all states in main.
 -- THIS MUST BE DONE IN MAIN OR IT WILL CAUSE RECIPROICAL IMPORT ERROR.
-shopScreen = require "states/shopScreen"
+ShopScreen = require "states/ShopScreen"
 MainMenu = require "states/MainMenu"
 MainState = require "states/MainState"
 Settings = require "states/Settings"
 CharacterSelector = require "UI/CharacterSelector"
 
--- Game State Manager
-GameStateManager = require("libraries/gamestateManager")
-
-GameConfig = {}
-
--------------------------------------------------------
- -- Money system + cost config
- -------------------------------------------------------
-PlayerMoney = 100
-
--- global variables
+-- Total money the player has, starts out with 2000 KSh
+PlayerMoney = 2000
+-- Variable used to determine if day or night
 TintEnabled = false
+-- Variable used to determine if debug mode is on
 DebugMode = false
+-- This value is checked each state to determine if this is a new save or not
 FirstRun = true
+-- Timer for day/night cycle
 Timer = 0
-Interval = 30 -- how long user has each day/night before cycling
+-- Interval for day/night cycle
+Interval = 60
+-- Last trigger time for day/night cycle
 LastTrigger = 0
-PressSpaceAllowed = true --locking mechanism so you cannot skip attacks
+-- Locking mechanism to prevent skipping attacks
+PressSpaceAllowed = true
 
--- Current build mode: "hive", "bee", "flower", or nil
-CurrentBuildMode = nil
+-- Current build mode: "hive", "bee", "flower", or ""
+CurrentBuildMode = ""
 
 function love.load()
+    -- Load entities
     require "entities.bee"
     require "entities.flower"
     require "entities.hive"
@@ -49,14 +52,11 @@ function love.load()
     require "entities.lantana"
     require "entities.dewdrop"
 
-    love.window.setMode(960, 640)
+    -- Set default filter for graphics
+    love.graphics.setDefaultFilter(GameConfig.filter, GameConfig.filter)
+    love.window.setMode(GameConfig.windowW, GameConfig.windowH)
 
-    -- Update GameConfig after setting the window mode
-    GameConfig.windowW = love.graphics.getWidth()
-    GameConfig.windowH = love.graphics.getHeight()
-
-    love.graphics.setDefaultFilter("nearest", "nearest")
-
+    -- Set initial state
     GameStateManager:setState(MainMenu)
 end
 
@@ -76,11 +76,14 @@ function love.update(dt)
 end
 
 function love.draw()
+    -- Forward draw to current state
     GameStateManager:draw()
+    -- Draw modal
     modal:draw()
 end
 
 function love.mousepressed(x, y, b)
+    -- Forward mouse input to current state
     local current = GameStateManager:getState()
     if current and current.mousepressed then
         current:mousepressed(x, y, b)
@@ -89,14 +92,18 @@ function love.mousepressed(x, y, b)
 end
 
 function love.textinput(text)
-    if modal.active then return end -- block text input when modal is up
+    -- Block text input when modal is up
+    if modal.active then return end
+    -- Forward text input to current state
     if GameStateManager.currentState and GameStateManager.currentState.textinput then
         GameStateManager.currentState:textinput(text)
     end
 end
 
 function love.keypressed(k)
-    if modal.active then return end -- block text input when modal is up
+    -- Block key input when modal is up
+    if modal.active then return end
+    -- Forward key input to current state
     local current = GameStateManager:getState()
     if current and current.keypressed then
         current:keypressed(k)

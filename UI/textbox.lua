@@ -32,7 +32,7 @@ end
 
 function textbox:draw(font)
     -- Set font
-    font = font or smallFont
+    font = font or SmallFont
     love.graphics.setFont(font)
 
     -- Set background

@@ -1,6 +1,7 @@
 local Player = Object:extend()
 
 Spritesheet = {
+    "sprites/chars/char9.png",
     "sprites/chars/char8.png",
     "sprites/chars/char7.png",
     "sprites/chars/char6.png",
@@ -12,6 +13,7 @@ Spritesheet = {
 }
 
 AttackingSheet = {
+    "sprites/attacking/char9_sword.png",
     "sprites/attacking/char8_sword.png",
     "sprites/attacking/char7_sword.png",
     "sprites/attacking/char6_sword.png",
@@ -24,12 +26,25 @@ AttackingSheet = {
 
 function Player:new()
     --basic properties, formerly in MainState.lua
-    self.animations = {
-        idle = playerAnimation(love.graphics.newImage(Spritesheet[Character]), 32, 32, 0.5),
-        attack = playerAnimation(love.graphics.newImage(AttackingSheet[Character]), 32, 32, 0.7)
-    }
-    self.animation = self.animations.idle    self.direction = "still"
 
+    if Character == 1 then
+        self.scale = 1.25
+        self.width = 64
+        self.height = 64
+    else
+        self.scale = 3
+        self.width = 32
+        self.height = 32
+    end
+
+    self.animations = {
+        idle = playerAnimation(love.graphics.newImage(Spritesheet[Character]), self.width, self.height, 0.5),
+        attack = playerAnimation(love.graphics.newImage(AttackingSheet[Character]), self.width, self.height, 0.4)
+    }
+
+    self.animation = self.animations.idle    
+    self.direction = "still"
+    
     self.x = 480
     self.y = 320
     self.speed = 300
@@ -286,9 +301,9 @@ function Player:draw()
         if spriteNum > #self.animation.quads then
             spriteNum = #self.animation.quads  -- Use the last frame if out of bounds
         end
-        love.graphics.draw(self.animation.spritesheet, self.animation.quads[spriteNum], self.x - 48, self.y - 64, 0, 3)
+        love.graphics.draw(self.animation.spritesheet, self.animation.quads[spriteNum], self.x - 48, self.y - 64, 0, self.scale)
     else
-        love.graphics.draw(self.animation.spritesheet, self.animation.quads[1], self.x - 48, self.y - 64, 0, 3)
+        love.graphics.draw(self.animation.spritesheet, self.animation.quads[1], self.x - 48, self.y - 64, 0, self.scale)
     end
 
     --drawing damage effects

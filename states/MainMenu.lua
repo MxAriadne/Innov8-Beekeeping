@@ -39,7 +39,7 @@ function MainMenu:enter()
                         self.logoCanvas:getHeight() / self.logo:getHeight()) -- Draw image onto canvas
 
     love.graphics.setCanvas() -- Swtich back to screen
-    love.graphics.setColor(gameTitleColor)
+    love.graphics.setColor(GameTitleColor)
     self.honeycomb = love.graphics.newImage("sprites/honeycomb.png")
 
 end
@@ -47,7 +47,7 @@ end
 -- This function draws the created buttons on the screen
 function MainMenu:draw()
     -- Set background color
-    love.graphics.setBackgroundColor(menuBackgroundColor)
+    love.graphics.setBackgroundColor(MenuBackgroundColor)
 
     -- Draw title centered to top of window
     love.graphics.setColor(1, 1, 1)
@@ -60,7 +60,7 @@ function MainMenu:draw()
 
     -- Draw the buttons
     for _, button in ipairs(self.buttons) do
-        button:draw(colors.yellow, mediumFont, menuTextColor)
+        button:draw(colors.yellow, MediumFont, MenuTextColor)
     end
 end
 

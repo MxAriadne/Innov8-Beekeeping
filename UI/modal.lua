@@ -21,8 +21,8 @@ function modal:show(title, message, options, width, height)
         {label = "OK", action = function() modal:close() end}
     }
 
-    local startX = (love.graphics.getWidth() - (#options * 120 + (#options - 1) * 20)) / 2
-    local y = (love.graphics.getHeight() + self.height) / 2 - 60
+    local startX = (GameConfig.windowW - (#options * 120 + (#options - 1) * 20)) / 2
+    local y = (GameConfig.windowH + self.height) / 2 - 60
 
     for i, opt in ipairs(options) do
         local b = button:new(opt.label, function()
@@ -43,11 +43,11 @@ function modal:draw()
 
     -- Dim background
     love.graphics.setColor(0, 0, 0, 0.5)
-    love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+    love.graphics.rectangle("fill", 0, 0, GameConfig.windowW, GameConfig.windowH)
 
     -- Modal box
-    local x = (love.graphics.getWidth() - self.width) / 2
-    local y = (love.graphics.getHeight() - self.height) / 2
+    local x = (GameConfig.windowW - self.width) / 2
+    local y = (GameConfig.windowH - self.height) / 2
 
     love.graphics.setColor(1, 1, 1)
     love.graphics.rectangle("fill", x, y, self.width, self.height, 10, 10)

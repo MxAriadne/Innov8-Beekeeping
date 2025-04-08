@@ -18,18 +18,18 @@ margin = 10
 
 -- Fonts used on main menu screen
 XSfont = love.graphics.newFont(12) -- Font for item descriptions
-XSfont:setFilter("nearest", "nearest")
-smallFont = love.graphics.newFont(24) -- Font for text and notes
-smallFont:setFilter("nearest", "nearest")
-mediumFont = love.graphics.newFont(36) -- Font for button text
-mediumFont:setFilter("nearest", "nearest")
-largeFont = love.graphics.newFont(84) -- Font for game title
-largeFont:setFilter("nearest", "nearest")
+XSfont:setFilter(GameConfig.filter, GameConfig.filter)
+SmallFont = love.graphics.newFont(24) -- Font for text and notes
+SmallFont:setFilter(GameConfig.filter, GameConfig.filter)
+MediumFont = love.graphics.newFont(36) -- Font for button text
+MediumFont:setFilter(GameConfig.filter, GameConfig.filter)
+LargeFont = love.graphics.newFont(84) -- Font for game title
+LargeFont:setFilter(GameConfig.filter, GameConfig.filter)
 
 
 -- Main menu colors
-menuBackgroundColor = colors.tan
-gameTitleColor = colors.brown
-menuButtonColor = colors.yellow
-highlightedButtonColor = colors.darkYellow
-menuTextColor = colors.brown
+MenuBackgroundColor = colors.tan
+GameTitleColor = colors.brown
+MenuButtonColor = colors.yellow
+HighlightedButtonColor = colors.darkYellow
+MenuTextColor = colors.brown

@@ -71,15 +71,11 @@ function Wasp:new()
 end
 
 function Wasp:update(dt)
-    if waspGo then
+    if WaspGo then
         self.visible = true
         self:updateState(dt)
         self:updateCombat(dt)
         self:move(dt)
-    end
-    if self.x >= 987 then
-        self.visible = false
-        waspGo = false
     end
 end
 

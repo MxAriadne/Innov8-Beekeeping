@@ -66,7 +66,7 @@ function HoneyBadger:new()
 end
 
 function HoneyBadger:update(dt)
-    if badgerGo then
+    if BadgerGo then
         self.visible = true
         self:updateState(dt)
         self:updateCombat(dt)

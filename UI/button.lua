@@ -25,13 +25,13 @@ end
 function button:draw(buttonColor, font, textColor)
     -- Set design parameters or assign default values
     local buttonColor = buttonColor or colors.white
-    local font = font or mediumFont
+    local font = font or MediumFont
     local textColor = textColor or colors.black
 
     -- Highlight button when hovered
     local cursorX, cursorY = love.mouse.getPosition()
     if self:hovering(cursorX, cursorY) then
-        buttonColor = highlightedButtonColor or colors.yellow
+        buttonColor = HighlightedButtonColor or colors.yellow
     end
 
     -- Draw the button

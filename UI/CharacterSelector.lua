@@ -48,7 +48,7 @@ function CharacterSelector:enter()
         if Character < 0 then
             Character = 8
         end
-    end, 60, 60, 100, love.graphics.getHeight() / 2 - 30)
+    end, 60, 60, 100, GameConfig.windowH / 2 - 30)
 
     -- Create the right arrow button to go to the next character
     arrowRight = button:new(">", function()
@@ -57,13 +57,13 @@ function CharacterSelector:enter()
         if Character > 8 then
             Character = 0
         end
-    end, 60, 60, love.graphics.getWidth() - 160, love.graphics.getHeight() / 2 - 30)
+    end, 60, 60, GameConfig.windowW - 160, GameConfig.windowH / 2 - 30)
 
     -- Create a continue button to proceed to the main game state
     continueButton = button:new("Continue", function()
         GameStateManager:setState(MainState)
         FirstRun = false
-    end, 150, 50, love.graphics.getWidth() / 2 - 75, love.graphics.getHeight() - 100)
+    end, 150, 50, GameConfig.windowW / 2 - 75, GameConfig.windowH - 100)
 end
 
 function CharacterSelector:draw()
@@ -74,11 +74,11 @@ function CharacterSelector:draw()
     -- Display prompt to enter player's name
     --love.graphics.setFont(love.graphics.newFont(18))
     love.graphics.setColor(0, 0, 0)  -- Set text color to black
-    love.graphics.print("Enter your name:", love.graphics.getWidth() / 2 - 100, 30)
+    love.graphics.print("Enter your name:", GameConfig.windowW / 2 - 100, 30)
 
     -- Draw text input box
-    love.graphics.rectangle("line", love.graphics.getWidth() / 2 - 100, 60, 200, 30)
-    love.graphics.print(textInput, love.graphics.getWidth() / 2 - 95, 65)
+    love.graphics.rectangle("line", GameConfig.windowW / 2 - 100, 60, 200, 30)
+    love.graphics.print(textInput, GameConfig.windowW / 2 - 95, 65)
 
     -- Draw the continue button
     continueButton:draw(colors.yellow, love.graphics.newFont(24), {0, 0, 0})
@@ -90,8 +90,8 @@ function CharacterSelector:draw()
     local quad = quads[currentIndex]
     if quad then
         local scale = 4
-        local x = (love.graphics.getWidth() - 64 * scale) / 2
-        local y = (love.graphics.getHeight() - 64 * scale) / 2
+        local x = (GameConfig.windowW - 64 * scale) / 2
+        local y = (GameConfig.windowH - 64 * scale) / 2
         love.graphics.draw(image, quad, x, y, 0, scale, scale)
     end
 end
@@ -123,7 +123,7 @@ function CharacterSelector:mousepressed(x, y, b)
     continueButton:mousepressed(x, y, b)
 
     -- Detect if the name input box was clicked
-    if x >= love.graphics.getWidth() / 2 - 100 and x <= love.graphics.getWidth() / 2 + 100 and y >= 60 and y <= 90 then
+    if x >= GameConfig.windowW / 2 - 100 and x <= GameConfig.windowW / 2 + 100 and y >= 60 and y <= 90 then
         nameInputActive = true  -- Activate text input
     else
         nameInputActive = false  -- Deactivate text input if clicked outside

@@ -19,27 +19,29 @@
     update everything
 ]]
 
+local DayCycle = {}
+
 local d = require("dialogs")
 local tips = require("tips")
 
-daysPassed = 0.0;
-bgTint = {0.1, 0, .2} -- tint for background(r, g, b)
+local daysPassed = 0.0;
+local bgTint = {0.1, 0, .2} -- tint for background(r, g, b)
 
 -- days for attacks
-waspDay = 1 --5
-waspGo = false
-badgerDay = 3 --10
-badgerGo = false
+local waspDay = 1 --5
+WaspGo = false
+BadgerDay = 3 --10
+BadgerGo = false
 
 --this function changes the day counter
 --after user is done updating their hive for the day
-function AdvanceDay()
+function DayCycle:AdvanceDay()
     daysPassed = daysPassed + 0.5
 end
 
 --method to change to night
-function NightSky()
-    honeyTemp = TotalHoney
+function DayCycle:NightSky()
+    HoneyTemp = TotalHoney
 
     -- lock space
     PressSpaceAllowed = false
@@ -59,12 +61,12 @@ function NightSky()
     DialogManager:show(d.goodnight) -- stores dialog
 
     -- tigger nightly updates
-    TriggerUpdates()
+    self:TriggerUpdates()
 
 end
 
 --method to change to day
-function DaySky()
+function DayCycle:DaySky()
     -- lock space
     PressSpaceAllowed = false
 
@@ -86,7 +88,7 @@ function DaySky()
     modal:show("Dawn of Day " .. daysPassed .. "!", string.format(
                                                         "You have %d KSh!\n" ..
                                                         "Remember to press TAB to purchase new equipment!\n\n\n" ..
-                                                        "Your bees produced " .. (TotalHoney - honeyTemp) .. " grams of honey today!\n\n\n" ..
+                                                        "Your bees produced " .. (TotalHoney - HoneyTemp) .. " grams of honey today!\n\n\n" ..
                                                         "Check out your stats:\n\n" ..
                                                         "%-25s %5d\n" ..
                                                         "%-25s %5d\n" ..
@@ -113,13 +115,13 @@ function DaySky()
     --shop populates
 
     -- tigger nightly updates
-    TriggerUpdates()
+    self:TriggerUpdates()
 
 
 end
 
 --method to update things throughout the night
-function TriggerUpdates(dt)
+function DayCycle:TriggerUpdates(dt)
 
     --check for attack
     if daysPassed == waspDay then
@@ -127,7 +129,7 @@ function TriggerUpdates(dt)
         DialogManager:push(d.waspmessage)
 
 
-    elseif daysPassed == badgerDay+0.5 then
+    elseif daysPassed == BadgerDay+0.5 then
 
         DialogManager:push(d.badgermessage)
 
@@ -139,7 +141,7 @@ function TriggerUpdates(dt)
 end
 
 -- applys a tint over everything using a transparent rectangle
-function ApplyBGTint()
+function DayCycle:ApplyBGTint()
     if not TintEnabled then return end -- If tint is disabled, do nothing
 
     love.graphics.setColor(bgTint[1], bgTint[2], bgTint[3], 0.5) -- Add semi-transparent tint
@@ -154,3 +156,5 @@ function ApplyBGTint()
     love.graphics.setBlendMode("alpha")
     love.graphics.setColor(1, 1, 1, 1)
 end
+
+return DayCycle

@@ -7,13 +7,11 @@ local sti = require 'libraries/sti'
 local wf = require 'libraries/windfield'
 local HUD = require "UI/HUD"
 local Dialove = require("libraries/Dialove.dialove")
-local DayCycle = require("dayCycleScript")
-local Beehive = require("libraries/beehive")
-local Jumper = require("libraries/jumper")
 local dialogs = require("dialogs")
 local Player = require "entities.player"
 local SaveManager = require "save_manager"
 local game_Data = require "game_data"
+local DayCycle = require("dayCycleScript")
 
 -- Initial setup
 function MainState:enter()
@@ -34,8 +32,8 @@ function MainState:enter()
 
     -- Assign instances to globals for other modules to access
     hive = Hive()
-    bee = Bee(hive, 275, 300)
     flower = Flower()
+    bee = Bee(hive, 275, 300)
     honeybadger = HoneyBadger()
     wasp = Wasp()
     player = Player()
@@ -101,9 +99,9 @@ function MainState:enter()
     player.collider:setCollisionClass('Player')
 
     -- Create colliders for each wall tile
-    walls = {}
+    local walls = {}
     if Map.layers["Walls"] then
-        for i, obj in pairs(Map.layers["Walls"].objects) do
+        for _, obj in pairs(Map.layers["Walls"].objects) do
             local wall = World:newRectangleCollider(obj.x*2, obj.y*2, obj.width*2, obj.height*2)
             wall:setType('static')
             wall:setCollisionClass('Wall')
@@ -149,10 +147,13 @@ function MainState:update(dt)
         b:update(dt)
     end
 
+    if wasp then wasp:update(dt) end
+    if honeybadger then honeybadger:update(dt) end
+
     -- Press escape to save and quit
     if love.keyboard.isDown("escape") then
         Music:stop()
-        SaveManager.save(game_Data.gameData)
+        SaveManager.save()
         GameStateManager:setState(MainMenu)
     end
 
@@ -170,12 +171,12 @@ end
 function MainState:keypressed(k)
     if k == "space" then
         -- Toggle day/night
-        AdvanceDay()
+        DayCycle:AdvanceDay()
         if not TintEnabled then
-            NightSky()
+            DayCycle:NightSky()
             TintEnabled = true
         else
-            DaySky()
+            DayCycle:DaySky()
             TintEnabled = false
         end
     elseif k == 'return' then
@@ -201,7 +202,7 @@ function MainState:keypressed(k)
     elseif k == "tab" then
         Music:stop()
         -- Open shop screen
-        GameStateManager:setState(shopScreen)
+        GameStateManager:setState(ShopScreen)
     end
 end
 
@@ -321,7 +322,7 @@ BuildOptions = {
 function MainState:mousepressed(x, y, button)
     if button == 2 and BuildOptions[CurrentBuildMode] then  -- Right click
         BuildOptions[CurrentBuildMode](x, y)
-        CurrentBuildMode = nil
+        CurrentBuildMode = ""
     end
 
     if button == 1 then
@@ -361,18 +362,18 @@ function MainState:draw()
     if player then player:draw() end
 
     -- Apply tint and draw HUD
-    ApplyBGTint()
+    DayCycle:ApplyBGTint()
     HUD:draw()
     DialogManager:draw()
 end
 
 -- Functions to activate enemies via triggers
 function TrigB()
-    badgerGo = true
+    BadgerGo = true
 end
 
 function TrigW()
-    waspGo = true
+    WaspGo = true
 end
 
 -- Return the state
