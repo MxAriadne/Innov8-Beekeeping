@@ -19,104 +19,130 @@
     update everything
 ]]
 
-local d = require("dialogs")
+local DayCycle = {}
 
-daysPassed = 0.0;
-bgTint = {0.1, 0, .2} -- tint for background(r, g, b)
+local d = require("dialogs")
+local tips = require("tips")
+
+local daysPassed = 0.0;
+local bgTint = {0.1, 0, .2} -- tint for background(r, g, b)
 
 -- days for attacks
-waspDay = 1 --5
-waspGo = false
-badgerDay = 3 --10
-badgerGo = false
+local waspDay = 1 --5
+WaspGo = false
+BadgerDay = 3 --10
+BadgerGo = false
 
 --this function changes the day counter
 --after user is done updating their hive for the day
-function AdvanceDay()
+function DayCycle:AdvanceDay()
     daysPassed = daysPassed + 0.5
-
-
 end
 
 --method to change to night
-function NightSky()
+function DayCycle:NightSky()
+    HoneyTemp = TotalHoney
+
     -- lock space
-    pressSpaceAllowed = false
+    PressSpaceAllowed = false
     print("before update")
-    print(pressSpaceAllowed)
+    print(PressSpaceAllowed)
 
     -- update timer
     Timer = 0;
 
     -- pop any old messages
-    dialogManager:clearDialogs()
+    DialogManager:clearDialogs()
 
     --stop shop keys functionality?
 
     -- Show a night message using Dialove
     -- Push the night message to the dialog manager
-    dialogManager:show(d.goodnight) -- stores dialog
+    DialogManager:show(d.goodnight) -- stores dialog
 
     -- tigger nightly updates
-    TriggerUpdates()
-
-    
+    self:TriggerUpdates()
 
 end
 
 --method to change to day
-function DaySky()
+function DayCycle:DaySky()
     -- lock space
-    pressSpaceAllowed = false
+    PressSpaceAllowed = false
 
     -- update timer
     Timer = 0;
-    
+
     -- pop any old messages
-    dialogManager:clearDialogs()
+    DialogManager:clearDialogs()
 
     --day message
-    dialogManager:show(d.goodmorning) -- stores dialog
+    DialogManager:show(d.goodmorning) -- stores dialog
 
     --load stat message with variables
     local morningstats = {
-        text = string.format("Check out your stats: You have $%d.\nYour hive's health is at %d.\nYour hive's honey count is at %d. \nYour bee count is %d. \nYour sword is at %d strength. \nYour fences are at %d strength.", PlayerMoney, hive.health, hive.honey, #bees, 0, 0),
+        text = string.format("Check out your stats: You have %d KSh.\nYour hive's health is at %d.\nYour hive's honey count is at %d. \nYour bee count is %d. \nYour sword is at %d strength. \nYour fences are at %d strength.", PlayerMoney, hive.health, hive.honey, #Bees, 0, 0),
         options = {} -- no choices, signals end of dialogue
     }
+
+    modal:show("Dawn of Day " .. daysPassed .. "!", string.format(
+                                                        "You have %d KSh!\n" ..
+                                                        "Remember to press TAB to purchase new equipment!\n\n\n" ..
+                                                        "Your bees produced " .. (TotalHoney - HoneyTemp) .. " grams of honey today!\n\n\n" ..
+                                                        "Check out your stats:\n\n" ..
+                                                        "%-25s %5d\n" ..
+                                                        "%-25s %5d\n" ..
+                                                        "%-25s %5d\n" ..
+                                                        "%-25s %5d",
+                                                        PlayerMoney,
+                                                        "Honey Count:", TotalHoney,
+                                                        "Bee Count:", #Bees,
+                                                        "Sword Strength:", 0,
+                                                        "Fence Strength:", 0
+                                                    ) .. "\n\n\n" .. tips[math.random(1, #tips)],
+    {
+        {
+            label = "Continue", action =
+            function()
+                modal:close()
+            end
+        }
+    }, 512, 512)
+
     --send update message
-    dialogManager:push(morningstats)
+    --DialogManager:push(morningstats)
 
     --shop populates
 
     -- tigger nightly updates
-    TriggerUpdates()
+    self:TriggerUpdates()
 
-    
+
 end
 
 --method to update things throughout the night
-function TriggerUpdates(dt)
+function DayCycle:TriggerUpdates(dt)
 
     --check for attack
     if daysPassed == waspDay then
-        
-        dialogManager:push(d.waspmessage)
-       
+        TintEnabled = true
+        DialogManager:push(d.waspmessage)
 
-    elseif daysPassed == badgerDay+0.5 then
 
-        dialogManager:push(d.badgermessage)
+    elseif daysPassed == BadgerDay+0.5 then
+
+        DialogManager:push(d.badgermessage)
 
     else
-        pressSpaceAllowed = true
+        PressSpaceAllowed = true
     end
 
 
 end
 
 -- applys a tint over everything using a transparent rectangle
-function ApplyBGTint()
-    if not tintEnabled then return end -- If tint is disabled, do nothing
+function DayCycle:ApplyBGTint()
+    if not TintEnabled then return end -- If tint is disabled, do nothing
 
     love.graphics.setColor(bgTint[1], bgTint[2], bgTint[3], 0.5) -- Add semi-transparent tint
 
@@ -130,3 +156,5 @@ function ApplyBGTint()
     love.graphics.setBlendMode("alpha")
     love.graphics.setColor(1, 1, 1, 1)
 end
+
+return DayCycle

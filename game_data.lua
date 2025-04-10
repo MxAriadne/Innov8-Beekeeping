@@ -11,6 +11,7 @@ local PlayerMoney = 100  -- Example value
 local bees = {}  -- Example empty table, replace with actual data
 local waspGo = false  -- Example value
 local badgerGo = false  -- Example value
+local PlayerName = ""
 
 local gameData = {
     -- day number

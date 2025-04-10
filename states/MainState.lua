@@ -1,304 +1,380 @@
+-- Create the MainState table to act as the game state object
 local MainState = {}
 
---libraries import from libraries folder
-Object = require("classic")
+-- Importing external libraries and modules used in the game
+Object = require("libraries.classic")
 local sti = require 'libraries/sti'
 local wf = require 'libraries/windfield'
 local HUD = require "UI/HUD"
 local Dialove = require("libraries/Dialove.dialove")
-local DayCycle = require("dayCycleScript")
-local Beehive = require("libraries/beehive")
-local Jumper = require("libraries/jumper")
 local dialogs = require("dialogs")
-local Player = require "player"
+local Player = require "entities.player"
 local SaveManager = require "save_manager"
 local game_Data = require "game_data"
+local DayCycle = require("dayCycleScript")
 
+-- Initial setup
 function MainState:enter()
-    --base size for the game right now
-    --will put everything into variables later so it can be more easily resized
-    map = sti('maps/TilesForBeekeepingGameTopBoundaries.lua')
+
+    -- Load the tilemap
+    Map = sti('maps/TilesForBeekeepingGameTopBoundaries.lua')
+
+    -- Set game window resolution
     love.window.setMode(960, 640)
 
-    world = wf.newWorld()
+    -- Load music
+    Music = love.audio.newSource("tunes/Flowers.mp3", "stream")
 
-    --defining collision classes
-    world:addCollisionClass('Player')
-    world:addCollisionClass('Wall')
-    world:addCollisionClass('PlayerAttack')
-    world:addCollisionClass('Enemy')
-    world:addCollisionClass('Hive')
-
-
-    --table for flowers
-    flowers = {flower}
-    money = 0
-
-    music = love.audio.newSource("tunes/Flowers.mp3", "stream")
-    music:setVolume(0.3)
-    music:setLooping(true)  --music loop
-    music:play()  --playing the music
-
-    --dialog library initilization
-    dialogManager = Dialove.init({
+    -- Initialize dialog system
+    DialogManager = Dialove.init({
         font = love.graphics.newFont('libraries/fonts/comic-neue/ComicNeue-Bold.ttf', 16)
     })
 
-    --setup tutorial dialogue at beginning of game.
-    dialogManager:show(dialogs.startupM);
+    -- Assign instances to globals for other modules to access
+    hive = Hive()
+    flower = Flower()
+    bee = Bee(hive, 275, 300)
+    honeybadger = HoneyBadger()
+    wasp = Wasp()
+    player = Player()
 
-    -- Load HUD overlay
+    -- Ensure entity tables exist before inserting
+    if not Hives then Hives = {} end
+    if not Bees then Bees = {} end
+    if not Flowers then Flowers = {} end
+
+    -- Initialize everything if this is the first time opening the state.
+    -- This stops everything from doubling when reverting state from menus.
+    if FirstRun then
+        World = wf.newWorld()
+        -- Define collision categories
+        World:addCollisionClass('Player')
+        World:addCollisionClass('Wall')
+        World:addCollisionClass('PlayerAttack')
+        World:addCollisionClass('Enemy')
+        World:addCollisionClass('Hive')
+
+        -- Create a collider for the first hive
+        local wall = World:newRectangleCollider(
+            hive.x - hive.width/2,
+            hive.y - hive.height/2,
+            hive.width,
+            hive.height
+        )
+
+        wall:setType('static')
+        wall:setCollisionClass('Hive')
+
+        hive.collider = wall
+
+        -- Load and play background music
+        Music:setVolume(0.3)
+        Music:setLooping(true)
+        Music:play()
+
+        -- Start tutorial dialog
+        DialogManager:show(dialogs.startupM)
+
+        -- Init honey total
+        TotalHoney = 0
+
+        -- Add created entities to their respective tables
+        table.insert(Hives, hive)
+        table.insert(Bees, bee)
+        table.insert(Flowers, flower)
+    else
+        Music:stop()
+        Music:setVolume(0.3)
+        Music:setLooping(true)
+        Music:play()
+    end
+
+    -- Load HUD
     HUD:load()
 
-    --player instance and global reference
-    self.player = Player()
-    player = self.player
+    -- Set up player collider
+    player.collider = World:newBSGRectangleCollider(480, 340, 20, 20, 14)
+    player.collider:setFixedRotation(true)
+    player.collider:setObject(player)
+    player.collider:setCollisionClass('Player')
 
-    --player collider configuration
-    self.player.collider = world:newBSGRectangleCollider(480, 340, 20, 20, 14)
-    self.player.collider:setFixedRotation(true)
-    self.player.collider:setObject(self.player)
-    self.player.collider:setCollisionClass('Player')
-
-    --auto-getting and making the colliders from the objects created in Tiled
-    walls = {}
-    if map.layers["Walls"] then
-        for i, obj in pairs(map.layers["Walls"].objects) do
-            local wall = world:newRectangleCollider(obj.x*2, obj.y*2, obj.width*2, obj.height*2)
+    -- Create colliders for each wall tile
+    local walls = {}
+    if Map.layers["Walls"] then
+        for _, obj in pairs(Map.layers["Walls"].objects) do
+            local wall = World:newRectangleCollider(obj.x*2, obj.y*2, obj.width*2, obj.height*2)
             wall:setType('static')
             wall:setCollisionClass('Wall')
             table.insert(walls, wall)
         end
     end
+end
 
-    --initializing entity tables if they don't exist
-    if not hives then hives = {} end
-    if not bees then bees = {} end
-    if not flowers then flowers = {} end
-
-    --creating the entities instance variables for initial game state
-    self.hive = Hive()
-    self.bee = Bee()
-    self.flower = Flower()
-    self.honeybadger = HoneyBadger()
-    self.wasp = Wasp()
-
-    --making the hive collider using values in hive.lua instead of hardcoding
-    local wall = world:newRectangleCollider(self.hive.x - self.hive.width/2, self.hive.y - self.hive.height/2, self.hive.width, self.hive.height)
-    wall:setType('static')
-    wall:setCollisionClass('Hive')
-
-    --assigning the instances to global variables for accessibility
-    hive = self.hive
-    bee = self.bee
-    flower = self.flower
-    honeybadger = self.honeybadger
-    wasp = self.wasp
-
-    --adding the initial entities to their arrays
-    table.insert(hives, self.hive)
-    table.insert(bees, self.bee)
-    table.insert(flowers, self.flower)
+function round(num, numDecimalPlaces)
+  return tonumber(string.format("%." .. (numDecimalPlaces or 0) .. "f", num))
 end
 
 function MainState:update(dt)
-    dialogManager:update(dt) -- update dia system
-    world:update(dt) --player movement with colliders
+    DialogManager:update(dt)
+    World:update(dt)
 
-    --update player
-    if self.player then
-        self.player:update(dt)
+    -- Update player if init worked
+    if player then player:update(dt) end
 
-        if love.mouse.isDown(1) then  --left click to attack
-            self.player:attack()
-
+    -- Update all hives
+    local sum = 0
+    for _, h in ipairs(Hives) do
+        h:update(dt)
+        if not h.visible then
+            h = nil
         end
     end
 
-    --update enemy entities
-    if self.wasp then self.wasp:update(dt) end
-    if self.honeybadger then self.honeybadger:update(dt) end
-
-    --update all hives, bees, and flowers
-    for _, h in ipairs(hives) do
-        h:update(dt)
-    end
-
-    for _, f in ipairs(flowers) do
+    -- Update all flowers
+    for _, f in ipairs(Flowers) do
         if f.update then
             f:update(dt)
         end
+
+        if not f.visible then
+            f = nil
+        end
+
     end
 
-    for _, b in ipairs(bees) do
+    -- Update all bees
+    for _, b in ipairs(Bees) do
         b:update(dt)
     end
 
+    if wasp then wasp:update(dt) end
+    if honeybadger then honeybadger:update(dt) end
+
+    -- Press escape to save and quit
     if love.keyboard.isDown("escape") then
-        music:stop()
-        SaveManager.save(game_Data.gameData) -- save game
-        GameStateManager:revertState()
+        Music:stop()
+        SaveManager.save()
+        GameStateManager:setState(MainMenu)
     end
 
-    --updating the entities (making them move) IF they exist
-    if self.wasp then self.wasp:update(dt) end
-    if self.bee then self.bee:update(dt) end
-    if self.honeybadger then self.honeybadger:update(dt) end
-
+    --converts honey to money
+    for _, h in ipairs(Hives) do
+        if h.honey > 0 then
+            TotalHoney = round(TotalHoney + h.honey, 2)
+            PlayerMoney = round(PlayerMoney + h.honey, 2)
+            h.honey = 0
+        end
+    end
 end
 
-function love.keypressed(k)
-    -- Handle spacebar for day cycle
-    if k == "space" and pressSpaceAllowed then
-        AdvanceDay()  -- Call the trigger updates function from dayCycleScript.lua
-        if tintEnabled == false then --tintEnabled
-            NightSky()
-            tintEnabled = true
+-- Called when a key is pressed
+function MainState:keypressed(k)
+    if k == "space" then
+        -- Toggle day/night
+        DayCycle:AdvanceDay()
+        if not TintEnabled then
+            DayCycle:NightSky()
+            TintEnabled = true
         else
-            DaySky()
-            tintEnabled = false
+            DayCycle:DaySky()
+            TintEnabled = false
         end
-
-    -- Handle dialog flow controls
     elseif k == 'return' then
-    -- exit dialogue box
-        dialogManager:pop()
-        --dialogManager.queue = {} -- Force empty
+        -- Close dialogue box
+        DialogManager:pop()
     elseif k == 'c' then
-        dialogManager:complete()
-    -- elseif k == 'f' then
-    --     dialogManager:faster()
+        -- Complete dialogue instantly
+        DialogManager:complete()
     elseif k == 'b' then
-        dialogManager:changeOption(1)
+        -- Next dialogue option
+        DialogManager:changeOption(1)
     elseif k == 'n' then
-        dialogManager:changeOption(-1) -- previous one
-        --pathfinding debug toggle
-    --f key to build hive
-    elseif k == "f" then
-        if PlayerMoney >= HiveCost then
-            PlayerMoney = PlayerMoney - HiveCost
-            CurrentBuildMode = "hive"
-            print("You purchased a hive blueprint. Right-click to place!")
-        else
-            print("Not enough money for a hive!")
-        end
-
-    --g key to build bee
-    elseif k == "g" then
-        if PlayerMoney >= BeeCost then
-            PlayerMoney = PlayerMoney - BeeCost
-            CurrentBuildMode = "bee"
-            print("You purchased a bee. Right-click to place!")
-        else
-            print("Not enough money for a bee!")
-        end
-    --h key to build flower
-    elseif k == "h" then
-        if PlayerMoney >= FlowerCost then
-            PlayerMoney = PlayerMoney - FlowerCost
-            CurrentBuildMode = "flower"
-            print("You purchased a flower seed. Right-click to plant!")
-        else
-            print("Not enough money for a flower!")
-        end
-
-    elseif (k == "e") then
+        -- Previous dialogue option
+        DialogManager:changeOption(-1)
+    elseif k == "e" then
+        -- Debug money cheat
         PlayerMoney = PlayerMoney + 5
         print(PlayerMoney)
-
-    elseif (k == "`") then
-        --toggle debug mode
-        debugMode = not debugMode
-        print("Debug mode: " .. (debugMode and "ON" or "OFF"))
-    --[[
-    elseif k == "p" then
-        SaveManager.save(gameData)
-        
-    elseif k == "l" then
-        local loadedData = SaveManager.load()
-        if loadedData then
-            gameData = loadedData
-        end
-    ]]
+    elseif k == "`" then
+        -- Toggle debug mode
+        DebugMode = not DebugMode
+        print("Debug mode: " .. (DebugMode and "ON" or "OFF"))
+    elseif k == "tab" then
+        Music:stop()
+        -- Open shop screen
+        GameStateManager:setState(ShopScreen)
     end
 end
 
-function love.keyreleased(k)
+-- Called when a key is released
+function MainState:keyreleased(k)
     print("State Key released:", k)
 
+    -- Pass key release to player
     player:keyreleased(k)
-    -- Handle spacebar to adjust dialog speed
+
+    -- Dialogue slowdown
     if k == 's' then
-        dialogManager:slower()
+        DialogManager:slower()
     end
 end
 
--- build mode, right click
-function love.mousepressed(x, y, button)
-    if button == 2 then
-        if CurrentBuildMode == "hive" then
-            local newHive = Hive()
-            newHive.x, newHive.y = x, y
-            table.insert(hives, newHive)
-            hive = newHive
-            print("Placed a new hive at (" .. x .. ", " .. y .. ")")
-        elseif CurrentBuildMode == "bee" then
-            local newBee = Bee()
-            newBee.x, newBee.y = x, y
-            table.insert(bees, newBee)
-            bee = newBee
-            print("Placed a new bee at (" .. x .. ", " .. y .. ")")
-        elseif CurrentBuildMode == "flower" then
-            local newFlower = Flower()
-            newFlower.x, newFlower.y = x, y
-            table.insert(flowers, newFlower)
-            flower = newFlower
-            print("Placed a new flower at (" .. x .. ", " .. y .. ")")
+BuildOptions = {
+    LangstrothHive = function(x, y)
+        local h = LangstrothHive(); h.x = x; h.y = y;
+        -- Create a collider for the hive
+        local wall = World:newRectangleCollider(
+            h.x - h.width/2,
+            h.y - h.height/2,
+            h.width,
+            h.height
+        )
+
+        wall:setType('static')
+        wall:setCollisionClass('Hive')
+
+        h.collider = wall
+
+        table.insert(Hives, h)
+    end,
+    LogHive = function(x, y)
+        local h = Hive(); h.x = x; h.y = y;
+        -- Create a collider for the hive
+        local wall = World:newRectangleCollider(
+            h.x - h.width/2,
+            h.y - h.height/2,
+            h.width,
+            h.height
+        )
+
+        wall:setType('static')
+        wall:setCollisionClass('Hive')
+
+        h.collider = wall
+
+        table.insert(Hives, h)
+    end,
+    TopBarHive = function(x, y)
+        local h = TopBarHive(); h.x = x; h.y = y;
+        -- Create a collider for the hive
+        local wall = World:newRectangleCollider(
+            h.x - h.width/2,
+            h.y - h.height/2,
+            h.width,
+            h.height
+        )
+
+        wall:setType('static')
+        wall:setCollisionClass('Hive')
+
+        h.collider = wall
+
+        table.insert(Hives, h)
+    end,
+    Orchid = function(x, y)
+        local f = Flower(); f.x = x; f.y = y; table.insert(Flowers, f)
+    end,
+    GoldenDewdrops = function(x, y)
+        local f = GoldenDewdrops(); f.x = x; f.y = y; table.insert(Flowers, f)
+    end,
+    CommonLantana = function(x, y)
+        local f = CommonLantana(); f.x = x; f.y = y; table.insert(Flowers, f)
+    end,
+    Bee = function(x, y)
+        local closestHive = nil
+        for _, hive in pairs(Hives) do
+            if closestHive == nil then
+                closestHive = hive
+            else
+                if (x - hive.x) * (x - hive.x) + (y - hive.y) * (y - hive.y) < (x - closestHive.x) * (x - closestHive.x) + (y - closestHive.y) * (y - closestHive.y) then
+                    closestHive = hive
+                end
+            end
         end
-        CurrentBuildMode = nil
+
+        if closestHive then
+             closestHive:updateHoneyProduction()
+             local b = Bee(closestHive, x, y); table.insert(Bees, b)
+             closestHive.beeCount = closestHive.beeCount + 1
+        end
+    end,
+    QueenBee = function(x, y)
+        local closestHive = nil
+        for _, hive in pairs(Hives) do
+            if closestHive == nil then
+                closestHive = hive
+            else
+                if (x - hive.x) * (x - hive.x) + (y - hive.y) * (y - hive.y) < (x - closestHive.x) * (x - closestHive.x) + (y - closestHive.y) * (y - closestHive.y) then
+                    closestHive = hive
+                end
+            end
+        end
+
+        if closestHive then
+             closestHive:updateHoneyProduction()
+             local b = QueenBee(closestHive, x, y); table.insert(Bees, b)
+             closestHive.beeCount = closestHive.beeCount + 1
+        end
+    end
+}
+
+-- Called when mouse is clicked
+function MainState:mousepressed(x, y, button)
+    if button == 2 and BuildOptions[CurrentBuildMode] then  -- Right click
+        BuildOptions[CurrentBuildMode](x, y)
+        CurrentBuildMode = ""
+    end
+
+    if button == 1 then
+        player:attack()
     end
 end
 
+-- Called every frame to draw the screen
 function MainState:draw()
+    -- Set background and drawing color
     love.graphics.setBackgroundColor(1, 1, 1, 1)
     love.graphics.setColor(1, 1, 1, 1)
 
-    map:draw(0, 0, 2, 2)
+    -- Draw the tile map
+    Map:draw(0, 0, 2, 2)
 
-    --drawing the entities if they exist
-    --draw all hives, bees, and flowers
-    for _, h in ipairs(hives) do
+    -- Draw hives
+    for _, h in ipairs(Hives) do
         h:draw()
     end
 
-    for _, b in ipairs(bees) do
+    -- Draw bees
+    for _, b in ipairs(Bees) do
         b:draw()
     end
 
-    for _, f in ipairs(flowers) do
+    -- Draw flowers
+    for _, f in ipairs(Flowers) do
         f:draw()
     end
 
-    --drawing the special entities
-    if self.wasp then self.wasp:draw() end
-    if self.honeybadger then self.honeybadger:draw() end
+    -- Draw enemies if they exist
+    if wasp then wasp:draw() end
+    if honeybadger then honeybadger:draw() end
 
-    --draw player
-    if self.player then self.player:draw() end
+    -- Draw the player
+    if player then player:draw() end
 
-    -- Draw HUD overlay
-    ApplyBGTint()
+    -- Apply tint and draw HUD
+    DayCycle:ApplyBGTint()
     HUD:draw()
-    dialogManager:draw()
+    DialogManager:draw()
 end
 
--- function to activate enemies (needed func in an early file)
+-- Functions to activate enemies via triggers
 function TrigB()
-    badgerGo = true;
+    BadgerGo = true
 end
 
 function TrigW()
-    waspGo = true;
+    WaspGo = true
 end
 
+-- Return the state
 return MainState
