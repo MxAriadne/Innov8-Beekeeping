@@ -19,9 +19,6 @@ function MainState:enter()
     -- Load the tilemap
     Map = sti('maps/TilesForBeekeepingGameTopBoundaries.lua')
 
-    -- Set game window resolution
-    love.window.setMode(960, 640)
-
     -- Load music
     Music = love.audio.newSource("tunes/Flowers.mp3", "stream")
 
@@ -30,22 +27,20 @@ function MainState:enter()
         font = love.graphics.newFont('libraries/fonts/comic-neue/ComicNeue-Bold.ttf', 16)
     })
 
-    -- Assign instances to globals for other modules to access
-    hive = Hive()
-    flower = Flower()
-    bee = Bee(hive, 275, 300)
-    honeybadger = HoneyBadger()
-    wasp = Wasp()
-    player = Player()
-
-    -- Ensure entity tables exist before inserting
-    if not Hives then Hives = {} end
-    if not Bees then Bees = {} end
-    if not Flowers then Flowers = {} end
-
     -- Initialize everything if this is the first time opening the state.
     -- This stops everything from doubling when reverting state from menus.
     if FirstRun then
+        -- Ensure entity table exist before inserting
+        if not Entities then Entities = {} end
+
+        -- Assign instances to globals for other modules to access
+        hive = Hive()
+        flower = Flower(500, 500)
+        honeybadger = HoneyBadger()
+        wasp = Wasp(600, 600)
+        player = Player()
+        bee = Bee(hive, 275, 300)
+
         World = wf.newWorld()
         -- Define collision categories
         World:addCollisionClass('Player')
@@ -79,9 +74,12 @@ function MainState:enter()
         TotalHoney = 0
 
         -- Add created entities to their respective tables
-        table.insert(Hives, hive)
-        table.insert(Bees, bee)
-        table.insert(Flowers, flower)
+        table.insert(Entities, hive)
+        table.insert(Entities, bee)
+        table.insert(Entities, flower)
+        table.insert(Entities, wasp)
+        table.insert(Entities, player)
+        table.insert(Entities, honeybadger)
     else
         Music:stop()
         Music:setVolume(0.3)
@@ -118,52 +116,27 @@ function MainState:update(dt)
     DialogManager:update(dt)
     World:update(dt)
 
-    -- Update player if init worked
-    if player then player:update(dt) end
+    -- Update all entities
+    for _, e in ipairs(Entities) do
+        e:update(dt)
 
-    -- Update all hives
-    local sum = 0
-    for _, h in ipairs(Hives) do
-        h:update(dt)
-        if not h.visible then
-            h = nil
-        end
-    end
-
-    -- Update all flowers
-    for _, f in ipairs(Flowers) do
-        if f.update then
-            f:update(dt)
+        if e.type == "hive" and e.honey > 0 then
+            TotalHoney = round(TotalHoney + e.honey, 2)
+            PlayerMoney = round(PlayerMoney + e.honey, 2)
+            e.honey = 0
         end
 
-        if not f.visible then
-            f = nil
+        if not e.visible then
+            e = nil
         end
 
     end
-
-    -- Update all bees
-    for _, b in ipairs(Bees) do
-        b:update(dt)
-    end
-
-    if wasp then wasp:update(dt) end
-    if honeybadger then honeybadger:update(dt) end
 
     -- Press escape to save and quit
     if love.keyboard.isDown("escape") then
         Music:stop()
         SaveManager.save()
         GameStateManager:setState(MainMenu)
-    end
-
-    --converts honey to money
-    for _, h in ipairs(Hives) do
-        if h.honey > 0 then
-            TotalHoney = round(TotalHoney + h.honey, 2)
-            PlayerMoney = round(PlayerMoney + h.honey, 2)
-            h.honey = 0
-        end
     end
 end
 
@@ -235,7 +208,7 @@ BuildOptions = {
 
         h.collider = wall
 
-        table.insert(Hives, h)
+        table.insert(Entities, h)
     end,
     LogHive = function(x, y)
         local h = Hive(); h.x = x; h.y = y;
@@ -252,7 +225,7 @@ BuildOptions = {
 
         h.collider = wall
 
-        table.insert(Hives, h)
+        table.insert(Entities, h)
     end,
     TopBarHive = function(x, y)
         local h = TopBarHive(); h.x = x; h.y = y;
@@ -269,51 +242,60 @@ BuildOptions = {
 
         h.collider = wall
 
-        table.insert(Hives, h)
+        table.insert(Entities, h)
     end,
     Orchid = function(x, y)
-        local f = Flower(); f.x = x; f.y = y; table.insert(Flowers, f)
+        local f = Flower(); f.x = x; f.y = y; table.insert(Entities, f)
     end,
     GoldenDewdrops = function(x, y)
-        local f = GoldenDewdrops(); f.x = x; f.y = y; table.insert(Flowers, f)
+        local f = GoldenDewdrops(); f.x = x; f.y = y; table.insert(Entities, f)
     end,
     CommonLantana = function(x, y)
-        local f = CommonLantana(); f.x = x; f.y = y; table.insert(Flowers, f)
+        local f = CommonLantana(); f.x = x; f.y = y; table.insert(Entities, f)
     end,
     Bee = function(x, y)
         local closestHive = nil
-        for _, hive in pairs(Hives) do
-            if closestHive == nil then
-                closestHive = hive
-            else
-                if (x - hive.x) * (x - hive.x) + (y - hive.y) * (y - hive.y) < (x - closestHive.x) * (x - closestHive.x) + (y - closestHive.y) * (y - closestHive.y) then
-                    closestHive = hive
+        for _, e in ipairs(Entities) do
+            if e.type == "hive" then
+                if closestHive == nil then
+                    closestHive = e
+                else
+                    if (x - e.x) * (x - e.x) + (y - e.y) * (y - e.y) < (x - closestHive.x) * (x - closestHive.x) + (y - closestHive.y) * (y - closestHive.y) then
+                        closestHive = e
+                    end
                 end
             end
         end
 
         if closestHive then
-             closestHive:updateHoneyProduction()
-             local b = Bee(closestHive, x, y); table.insert(Bees, b)
-             closestHive.beeCount = closestHive.beeCount + 1
+            closestHive:updateHoneyProduction()
+            local b = Bee(closestHive, x, y); table.insert(Entities, b)
+            closestHive.beeCount = closestHive.beeCount + 1
+        else
+            local b = Bee(nil, x, y); table.insert(Entities, b)
         end
     end,
     QueenBee = function(x, y)
         local closestHive = nil
-        for _, hive in pairs(Hives) do
-            if closestHive == nil then
-                closestHive = hive
-            else
-                if (x - hive.x) * (x - hive.x) + (y - hive.y) * (y - hive.y) < (x - closestHive.x) * (x - closestHive.x) + (y - closestHive.y) * (y - closestHive.y) then
-                    closestHive = hive
+        for _, e in ipairs(Entities) do
+            if e.type == "hive" then
+                if closestHive == nil then
+                    closestHive = e
+                else
+                    if (x - e.x) * (x - e.x) + (y - e.y) * (y - e.y) < (x - closestHive.x) * (x - closestHive.x) + (y - closestHive.y) * (y - closestHive.y) then
+                        closestHive = e
+                    end
                 end
             end
         end
 
         if closestHive then
-             closestHive:updateHoneyProduction()
-             local b = QueenBee(closestHive, x, y); table.insert(Bees, b)
-             closestHive.beeCount = closestHive.beeCount + 1
+            closestHive:updateHoneyProduction()
+            local b = QueenBee(closestHive, x, y); table.insert(Entities, b)
+            closestHive.hasQueen = true
+            closestHive.QueenBee = b
+        else 
+            local b = QueenBee(nil, x, y); table.insert(Entities, b)
         end
     end
 }
@@ -339,27 +321,21 @@ function MainState:draw()
     -- Draw the tile map
     Map:draw(0, 0, 2, 2)
 
-    -- Draw hives
-    for _, h in ipairs(Hives) do
-        h:draw()
+    -- THIS NEEDS ORDERED LIKE THIS FOR Z-DEPTH
+    -- Draw hives on bottom layer
+    for _, e in ipairs(Entities) do
+        if e.type == "hive" or e.type ~= "player" then
+            e:draw()
+        end
     end
-
-    -- Draw bees
-    for _, b in ipairs(Bees) do
-        b:draw()
+    -- Draw player underneath entities
+    player:draw()
+    -- Draw entities on top of hives
+    for _, e in ipairs(Entities) do
+        if e.type ~= "hive" and e.type ~= "player" then
+            e:draw()
+        end
     end
-
-    -- Draw flowers
-    for _, f in ipairs(Flowers) do
-        f:draw()
-    end
-
-    -- Draw enemies if they exist
-    if wasp then wasp:draw() end
-    if honeybadger then honeybadger:draw() end
-
-    -- Draw the player
-    if player then player:draw() end
 
     -- Apply tint and draw HUD
     DayCycle:ApplyBGTint()

@@ -4,24 +4,14 @@ Spritesheet = {
     "sprites/chars/char9.png",
     "sprites/chars/char8.png",
     "sprites/chars/char7.png",
-    "sprites/chars/char6.png",
-    "sprites/chars/char5.png",
-    "sprites/chars/char4.png",
-    "sprites/chars/char3.png",
-    "sprites/chars/char2.png",
-    "sprites/chars/char1.png"
+    "sprites/chars/char6.png"
 }
 
 AttackingSheet = {
     "sprites/attacking/char9_sword.png",
     "sprites/attacking/char8_sword.png",
     "sprites/attacking/char7_sword.png",
-    "sprites/attacking/char6_sword.png",
-    "sprites/attacking/char5_sword.png",
-    "sprites/attacking/char4_sword.png",
-    "sprites/attacking/char3_sword.png",
-    "sprites/attacking/char2_sword.png",
-    "sprites/attacking/char1_sword.png"
+    "sprites/attacking/char6_sword.png"
 }
 
 function Player:new()
@@ -44,7 +34,11 @@ function Player:new()
 
     self.animation = self.animations.idle    
     self.direction = "still"
-    
+
+    self.type = "player"
+
+    self.visible = true
+
     self.x = 480
     self.y = 320
     self.speed = 300
@@ -56,7 +50,7 @@ function Player:new()
     self.isAttacking = false
     self.attackCooldown = 0.5
     self.attackTimer = 0
-    self.attackRange = 50
+    self.attackRange = 30
 
     --tracks when damage is dealt to add visual effect -- want to add a robloxian oof here
     self.damageIndicator = {}  --table to store hit effects
@@ -66,16 +60,27 @@ function Player:new()
     self.equippedWeapon = "hands"
     self.weapons = {
         hands = {
-            damage = {wasp = 4, honeybadger = 3, bee = 5, hive = 10, flower = 10},
-            hitChance = {wasp = 0.50, honeybadger = 0.85, bee = 0.70, hive = 1.0, flower = 1.0}
+            damage = {wasp = 4, honey_badger = 3, bee = 5, hive = 10, flower = 10, queenBee = 10},
+            hitChance = {wasp = 0.50, honey_badger = 0.85, bee = 0.70, hive = 1.0, flower = 1.0, queenBee = 1.0}
         }
     }
 
-    --collision setup
+    -- Collision setup
     self.collider = nil
+
+    -- Player inventory
+    self.items = { ShopTools.bucket }
+
+    -- Current item in hand
+    self.itemInHand = nil
 end
 
 function Player:update(dt)
+
+    if self.itemInHand then
+        love.graphics.draw(self.itemInHand.image, self.x-32, self.y-32)
+    end
+
     -- Update the attack timer
     if self.isAttacking then
         -- Set attack animation
@@ -196,35 +201,13 @@ function Player:attack()
         --storing and getting targets in range
         local targets = {}
 
-        --checking if the target is in range
-        if wasp and wasp.visible and self:isTargetInRange(wasp) then
-            table.insert(targets, {obj = wasp, type = "wasp"})
-            print("Wasp in range")
-        end
-
-        if honeybadger and honeybadger.visible and self:isTargetInRange(honeybadger) then
-            table.insert(targets, {obj = honeybadger, type = "honeybadger"})
-            print("HoneyBadger in range")
-        end
-
-        for _, bee in ipairs(Bees) do
-            if bee.visible and self:isTargetInRange(bee) then
-                table.insert(targets, {obj = bee, type = "bee"})
-                print("Bee in range")
-            end
-        end
-
-        for _, hive in ipairs(Hives) do
-            if hive.visible and self:isTargetInRange(hive) then
-                table.insert(targets, {obj = hive, type = "hive"})
-                print("Hive in range")
-            end
-        end
-
-        for _, flower in ipairs(Flowers) do
-            if flower.visible and self:isTargetInRange(flower) then
-                table.insert(targets, {obj = flower, type = "flower"})
-                print("flower in range")
+        -- Checking if the target is in range
+        for _, e in ipairs(Entities) do
+            if e.type ~= "player" then
+                if e.visible and self:isTargetInRange(e) then
+                    table.insert(targets, {obj = e, type = e.type})
+                    print(e.type .. " in range")
+                end
             end
         end
 
@@ -259,8 +242,8 @@ function Player:attack()
 end
 
 --player take damage function
-function Player:takeDamage(damage)
-    self.health = math.max(0, self.health - damage)
+function Player:takeDamage(damage, attacker)
+    self.health = self.health - damage
 end
 
 function Player:draw()
@@ -309,7 +292,7 @@ function Player:draw()
     --drawing damage effects
     for _, hit in ipairs(self.damageIndicator) do
         love.graphics.setColor(1, 0, 0, hit.timer / self.damageIndicatorDuration)
-        love.graphics.circle("fill", hit.x, hit.y, 20)
+        love.graphics.circle("fill", hit.x, hit.y, 10)
     end
 
     love.graphics.setColor(1, 1, 1, 1)
@@ -336,15 +319,16 @@ function Player:draw()
         --draw entity hitboxes
         local targets = {
             {obj = wasp, type = "wasp", color = {1, 1, 0}},
-            {obj = honeybadger, type = "honeybadger", color = {0.7, 0.4, 0}},
-            {obj = Bees, type = "bee", color = {1, 0.8, 0}},
-            {obj = Hives, type = "hive", color = {0.8, 0.6, 0.2}},
-            {obj = Flowers, type = "flower", color = {0.8, 0.6, 0.2}}
+            {obj = honeybadger, type = "honey_badger", color = {0.7, 0.4, 0}},
+            {obj = Entities, type = "bee", color = {1, 0.8, 0}},
+            {obj = Entities, type = "queenBee", color = {1, 0.8, 0}},
+            {obj = Entities, type = "hive", color = {0.8, 0.6, 0.2}},
+            {obj = Entities, type = "flower", color = {0.8, 0.6, 0.2}}
         }
 
         for _, target in ipairs(targets) do
             for _, entity in ipairs(target.obj) do
-                if entity and entity.visible then
+                if entity.type ~= "player" and entity.visible then
                     --drawing the hitboxes
                     love.graphics.setColor(target.color[1], target.color[2], target.color[3], 0.7)
 

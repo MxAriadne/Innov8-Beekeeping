@@ -18,8 +18,10 @@ MainState = require "states/MainState"
 Settings = require "states/Settings"
 CharacterSelector = require "UI/CharacterSelector"
 
+-- Set player name, used for save files.
+PlayerName = "Player"
 -- Total money the player has, starts out with 2000 KSh
-PlayerMoney = 2000
+PlayerMoney = 1000000
 -- Variable used to determine if day or night
 TintEnabled = false
 -- Variable used to determine if debug mode is on
@@ -40,11 +42,12 @@ CurrentBuildMode = ""
 
 function love.load()
     -- Load entities
+    require "entities.entity"
     require "entities.bee"
     require "entities.flower"
     require "entities.hive"
     require "entities.wasp"
-    require "entities.honeybadger"
+    require "entities.honey_badger"
     require "entities.player"
     require "entities.queenBee"
     require "entities.langstrothhive"

@@ -4,7 +4,7 @@
 -- Import required modules
 require "UI/design"
 local button = require "UI/button"
-local gameSaves = require "states/loadFilesScreen"
+local gameSaves = require "states.LoadFilesScreen"
 
 local MainMenu = {}
 

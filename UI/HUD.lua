@@ -4,7 +4,7 @@
 local HUD = {}
 local tileSize = 32
 local itemSize = tileSize * 1.5 -- 1.5 times dimension of tile
-local shopItems = require "shopItems"
+local ShopItems = require "ShopItems"
 
 function HUD:load()
     -- images of items in hotbar will be attributed to each tool
@@ -12,11 +12,10 @@ function HUD:load()
     self.hotbarSize = 10 -- Number of items displayed in hotbar
     self.canvases = {} -- Canvases for current items
 
-    -- Check if player has items in hotbar
-    local items = {shopItems.tools.basicSword}
-    if items then
+    -- Check if player has items in inventory
+    if player and player.items then
         -- Create canvas for each item
-        for i, item in ipairs(items) do
+        for i, item in ipairs(player.items) do
             local canvas = love.graphics.newCanvas(itemSize, itemSize)
             love.graphics.setCanvas(canvas) -- Switch drawing to canvas
             love.graphics.clear(0, 0, 0, 0) -- Make new canvas transparent

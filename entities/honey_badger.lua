@@ -1,6 +1,6 @@
-Wasp = Entity:extend()
+HoneyBadger = Entity:extend()
 
-function Wasp:new(x, y)
+function HoneyBadger:new(x, y)
     -- Parent constructor
     Entity.new(self)
 
@@ -15,11 +15,11 @@ function Wasp:new(x, y)
     self.y_offset = 32
 
     -- Image holder
-    self.image = love.graphics.newImage("sprites/wasp.png")
+    self.image = love.graphics.newImage("sprites/honey_badger_spritesheet.png")
 
     -- List of entities that this one will try to fight
     -- THIS IS IN ORDER OF PRIORITY
-    self.enemies = {"bee", "hive", "queenBee", "player"}
+    self.enemies = {"hive", "bee", "queenBee", "player"}
 
     -- Animation duration
     self.animationDuration = 2
@@ -28,83 +28,58 @@ function Wasp:new(x, y)
     self.animation = self:animate()
 
     -- Position of the entity
-    self.x = x or 0
-    self.y = y or 0
+    self.x = x or 970
+    self.y = y or 150
 
     -- Scale of the entity
-    self.scale = 0.75
+    self.scale = 1
 
     -- Type check
-    self.type = "wasp"
-
-    -- Target holder variable for movement
-    self.target = nil
+    self.type = "honey_badger"
 
     -- Pathfinding variables
-    self.pathfinding = Pathfinding
-    self.pathfinding:initialize()
-    self.current_path = nil
-    self.current_path_index = 1
     self.state = "hunting"
 
     -- Speed variables
-    self.movementSpeed = 70
+    self.movementSpeed = 45
     self.retreatSpeed = 150
     self.speed = self.movementSpeed
 
-    -- Is entity under attack?
-    self.isUnderAttack = false
-
-    -- Holder for last entity that attacked this one
-    self.lastAttacker = nil
-
-    -- Hits taken before retaliating
-    self.aggressionThreshold = 1
-
-    -- Hit tracker for retaliating
-    self.hitsTaken = 0
-
     -- Amount of attacks before fleeing
-    self.maxAttacks = 5
+    self.maxAttacks = 10
 
     -- Range at which entity will attack
-    self.combatEngagementRange = 500
+    self.combatEngagementRange = 1000
 
     -- Health threshold for retreat
-    self.retreatHealthThreshold = 1
+    self.retreatHealthThreshold = 5
 
-    -- Tracker for time since last attack
-    self.attackTimer = 0
+    -- Aggression threshold
+    self.aggressionThreshold = 10
 
     -- Attack cooldown
-    self.attackCooldown = 1.5
+    self.attackCooldown = 3
 
     -- Attack damage
-    self.attackDamage = 1
+    self.attackDamage = 5
 
     -- Attack range
-    self.attackRadius = 50
+    self.attackRadius = 60
 
     -- Time it take to harvest or steal honey
-    self.harvestingTime = 3
+    self.harvestingTime = 4
 
     -- Timer to track time spent harvesting or stealing
     self.harvestingTimer = 0
 
     -- Max amount of honey that can be stolen (in grams)
-    self.maxLootCapacity = 3
-
-    -- Current amount of honey held
-    self.currentLoot = 0
-
-    -- Boolean to track if entity has honey
-    self.hasLoot = false
+    self.maxLootCapacity = 5
 
     -- Previous state holder
     self.previousState = "hunting"
 end
 
-function Wasp:draw()
+function HoneyBadger:draw()
     -- Default draw function
     if not self.visible or self == nil then return end
 
@@ -131,4 +106,28 @@ function Wasp:draw()
     self:debug()
 end
 
-return Wasp
+function HoneyBadger:takeDamage(damage, attacker)
+    self.lastAttacker = attacker
+    self.hitsTaken = self.hitsTaken + 1
+    self.health = self.health - damage
+    self.isUnderAttack = true
+
+    -- If entity was killed...
+    if self.health <= 0 then
+        --self.attacker.target = nil
+        self:destroy()
+        return
+    end
+
+    -- If entity is still alive, check aggression
+    -- Additional small chance for them to attack bees nearby
+    if self.hitsTaken >= self.aggressionThreshold and self.state ~= "fleeing" and math.random() < 0.1 and attacker.type == "bee" then
+        self.isUnderAttack = true
+        self.target = attacker
+        self.state = "attacking"
+    end
+
+    self:updateState()
+end
+
+return HoneyBadger

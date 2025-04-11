@@ -1,11 +1,7 @@
----
---- Created by Freyja Richardson.
---- DateTime: 4/7/2025 2:28 PM
----
-
 LangstrothHive = Hive:extend()
 
 function LangstrothHive:new()
+    self.id = #Entities + 1
     self.image = love.graphics.newImage("sprites/langstroth_hive.png")
 
     self.x = 200
@@ -22,27 +18,20 @@ function LangstrothHive:new()
     self.maxHealth = 200
 
     --type check flag
-    self.is_hive = true
+    self.type = "hive"
     self.visible = true
 
     --taking damage effect
     self.flashTimer = 0
     self.flashDuration = 0.2
+
+    self.hasQueen = false
+
 end
 
 function LangstrothHive:updateHoneyProduction()
-    --if queen bee
-    local hasQueen = false
-    for _, b in ipairs(Bees) do
-        if b.is_queen then
-            hasQueen = true
-            self.QueenBee = b
-            break
-        end
-    end
-
     --if there is a queen, calculate the production rate
-    if hasQueen then
+    if self.hasQueen then
         self.honeyProductionRate = 3.0
         --basing productivity off queen's health and age
         local queenHealthFactor = self.QueenBee.health * 0.5

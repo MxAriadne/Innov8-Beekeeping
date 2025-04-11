@@ -1,22 +1,24 @@
 Hive = Object:extend()
 
-function Hive:new()
+function Hive:new(x, y)
+    self.id = #Entities + 1
     self.image = love.graphics.newImage("sprites/log_hive.png")
-    self.x = 200
-    self.y = 315
+    self.x = x or 200
+    self.y = y or 315
     self.scale = 0.3
-    self.width = self.image:getWidth() * self.scale
-    self.height = self.image:getHeight() * self.scale
+    self.width = (self.image:getWidth() * self.scale)-10
+    self.height = (self.image:getHeight() * self.scale)-10
     self.honey = 10
     self.beeCount = 1 --set to 1 for now, for the 'default' main state hard spawned bee
     self.maxBeeCount = 5  --maximum number of bees - could be level dependent? or might remove later?
+    self.hasQueen = false
 
     --hive health variables
     self.health = 100
     self.maxHealth = 100
 
     --type check flag
-    self.is_hive = true
+    self.type = "hive"
     self.visible = true
 
     --taking damage effect
@@ -28,6 +30,8 @@ function Hive:new()
 end
 
 function Hive:update(dt)
+    -- If hive is hidden, skip update
+    if not self.visible or self == nil then return end
 
     self:updateHoneyProduction()
 
@@ -40,19 +44,40 @@ function Hive:update(dt)
     end
 
     if self.health <= 0 then
+        -- For each bee that has this hive as their homeHive, set to nil
+        for _, b in ipairs(Entities) do
+            if b.type == "bee" and b.homeHive == self then
+                b.homeHive = nil
+            end
+        end
+
+        -- If there is a queen bee, remove it from the hive
+        if self.QueenBee ~= nil then
+            self.QueenBee.homeHive = nil
+        end
+
         self.visible = false
+
         if self.collider ~= nil then
             self.collider:destroy()
             self.collider = nil
         end
-        table.remove(Hives, Hives[self])
+        -- Find the current index of this hive in the Entities table
+        for i, entity in ipairs(Entities) do
+            if entity == self then
+                table.remove(Entities, i)
+                break
+            end
+        end
+
+        self = nil
 
     end
 
 end
 
 function Hive:draw()
-    if not self.visible then return end
+    if not self.visible or self == nil then return end
     --draw with damage flash effect if being damaged
     if self.flashTimer > 0 then
         love.graphics.setColor(1, 0.5, 0.5, 1)  --reddish tint
@@ -85,18 +110,8 @@ function Hive:draw()
 end
 
 function Hive:updateHoneyProduction()
-    --if queen bee
-    local hasQueen = false
-    for _, b in ipairs(Bees) do
-        if b.is_queen then
-            hasQueen = true
-            self.QueenBee = b
-            break
-        end
-    end
-
     --if there is a queen, calculate the production rate
-    if hasQueen then
+    if self.hasQueen then
         self.honeyProductionRate = 1.0
         --basing productivity off queen's health and age
         local queenHealthFactor = self.QueenBee.health * 0.5
@@ -119,7 +134,9 @@ end
 function Hive:takeDamage(damage, attacker)
     self.health = math.max(0, self.health - damage)
     self.flashTimer = self.flashDuration
-    --print("Hive took " .. damage .. " damage, health now: " .. self.health)
+    if self.QueenBee then
+        self.QueenBee:takeDamage(damage, attacker)
+    end
 end
 
 return Hive

@@ -2,7 +2,7 @@
 -- Author: Amelia Reiss
 
 -- Tools
-local tools = { 
+ShopTools = { 
     honey_brush = {
         name = "Honey Brush",
         image = love.graphics.newImage("sprites/honey_brush.png"),
@@ -27,7 +27,7 @@ local tools = {
 }
 
 -- Hives
-local hives = {
+ShopHives = {
     log = {
         name = "Log Hive",
         image = love.graphics.newImage("sprites/log_hive.png"),
@@ -52,7 +52,7 @@ local hives = {
 }
 
 -- Flowers
-local flowers = {
+ShopFlowers = {
     CommonLantana = {
         name = "Common Lantana",
         image = love.graphics.newImage("sprites/lantana.png"),
@@ -79,7 +79,7 @@ local flowers = {
               }
 }
 
-local bees = {
+ShopBees = {
     queenBee = {
         name = "Queen Bee",
         image = love.graphics.newImage("sprites/bee.png"),
@@ -96,6 +96,6 @@ local bees = {
     }
 }
 
-local shopItems = {tools = tools, hives = hives , flowers = flowers, bees = bees}
+ShopItems = {ShopTools = ShopTools, ShopHives = ShopHives, ShopFlowers = ShopFlowers, ShopBees = ShopBees}
 
-return shopItems
+return ShopItems

@@ -33,11 +33,9 @@ function Pathfinding:gridToWorld(grid_x, grid_y)
 end
 
 --finds a path from the wasp/hb's start position to the hive
-function Pathfinding:findPathToHive(start_x, start_y)
-    if not hive then return nil end  --in the unlikely case that there is no hive
-
+function Pathfinding:findPathToHive(start_x, start_y, hive_x, hive_y)
     local start_grid_x, start_grid_y = self:worldToGrid(start_x, start_y)
-    local hive_grid_x, hive_grid_y = self:worldToGrid(hive.x, hive.y)
+    local hive_grid_x, hive_grid_y = self:worldToGrid(hive_x, hive_y)
 
     --calculating the path from the start point to the hive
     local path = self.pathfinder:getPath(

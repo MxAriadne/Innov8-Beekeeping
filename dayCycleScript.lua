@@ -81,7 +81,7 @@ function DayCycle:DaySky()
 
     --load stat message with variables
     local morningstats = {
-        text = string.format("Check out your stats: You have %d KSh.\nYour hive's health is at %d.\nYour hive's honey count is at %d. \nYour bee count is %d. \nYour sword is at %d strength. \nYour fences are at %d strength.", PlayerMoney, hive.health, hive.honey, #Bees, 0, 0),
+        text = string.format("Check out your stats: You have %d KSh.\nYour hive's health is at %d.\nYour hive's honey count is at %d. \nYour bee count is %d. \nYour sword is at %d strength. \nYour fences are at %d strength.", PlayerMoney, hive.health, hive.honey, #ShopBees, 0, 0),
         options = {} -- no choices, signals end of dialogue
     }
 
@@ -96,7 +96,7 @@ function DayCycle:DaySky()
                                                         "%-25s %5d",
                                                         PlayerMoney,
                                                         "Honey Count:", TotalHoney,
-                                                        "Bee Count:", #Bees,
+                                                        "Bee Count:", #ShopBees,
                                                         "Sword Strength:", 0,
                                                         "Fence Strength:", 0
                                                     ) .. "\n\n\n" .. tips[math.random(1, #tips)],
