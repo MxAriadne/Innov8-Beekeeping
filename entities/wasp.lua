@@ -5,8 +5,9 @@ function Wasp:new(x, y)
     Entity.new(self)
 
     -- Health variables
-    self.health = 15
-    self.maxHealth = 20
+    local buff = self:getDayBuff()
+    self.health = 10 + (1.5 * buff)
+    self.maxHealth = self.health
 
     -- Dimensions of the entity
     self.width = 64
@@ -68,7 +69,7 @@ function Wasp:new(x, y)
     self.maxAttacks = 5
 
     -- Range at which entity will attack
-    self.combatEngagementRange = 250
+    self.combatEngagementRange = 175
 
     -- Health threshold for retreat
     self.retreatHealthThreshold = 1
@@ -80,7 +81,7 @@ function Wasp:new(x, y)
     self.attackCooldown = 1.5
 
     -- Attack damage
-    self.attackDamage = 1
+    self.attackDamage = 1 + self:getDayBuff(0.1)
 
     -- Attack range
     self.attackRadius = 50

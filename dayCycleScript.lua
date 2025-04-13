@@ -157,4 +157,8 @@ function DayCycle:ApplyBGTint()
     love.graphics.setColor(1, 1, 1, 1)
 end
 
+function DayCycle.getDaysPassed()
+    return daysPassed
+end
+
 return DayCycle

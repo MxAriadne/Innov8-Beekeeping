@@ -5,8 +5,9 @@ function HoneyBadger:new(x, y)
     Entity.new(self)
 
     -- Health variables
-    self.health = 25
-    self.maxHealth = 20
+    local buff = self:getDayBuff()
+    self.health = 20 + (2 * buff)
+    self.maxHealth = self.health
 
     -- Dimensions of the entity
     self.width = 64
@@ -49,7 +50,7 @@ function HoneyBadger:new(x, y)
     self.maxAttacks = 10
 
     -- Range at which entity will attack
-    self.combatEngagementRange = 1000
+    self.combatEngagementRange = 250
 
     -- Health threshold for retreat
     self.retreatHealthThreshold = 5
@@ -61,7 +62,7 @@ function HoneyBadger:new(x, y)
     self.attackCooldown = 3
 
     -- Attack damage
-    self.attackDamage = 5
+    self.attackDamage = 5 + self:getDayBuff(0.1)
 
     -- Attack range
     self.attackRadius = 60
