@@ -7,6 +7,8 @@ local gameSaves = {}
 local button = require "UI/button"
 local textbox = require "UI/textbox"
 require "UI/design"
+local save_manager = require "save_manager"
+local game_data = require "game_data"
 
 local textBoxColor = colors.grey
 local lastSearch = nil
@@ -80,7 +82,25 @@ end
 function gameSaves:search(name)
     lastSearch = name
     print(string.format("Searching for %s's save file", lastSearch))
-                   
+        
+    if name == nil or name == "" then
+        print("No username entered.")
+        return
+    end
+
+    local filename = name .. ".lua"
+
+    if love.filesystem.getInfo(filename) then
+        local loaded = save_manager.load(filename)--pass filename
+        if loaded then
+            print("Save file loaded. Switching to game.")
+            GameStateManager:setState("game") -- <- switch to your game state
+        else
+            print("Save file exists but failed to load.")
+        end
+    else
+        print("No save file found for: " .. name)
+    end
 end
 
 return gameSaves

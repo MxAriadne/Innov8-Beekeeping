@@ -9,8 +9,8 @@ local HUD = require "UI/HUD"
 local Dialove = require("libraries/Dialove.dialove")
 local dialogs = require("dialogs")
 local Player = require "entities.player"
-local SaveManager = require "save_manager"
-local game_Data = require "game_data"
+local save_manager = require "save_manager"
+local game_data = require "game_data"
 local DayCycle = require("dayCycleScript")
 
 -- Initial setup
@@ -153,7 +153,7 @@ function MainState:update(dt)
     -- Press escape to save and quit
     if love.keyboard.isDown("escape") then
         Music:stop()
-        SaveManager.save()
+        save_manager.save()
         GameStateManager:setState(MainMenu)
     end
 
