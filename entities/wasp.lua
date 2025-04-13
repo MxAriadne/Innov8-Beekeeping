@@ -5,7 +5,7 @@ function Wasp:new(x, y)
     Entity.new(self)
 
     -- Health variables
-    self.health = 20
+    self.health = 15
     self.maxHealth = 20
 
     -- Dimensions of the entity
@@ -68,7 +68,7 @@ function Wasp:new(x, y)
     self.maxAttacks = 5
 
     -- Range at which entity will attack
-    self.combatEngagementRange = 500
+    self.combatEngagementRange = 250
 
     -- Health threshold for retreat
     self.retreatHealthThreshold = 1
@@ -102,6 +102,16 @@ function Wasp:new(x, y)
 
     -- Previous state holder
     self.previousState = "hunting"
+
+    --unique wasp player attack variables
+    self.attackedByPlayer = false
+    self.targetType = nil
+    self.stingCount = 0
+    self.maxStings = 3
+    self.fleeingSpeed = 100
+    self.lastAttackTime = 0
+    self.attackRange = self.attackRadius
+    self.attackTimer = 0
 end
 
 function Wasp:draw()
@@ -129,6 +139,115 @@ function Wasp:draw()
 
     -- Draw debug if enabled
     self:debug()
+end
+
+function Wasp:updateState(dt)
+    if self.state == "fleeing" then return end
+    self.previousState = self.state
+
+    -- If current loot is greater than or equal to max capacity, set state to fleeing
+    -- OR if hits taken is greater than or equal to max attacks, set state to fleeing
+    if self.currentLoot >= self.maxLootCapacity or
+       self.hitsTaken >= self.maxAttacks or
+       self.health <= self.retreatHealthThreshold
+    then
+        self.isAggressive = false
+        self.speed = self.retreatSpeed
+        self.target = nil
+        self.state = "fleeing"
+    end
+
+    -- If state is not idle, or attacking, find nearest object to go to
+    if self.state ~= "idle" and
+       self.state ~= "attacking"
+    then
+        self:findNearestObject()
+    end
+
+    -- If state is attacking, attack
+    if self.state == "attacking" then
+        self:attack()
+    end
+
+    if self.attackedByPlayer and self.state ~= "fleeing" and self.state ~= "returning" then
+        if self.health > self.retreatHealthThreshold then
+            self.state = "attacking"
+            self.target = player
+            self.targetType = "player"
+            self.current_path = nil
+            
+            self.attackedByPlayer = false
+        else
+            self.state = "fleeing"
+            self.speed = self.fleeingSpeed
+            self.current_path = nil
+        end
+    end
+    
+    --attacking player state
+    if self.state == "attacking" and self.targetType == "player" and player then
+        --calculating distance to player
+        local dx = player.x - self.x
+        local dy = player.y - self.y
+        local distance = math.sqrt(dx*dx + dy*dy)
+        
+        if distance <= self.attackRange then
+            --incrementing attack timer
+            self.attackTimer = self.attackTimer + dt
+            
+            if self.attackTimer >= self.attackCooldown then
+                self:attackPlayer()
+                
+                --better off commented out
+                if DebugMode then
+                    --print("Wasp attacked player! Stings: " .. self.stingCount .. "/" .. self.maxStings)
+                end
+            end
+        else
+            local angle = math.atan2(dy, dx)
+            self.x = self.x + math.cos(angle) * self.speed * dt
+            self.y = self.y + math.sin(angle) * self.speed * dt
+        end
+    end
+end
+
+function Wasp:attackPlayer()
+    if player and player.takeDamage then
+        player:takeDamage(self.attackDamage)
+        
+        self.attackTimer = 0
+        
+        self.stingCount = self.stingCount + 1
+        
+        if self.stingCount >= self.maxStings then
+            self.state = "fleeing"
+            self.speed = self.fleeingSpeed
+        end   
+    end
+end
+
+function Wasp:takeDamage(damage, attacker)
+    self.health = self.health - damage
+    
+    self.isUnderAttack = true
+    self.lastAttacker = attacker
+    self.hitsTaken = self.hitsTaken + 1
+    
+    self.damageFlashTimer = 0.3
+    
+    --fleeing if health is low
+    if self.health <= self.retreatHealthThreshold then
+        self.state = "fleeing"
+        self.speed = self.fleeingSpeed
+        return
+    end
+    
+    --target attacker
+    if self.hitsTaken >= self.aggressionThreshold then
+        self.state = "attacking"
+        self.target = attacker
+        self.targetType = attacker.type
+    end
 end
 
 return Wasp

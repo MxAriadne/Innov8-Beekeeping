@@ -36,7 +36,7 @@ function MainState:enter()
         -- Assign instances to globals for other modules to access
         hive = Hive()
         flower = Flower(500, 500)
-        honeybadger = HoneyBadger()
+        honeybadger = HoneyBadger(600, 150)
         wasp = Wasp(600, 600)
         player = Player()
         bee = Bee(hive, 275, 300)
