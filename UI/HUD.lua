@@ -39,6 +39,7 @@ function HUD:load()
 end
 
 function HUD:draw()
+    love.graphics.setFont(XSfont)
     --draw money
     love.graphics.setColor(self.colors.money)
     love.graphics.print("Money: " .. PlayerMoney .. " KSh ", 800, 60)

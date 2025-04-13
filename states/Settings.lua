@@ -18,6 +18,7 @@ function Settings:update(dt)
 end
 
 function Settings:draw()
+    love.graphics.clear(MenuBackgroundColor or 0.1, 0.1, 0.1)
   love.graphics.setLineWidth(4)
   love.graphics.setColor(254, 67, 101)
 
