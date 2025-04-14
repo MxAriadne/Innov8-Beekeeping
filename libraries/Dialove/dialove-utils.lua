@@ -17,15 +17,10 @@ utils.colors = colors
 local normalBackgroundStencil = function (manager, dialog)
   return function ()
     love.graphics.setColor(colors.white)
-    --calculating the x position to center the dialog box properly
-    local dialogWidth = math.floor(manager.viewportW - manager.margin * 2)
-    --offset to shift the dialog
-    local xPos = math.floor((manager.viewportW - dialogWidth) / 2) + 100
-    
     love.graphics.rectangle('fill',
-      xPos,
+      math.floor(manager.margin),
       math.floor(dialog.y + manager.margin),
-      dialogWidth,
+      math.floor(manager.viewportW - manager.margin * 2),
       math.floor(dialog.backgroundH),
       manager.cornerRadius,
       manager.cornerRadius
@@ -39,7 +34,7 @@ local normalBackgroundStencil = function (manager, dialog)
       end
 
       love.graphics.rectangle('fill',
-        xPos,
+        math.floor(manager.margin),
         math.floor(titleBackgroundY),
         math.floor(manager.font:getWidth(dialog.title) + manager.horizontalPadding),
         math.floor(manager.lineHeight * 2),
@@ -51,9 +46,6 @@ local normalBackgroundStencil = function (manager, dialog)
 end
 
 utils.drawBackground = function (manager, dialog)
-  local dialogWidth = math.floor(manager.viewportW - manager.margin * 2)
-  local xPos = math.floor((manager.viewportW - dialogWidth) / 2) + 100
-  
   if dialog.background and dialog.background.image then
     love.graphics.setColor(dialog.background.color or colors.white)
 
@@ -65,22 +57,22 @@ utils.drawBackground = function (manager, dialog)
       love.graphics.draw(
         dialog.background.image,
         dialog.backgroundQuad,
-        xPos,
+        math.floor(manager.margin),
         math.floor(dialog.y + manager.margin))
       love.graphics.draw(
         dialog.background.image,
         dialog.backgroundQuad,
-        math.floor(xPos + dialog.quadWidth * 2),
+        math.floor(manager.margin + dialog.quadWidth * 2),
         math.floor(dialog.y + manager.margin + dialog.quadHeight * 2), 0, -1)
       love.graphics.draw(
         dialog.background.image,
         dialog.backgroundQuad,
-        xPos,
+        math.floor(manager.margin),
         math.floor(dialog.y + manager.margin + dialog.quadHeight * 2), 0, 1, -1)
       love.graphics.draw(
         dialog.background.image,
         dialog.backgroundQuad,
-        math.floor(xPos + dialog.quadWidth * 2),
+        math.floor(manager.margin + dialog.quadWidth * 2),
         math.floor(dialog.y + manager.margin), 0, -1, 1)
     end
   else
@@ -98,9 +90,9 @@ utils.drawBackground = function (manager, dialog)
     love.graphics.rectangle('line', 0, dialog.y, manager.viewportW, dialog.height)
     love.graphics.setColor(colors.yellow)
     love.graphics.rectangle('line',
-      xPos,
+      manager.margin,
       dialog.y + manager.margin,
-      dialogWidth,
+      manager.viewportW - manager.margin * 2,
       dialog.height - manager.margin * 2
     )
 
@@ -111,7 +103,7 @@ utils.drawBackground = function (manager, dialog)
       end
 
       love.graphics.rectangle('line',
-        xPos,
+        math.floor(manager.margin),
         math.floor(titleBackgroundY),
         math.floor(manager.font:getWidth(dialog.title) + manager.horizontalPadding * 2),
         math.floor(manager.lineHeight * 2)
@@ -123,9 +115,6 @@ end
 utils.printTitle = function (manager, dialog)
   if not dialog.title then return end
 
-  local dialogWidth = math.floor(manager.viewportW - manager.margin * 2)
-  local xPos = math.floor((manager.viewportW - dialogWidth) / 2) + 100
-
   love.graphics.setColor(dialog.titleColor or colors.blue)
   local titleY = dialog.y + manager.margin - manager.lineHeight / 2
   if dialog.top then
@@ -135,18 +124,15 @@ utils.printTitle = function (manager, dialog)
   end
 
   love.graphics.print(dialog.title,
-    math.floor(xPos + manager.horizontalPadding / 2),
+    math.floor(manager.margin + manager.horizontalPadding / 2),
     math.floor(titleY))
 end
 
 utils.printText = function (manager, dialog, firstLine, lastLine, completeLine)
-  local dialogWidth = math.floor(manager.viewportW - manager.margin * 2)
-  local xPos = math.floor((manager.viewportW - dialogWidth) / 2) + 100
-  
   local lineY = 0
   for n = firstLine, lastLine do
     local line = dialog.lines[n]
-    local lineX = math.floor(xPos + manager.horizontalPadding)
+    local lineX = math.floor(manager.margin + manager.horizontalPadding)
 
     if dialog.image then
       lineX = lineX + dialog.image:getWidth() + manager.horizontalPadding
@@ -184,22 +170,15 @@ end
 utils.drawImage = function (manager, dialog)
   if not dialog.image then return end
 
-  local dialogWidth = math.floor(manager.viewportW - manager.margin * 2)
-  local xPos = math.floor((manager.viewportW - dialogWidth) / 2) + 100
-
   love.graphics.setColor(colors.white)
   love.graphics.draw(dialog.image,
-    xPos + manager.horizontalPadding,
+    manager.margin + manager.horizontalPadding,
     dialog.y + manager.margin + manager.verticalPadding
   )
 end
 
 utils.printOptions = function (manager, dialog)
-  local dialogWidth = math.floor(manager.viewportW - manager.margin * 2)
-
-  local xPos = math.floor((manager.viewportW - dialogWidth) / 2) + 100
-  
-  local lineX = math.floor(xPos + manager.horizontalPadding)
+  local lineX = math.floor(manager.margin + manager.horizontalPadding)
   if dialog.image then
     lineX = lineX + dialog.image:getWidth() + manager.horizontalPadding
   end

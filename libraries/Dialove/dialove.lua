@@ -216,7 +216,7 @@ function dialove:push(data)
   local lineWasInserted = false
 
   local wordsToInsert = {}
-  for word in string.gmatch(content, '([^( |)]+)') do -- \n
+  for word in string.gmatch(content, '([^( |\n)]+)') do
     table.insert(wordsToInsert, word)
   end
 
@@ -312,8 +312,6 @@ function dialove:pop(forcePop)
       if self.activeDialogListIndex >= 1 then
         self.activeDialogListIndex = self.activeDialogListIndex - 1
         table.remove(self.activeDialogListMap)
-
-      else break -- added to fix bug
       end
     until not self:getActiveDialogList() or #self:getActiveDialogList() > 0
 
@@ -401,12 +399,6 @@ function dialove:draw()
     utils.printOptions(self, dialog)
   end
   love.graphics.pop()
-end
-
--- added to clear dialog list
-function dialove:clearDialogs()
-  self.activeDialogListMap = {}  -- Resets the dialog list
-  self.activeDialog = nil        -- Clears the active dialog
 end
 
 return dialove
