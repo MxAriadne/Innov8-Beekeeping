@@ -10,6 +10,11 @@ local MainMenu = {}
 
 -- This function generates and returns the buttons for the main menu
 function MainMenu:enter()
+    Music = love.audio.newSource("tunes/Flowers.mp3", "stream")
+    Music:setVolume(0.3)
+    Music:setLooping(true)
+    Music:play()
+
     self.buttons = {} -- Table of buttons for menu screen
 
     -- Variables for button placement and dimensions

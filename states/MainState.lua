@@ -19,9 +19,6 @@ function MainState:enter()
     -- Load the tilemap
     Map = sti('maps/TilesForBeekeepingGameTopBoundaries.lua')
 
-    -- Load music
-    Music = love.audio.newSource("tunes/Flowers.mp3", "stream")
-
     -- Initialize dialog system
     DialogManager = Dialove.init({
         font = love.graphics.newFont('libraries/fonts/comic-neue/ComicNeue-Bold.ttf', 16)
@@ -62,11 +59,6 @@ function MainState:enter()
 
         hive.collider = wall
 
-        -- Load and play background music
-        Music:setVolume(0.3)
-        Music:setLooping(true)
-        Music:play()
-
         -- Start tutorial dialog
         DialogManager:show(dialogs.startupM)
 
@@ -81,10 +73,6 @@ function MainState:enter()
         table.insert(Entities, player)
         table.insert(Entities, honeybadger)
     else
-        Music:stop()
-        Music:setVolume(0.3)
-        Music:setLooping(true)
-        Music:play()
     end
 
     -- Load HUD
@@ -172,7 +160,6 @@ function MainState:keypressed(k)
         DebugMode = not DebugMode
         print("Debug mode: " .. (DebugMode and "ON" or "OFF"))
     elseif k == "tab" then
-        Music:stop()
         -- Open shop screen
         GameStateManager:setState(ShopScreen)
     end
