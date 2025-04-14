@@ -50,7 +50,7 @@ function HoneyBadger:new(x, y)
     self.maxAttacks = 10
 
     -- Range at which entity will attack
-    self.combatEngagementRange = 250
+    self.combatEngagementRange = 1000
 
     -- Health threshold for retreat
     self.retreatHealthThreshold = 5

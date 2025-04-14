@@ -4,7 +4,7 @@ require "UI/design"
 local slider = require "UI/simple-slider"
 
 function Settings:enter()
-    volumeSlider = newSlider(400, 100, 300, love.audio.getVolume(), 0, 1, function (v) love.audio.setVolume(v) end)
+    volumeSlider = newSlider(600, 100, 300, love.audio.getVolume(), 0, 1, function (v) love.audio.setVolume(v) end)
 
 
 end
@@ -19,6 +19,10 @@ end
 
 function Settings:draw()
     love.graphics.clear(MenuBackgroundColor or 0.1, 0.1, 0.1)
+    love.graphics.setFont(MediumFont)
+    love.graphics.setColor(1,1,1,1)
+    love.graphics.print("Volume", 100, 80)
+
   love.graphics.setLineWidth(4)
   love.graphics.setColor(254, 67, 101)
 

@@ -69,7 +69,7 @@ function Wasp:new(x, y)
     self.maxAttacks = 5
 
     -- Range at which entity will attack
-    self.combatEngagementRange = 175
+    self.combatEngagementRange = 500
 
     -- Health threshold for retreat
     self.retreatHealthThreshold = 1

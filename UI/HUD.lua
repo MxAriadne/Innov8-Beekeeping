@@ -39,7 +39,7 @@ function HUD:load()
 end
 
 function HUD:draw()
-    love.graphics.setFont(XSfont)
+    love.graphics.setFont(XSfont) --- BY THE WAY THIS FIXES THE BUG WHERE THE HUD FONT IS SUDDENLY BIGGER UPON LOADING INTO MAIN STATE --- IT RESETS THE FONT SIZE !!!
     --draw money
     love.graphics.setColor(self.colors.money)
     love.graphics.print("Money: " .. PlayerMoney .. " KSh ", 800, 60)
