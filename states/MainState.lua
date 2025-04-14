@@ -36,8 +36,6 @@ function MainState:enter()
         -- Assign instances to globals for other modules to access
         hive = Hive()
         flower = Flower(500, 500)
-        honeybadger = HoneyBadger()
-        wasp = Wasp(600, 600)
         player = Player()
         bee = Bee(hive, 275, 300)
 
@@ -54,7 +52,7 @@ function MainState:enter()
             hive.x - hive.width/2,
             hive.y - hive.height/2,
             hive.width,
-            hive.height
+            hive.height-32
         )
 
         wall:setType('static')
@@ -77,9 +75,7 @@ function MainState:enter()
         table.insert(Entities, hive)
         table.insert(Entities, bee)
         table.insert(Entities, flower)
-        table.insert(Entities, wasp)
         table.insert(Entities, player)
-        table.insert(Entities, honeybadger)
     else
         Music:stop()
         Music:setVolume(0.3)
@@ -109,7 +105,7 @@ function MainState:enter()
 end
 
 function round(num, numDecimalPlaces)
-  return tonumber(string.format("%." .. (numDecimalPlaces or 0) .. "f", num))
+    return tonumber(string.format("%." .. (numDecimalPlaces or 0) .. "f", num))
 end
 
 function MainState:update(dt)
@@ -143,14 +139,16 @@ end
 -- Called when a key is pressed
 function MainState:keypressed(k)
     if k == "space" then
-        -- Toggle day/night
-        DayCycle:AdvanceDay()
-        if not TintEnabled then
-            DayCycle:NightSky()
-            TintEnabled = true
-        else
-            DayCycle:DaySky()
-            TintEnabled = false
+        if PressSpaceAllowed then
+            -- Toggle day/night
+            DayCycle:AdvanceDay()
+            if not TintEnabled then
+                DayCycle:NightSky()
+                TintEnabled = true
+            else
+                DayCycle:DaySky()
+                TintEnabled = false
+            end
         end
     elseif k == 'return' then
         -- Close dialogue box
@@ -176,6 +174,9 @@ function MainState:keypressed(k)
         Music:stop()
         -- Open shop screen
         GameStateManager:setState(ShopScreen)
+    elseif k == "f" then
+        -- DEBUG
+        CurrentBuildMode = "Fence"
     end
 end
 
@@ -200,7 +201,7 @@ BuildOptions = {
             h.x - h.width/2,
             h.y - h.height/2,
             h.width,
-            h.height
+            h.height-32
         )
 
         wall:setType('static')
@@ -217,7 +218,7 @@ BuildOptions = {
             h.x - h.width/2,
             h.y - h.height/2,
             h.width,
-            h.height
+            h.height-32
         )
 
         wall:setType('static')
@@ -234,7 +235,7 @@ BuildOptions = {
             h.x - h.width/2,
             h.y - h.height/2,
             h.width,
-            h.height
+            h.height-32
         )
 
         wall:setType('static')
@@ -297,6 +298,9 @@ BuildOptions = {
         else 
             local b = QueenBee(nil, x, y); table.insert(Entities, b)
         end
+    end,
+    Fence = function(x, y)
+        local f = Fence(x, y); table.insert(Entities, f)
     end
 }
 
@@ -324,7 +328,7 @@ function MainState:draw()
     -- THIS NEEDS ORDERED LIKE THIS FOR Z-DEPTH
     -- Draw hives on bottom layer
     for _, e in ipairs(Entities) do
-        if e.type == "hive" or e.type ~= "player" then
+        if e.type == "hive" or e.type == "fence" then
             e:draw()
         end
     end
@@ -332,7 +336,7 @@ function MainState:draw()
     player:draw()
     -- Draw entities on top of hives
     for _, e in ipairs(Entities) do
-        if e.type ~= "hive" and e.type ~= "player" then
+        if e.type ~= "hive" and e.type ~= "player" and e.type ~= "fence" then
             e:draw()
         end
     end
@@ -341,15 +345,6 @@ function MainState:draw()
     DayCycle:ApplyBGTint()
     HUD:draw()
     DialogManager:draw()
-end
-
--- Functions to activate enemies via triggers
-function TrigB()
-    BadgerGo = true
-end
-
-function TrigW()
-    WaspGo = true
 end
 
 -- Return the state

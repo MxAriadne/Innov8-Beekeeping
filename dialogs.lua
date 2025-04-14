@@ -14,19 +14,26 @@ local dialog = {
     },
     waspmessage = {
         text = "Oh no! Wasps are attacking! Wasps are a natural predator to honey bees. Paper wasps build open-comb in paper nests in trees. They attack weak hives and hunt bees mid-flight.",
-        options = { 
-            {
-                "Time to defend the hive!",  -- Option label (text displayed to the player)
-                function() TrigW() end 
-            }
+        options = {
+            {"Time to defend the hive!", function () for _, e in ipairs(Entities) do if e.type == "wasp" then e.visible = true end end end}
         }
-    },badgermessage = {
+    },
+    bee_eatermessage = {
+        text = "Oh no! A bee eater is attacking! Bee eaters are a natural predator to honey bees. They hunt bees mid-flight!",
+        options = {
+            {"Time to defend the hive!", function () for _, e in ipairs(Entities) do if e.type == "bee_eater" then e.visible = true end end end}
+        }
+    },
+    mothmessage = {
+        text = "Oh no! A wax moth is attacking! They invade hives and feed on the wax and larvae!",
+        options = {
+            {"Time to defend the hive!", function () for _, e in ipairs(Entities) do if e.type == "moth" then e.visible = true end end end}
+        }
+    },
+    badgermessage = {
         text = "Oh no! A honey badger is attacking! Badgers are tough and aggressive predators. They can tear open bee hives with their powerful claws in order to feast on the honey, wax, and bee larvae. They withstand any bee stings through their thick, loose skin.",
         options = {
-            {
-                "Time to defend the hive!",  -- Option label (text displayed to the player)
-                function() TrigB() end 
-            }
+            {"Time to defend the hive!", function () for _, e in ipairs(Entities) do if e.type == "honey_badger" then e.visible = true end end end}
         }
     },
 }
@@ -61,7 +68,7 @@ dialog.startupM = {
     text = [[Welcome! The goal of this game is to build a good enviroment for your bees in order to collect money! 
     Quick Tip: Press 'B' or 'N' to select an option. Then press ENTER to continue.]],
     options = {
-        { 'Tell Me How To Play!', function() DialogManager:show(dialog.startup0) DialogManager:push(dialog.startup1) DialogManager:push(dialog.startup2) DialogManager:push(dialog.startup3) end },
+        { 'Tell Me How To Play!', function() DialogManager:show(dialog.startup0) DialogManager:push(dialog.startup1) DialogManager:push(dialog.startup2) DialogManager:push(dialog.startup3) DialogManager:push(dialog.startup4) end },
         { 'Skip Tutorial!', function() DialogManager:pop() end }
     }
 }

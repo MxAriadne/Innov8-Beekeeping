@@ -24,14 +24,12 @@ local DayCycle = {}
 local d = require("dialogs")
 local tips = require("tips")
 
-local daysPassed = 0.0;
+local daysPassed = 0.0
 local bgTint = {0.1, 0, .2} -- tint for background(r, g, b)
 
 -- days for attacks
-local waspDay = 1 --5
-WaspGo = false
-BadgerDay = 3 --10
-BadgerGo = false
+local eventDay = 1.0
+local cycle = "day"
 
 --this function changes the day counter
 --after user is done updating their hive for the day
@@ -42,6 +40,9 @@ end
 --method to change to night
 function DayCycle:NightSky()
     HoneyTemp = TotalHoney
+
+    -- Update cycle
+    cycle = "night"
 
     -- lock space
     PressSpaceAllowed = false
@@ -70,20 +71,17 @@ function DayCycle:DaySky()
     -- lock space
     PressSpaceAllowed = false
 
-    -- update timer
+    -- Update timer
     Timer = 0;
+
+    -- Update cycle
+    cycle = "day"
 
     -- pop any old messages
     DialogManager:clearDialogs()
 
     --day message
     DialogManager:show(d.goodmorning) -- stores dialog
-
-    --load stat message with variables
-    local morningstats = {
-        text = string.format("Check out your stats: You have %d KSh.\nYour hive's health is at %d.\nYour hive's honey count is at %d. \nYour bee count is %d. \nYour sword is at %d strength. \nYour fences are at %d strength.", PlayerMoney, hive.health, hive.honey, #ShopBees, 0, 0),
-        options = {} -- no choices, signals end of dialogue
-    }
 
     modal:show("Dawn of Day " .. daysPassed .. "!", string.format(
                                                         "You have %d KSh!\n" ..
@@ -109,35 +107,55 @@ function DayCycle:DaySky()
         }
     }, 512, 512)
 
-    --send update message
-    --DialogManager:push(morningstats)
-
-    --shop populates
-
     -- tigger nightly updates
     self:TriggerUpdates()
-
-
 end
 
 --method to update things throughout the night
 function DayCycle:TriggerUpdates(dt)
 
-    --check for attack
-    if daysPassed == waspDay then
-        TintEnabled = true
-        DialogManager:push(d.waspmessage)
+    local dayEvents = {
+        [1] = "wasp",
+        [2] = "bee_eater",
+    }
 
+    local nightEvents = {
+        [1] = "badger",
+        [2] = "moth",
+    }
 
-    elseif daysPassed == BadgerDay+0.5 then
+    local entities = {
+        ["wasp"] = Wasp,
+        ["bee_eater"] = BeeEater,
+        ["badger"] = HoneyBadger,
+        ["moth"] = Moth,
+    }
 
-        DialogManager:push(d.badgermessage)
+    if daysPassed == eventDay then
+        -- Update event day randomly
+        eventDay = eventDay + math.random(0.5, 2)
 
+        if cycle == "night" then
+            TintEnabled = true
+            local event = nightEvents[math.random(1, #nightEvents)]
+
+            local entity = entities[event]()
+            entity.visible = false
+            table.insert(Entities, entity)
+
+            DialogManager:push(d[event .. "message"])
+        else
+            local event = dayEvents[math.random(1, #dayEvents)]
+
+            local entity = entities[event]()
+            entity.visible = false
+            table.insert(Entities, entity)
+
+            DialogManager:push(d[event .. "message"])
+        end
     else
         PressSpaceAllowed = true
     end
-
-
 end
 
 -- applys a tint over everything using a transparent rectangle

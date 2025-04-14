@@ -46,7 +46,7 @@ function CharacterSelector:enter()
         currentIndex = (currentIndex - 2) % #quads + 1
         Character = Character - 1
         if Character < 0 then
-            Character = 9
+            Character = 4
         end
     end, 60, 60, 100, GameConfig.windowH / 2 - 30)
 
@@ -54,7 +54,7 @@ function CharacterSelector:enter()
     arrowRight = button:new(">", function()
         currentIndex = currentIndex % #quads + 1
         Character = Character + 1
-        if Character > 9 then
+        if Character > 4 then
             Character = 0
         end
     end, 60, 60, GameConfig.windowW - 160, GameConfig.windowH / 2 - 30)

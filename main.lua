@@ -47,6 +47,8 @@ function love.load()
     require "entities.flower"
     require "entities.hive"
     require "entities.wasp"
+    require "entities.bee_eater"
+    require "entities.moth"
     require "entities.honey_badger"
     require "entities.player"
     require "entities.queenBee"
@@ -54,6 +56,7 @@ function love.load()
     require "entities.topbarhive"
     require "entities.lantana"
     require "entities.dewdrop"
+    require "entities.fence"
 
     -- Set default filter for graphics
     love.graphics.setDefaultFilter(GameConfig.filter, GameConfig.filter)

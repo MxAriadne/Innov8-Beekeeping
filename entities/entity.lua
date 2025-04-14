@@ -200,6 +200,9 @@ function Entity:destroy()
 
     -- Set visibility to false
     self.visible = false
+
+    -- Reset PressSpaceAllowed
+    PressSpaceAllowed = true
 end
 
 function Entity:takeDamage(damage, attacker)
@@ -216,7 +219,7 @@ function Entity:takeDamage(damage, attacker)
     end
 
     -- If entity is still alive, check aggression
-    if self.hitsTaken >= self.aggressionThreshold and self.state ~= "fleeing" then
+    if self.hitsTaken >= self.aggressionThreshold and self.state ~= "fleeing" and contains(self.enemies, attacker.type) then
         self.isUnderAttack = true
         self.target = attacker
         self.state = "attacking"
@@ -500,6 +503,12 @@ end
 
 function Entity:debug()
     if DebugMode then
+
+        -- Draw a box around the entity hitbox
+        love.graphics.setColor(0.5, 0.7, 0, 0.7)
+        love.graphics.rectangle("line", self.x - self.width/2, self.y - self.height/2, self.width, self.height)
+        love.graphics.setColor(1, 1, 1, 1)
+
         -- Draw the current path of the entity if exists
         if self.current_path then
 
@@ -520,6 +529,17 @@ function Entity:debug()
 
             -- Reset color
             love.graphics.setColor(1, 1, 1, 1)
+        end
+
+        --checking if target is in range
+        if player:isTargetInRange(self) then
+            --color hitbox green if in range
+            love.graphics.setColor(0, 1, 0, 0.3)
+            love.graphics.rectangle("fill", self.x - self.width/2, self.y - self.height/2, self.width, self.height)
+        else
+            --not in range, color yellow
+            love.graphics.setColor(1, 1, 0, 0.3)
+            love.graphics.rectangle("line", self.x - self.width/2, self.y - self.height/2, self.width, self.height)
         end
 
         -- Debug text over the entity to display stats.
