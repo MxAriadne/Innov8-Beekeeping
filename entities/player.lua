@@ -151,13 +151,6 @@ function Player:update(dt)
         self.collider:setLinearVelocity(vx, vy)
     end
 
-    --cooldowns were really working that great so the player will be invulnerable for a bit
-    if self.isInvulnerable then
-        self.invulnerabilityTimer = self.invulnerabilityTimer - dt
-        if self.invulnerabilityTimer <= 0 then
-            self.isInvulnerable = false
-        end
-    end
 
 end
 
@@ -237,12 +230,6 @@ function Player:attack()
                 if target.obj.takeDamage then
                     target.obj:takeDamage(damage, self)
                     self:addHitFeedback(target.obj.x, target.obj.y)
-
-                    if target.obj.type == "honey_badger" or target.obj.type == "wasp" then
-                        target.obj.attackedByPlayer = true
-                        target.obj.lastAttacker = self
-                        target.obj.targetType = "player"
-                    end
                 end
 
                 ::continue::
@@ -255,22 +242,8 @@ function Player:attack()
 end
 
 --player take damage function
-function Player:takeDamage(damage)
-    if not self.isInvulnerable then
-        self.health = math.max(0, self.health - damage)
-        
-        self.damageFlashTimer = 0.3
-        
-        --protects from damage spam from wasp
-        self.isInvulnerable = true
-        self.invulnerabilityTimer = 0.6
-    
-        self.flash = true
-        
-        if DebugMode then
-            print("Player took " .. damage .. " damage, health: " .. self.health)
-        end
-    end
+function Player:takeDamage(damage, attacker)
+    self.health = self.health - damage
 end
 
 function Player:draw()
