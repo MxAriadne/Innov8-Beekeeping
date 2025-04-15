@@ -1,86 +1,115 @@
-local DayCycle = require("dayCycleScript")
-local Beehive = require("libraries/beehive")
-local Jumper = require("libraries/jumper")
-local MenuState = require("states/MenuState")
-local MainState = require("states/MainState")
+-- Config table, contains window related variables
+GameConfig = { windowW = 960, windowH = 640, filter = "nearest" }
+
+-- Game State Manager
 GameStateManager = require("libraries/gamestateManager")
 
--- global variables
-tintEnabled = false
-debugMode = false
+-- Object library
+Object = require "libraries.classic"
 
-GameConfig = {}
+-- Globally declare the modal helper class so we can use it in any state.
+modal = require("UI/modal")
+
+-- Declare all states in main.
+-- THIS MUST BE DONE IN MAIN OR IT WILL CAUSE RECIPROICAL IMPORT ERROR.
+ShopScreen = require "states/ShopScreen"
+MainMenu = require "states/MainMenu"
+PauseMenu = require "states/PauseMenu"
+MainState = require "states/MainState"
+Settings = require "states/Settings"
+CharacterSelector = require "UI/CharacterSelector"
+
+-- Set player name, used for save files.
+PlayerName = "Player"
+-- Total money the player has, starts out with 2000 KSh
+PlayerMoney = 2000
+-- Variable used to determine if day or night
+TintEnabled = false
+-- Variable used to determine if debug mode is on
+DebugMode = false
+-- This value is checked each state to determine if this is a new save or not
+FirstRun = true
+-- Timer for day/night cycle
+Timer = 0
+-- Interval for day/night cycle
+Interval = 60
+-- Last trigger time for day/night cycle
+LastTrigger = 0
+-- Locking mechanism to prevent skipping attacks
+PressSpaceAllowed = true
+
+-- Current build mode: "hive", "bee", "flower", or ""
+CurrentBuildMode = ""
 
 function love.load()
-    Object = require "classic"
-    require "bee"
-    require "flower"
-    require "hive"
-    require "wasp"
-    require "honeybadger"
-    
-    --table for flowers
-    flowers = {flower}
+    -- Load entities
+    require "entities.entity"
+    require "entities.bee"
+    require "entities.flower"
+    require "entities.hive"
+    require "entities.wasp"
+    require "entities.honey_badger"
+    require "entities.player"
+    require "entities.queenBee"
+    require "entities.langstrothhive"
+    require "entities.topbarhive"
+    require "entities.lantana"
+    require "entities.dewdrop"
 
-    music = love.audio.newSource("tunes/Flowers.mp3", "stream")
-    music:setLooping(true)  --music loop
-    music:play()  --playing the music
+    -- Set default filter for graphics
+    love.graphics.setDefaultFilter(GameConfig.filter, GameConfig.filter)
+    love.window.setMode(GameConfig.windowW, GameConfig.windowH)
 
-    -- Update GameConfig after setting the window mode
-    GameConfig.windowW = love.graphics.getWidth()
-    GameConfig.windowH = love.graphics.getHeight()
-
-    love.graphics.setDefaultFilter("nearest", "nearest")
-
-    --commenting out menu state for now while working on the main state
-    --GameStateManager:setState(MenuState)
-    GameStateManager:setState(MainState)
+    -- Set initial state
+    GameStateManager:setState(MainMenu)
 end
 
-
 function love.update(dt)
-    GameStateManager:update(dt)
-    --dia:update(dt) -- update dia system
+    if not modal.active then
+        GameStateManager:update(dt)
+
+        --timer for daycycle (overridden by "space")
+        Timer = Timer + dt
+        if math.floor(Timer / Interval) > math.floor(LastTrigger / Interval) then
+            --print("Timer hit a multiple of Interval seconds: " .. math.floor(Timer))
+            love.keypressed("space")
+            LastTrigger = Timer
+        end
+
+    end
 end
 
 function love.draw()
+    -- Forward draw to current state
     GameStateManager:draw()
-    ApplyBGTint()
+    -- Draw modal
+    modal:draw()
 end
 
--- helper functions from Poultry Profits
-function checkCollision(a, b)
-    return a.x < b.x + (b.width or b.size) and
-           a.x + (a.width or a.size) > b.x and
-           a.y < b.y + (b.height or b.size) and
-           a.y + (a.height or a.size) > b.y
+function love.mousepressed(x, y, b)
+    -- Forward mouse input to current state
+    local current = GameStateManager:getState()
+    if current and current.mousepressed then
+        current:mousepressed(x, y, b)
+    end
+    if modal:mousepressed(x, y, b) then return end
 end
 
-function isInPickupRange(a, b)
-    local aCenterX = a.x + (a.width or a.size) / 2
-    local aCenterY = a.y + (a.height or a.size) / 2
-    local bCenterX = b.x + (b.width or b.size) / 2
-    local bCenterY = b.y + (b.height or b.size) / 2
-    local distance = math.sqrt((aCenterX - bCenterX)^2 + (aCenterY - bCenterY)^2)
-    local range = 50  -- Adjusted pickup range
-    return distance <= range
+function love.textinput(text)
+    -- Block text input when modal is up
+    if modal.active then return end
+    -- Forward text input to current state
+    if GameStateManager.currentState and GameStateManager.currentState.textinput then
+        GameStateManager.currentState:textinput(text)
+    end
 end
 
--- trigger event for day cycle
-function love.keypressed(key)
-    -- Check if the key for advancing the day was pressed
-    if key == "space" then
-        AdvanceDay()  -- Call the trigger updates function from dayCycleScript.lua
-        if tintEnabled then
-            NightSky()
-            tintEnabled = false
-        else
-            DaySky()
-            tintEnabled = true
-        end
-
-    --pathfinding debug toggle
-    elseif key == "`" then  --tilde key
-        debugMode = not debugMode
+function love.keypressed(k)
+    -- Block key input when modal is up
+    if modal.active then return end
+    -- Forward key input to current state
+    local current = GameStateManager:getState()
+    if current and current.keypressed then
+        current:keypressed(k)
     end
 end
