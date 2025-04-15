@@ -36,7 +36,7 @@ function Entity:new()
     self.scale = 1
 
     -- Collider holder
-    self.collider = nil
+    -- self.collider = nil
 
     -- Type check
     self.type = "entity"
@@ -113,11 +113,27 @@ function Entity:new()
 
     -- Boolean to track if entity has honey
     self.hasLoot = false
+
+    -- Create collider but let derived classes set their specific collision class
+    self.collider = World:newRectangleCollider(self.x, self.y, self.width, self.height)
+    self.collider:setFixedRotation(true)
+    self.collider:setObject(self)
+    self.collider:setType('dynamic')
+
+    -- Is this a flying entity?
+    self.isFlying = false
+
+    -- Set default collision class
+    self.collider:setCollisionClass("Enemy")
+
 end
 
 function Entity:update(dt)
     -- If entity is hidden, skip update
     if not self.visible or self == nil then return end
+
+    -- Update collider position
+    self.collider:setPosition(self.x, self.y)
 
     -- Show damage indicators
     for i = #self.damageIndicator, 1, -1 do
@@ -170,9 +186,15 @@ function Entity:draw()
     -- Reset colors
     love.graphics.setColor(1, 1, 1, 1)
 
+    -- Debug text over the entity to display stats.
+    love.graphics.print(string.format("HP: %d / %d", self.health, self.maxHealth),
+                                     self.x - self.width/3, self.y - self.height/2)
+
+
     -- Draw debug if enabled
     self:debug()
 end
+
 
 function Entity:destroy()
     -- Clear this entity as a target from other entities first
@@ -233,7 +255,7 @@ function Entity:ensureGridLock()
     local targetGridY = math.floor(self.target.y / 22)
 
     if targetGridX >= 1 and targetGridX <= 42 and targetGridY >= 1 and targetGridY <= 30 then
-        self.current_path = self.pathfinding:findPathToTarget(self.x, self.y, self.target.x, self.target.y)
+        self.current_path = self.pathfinding:findPathToTarget(self.x, self.y, self.target.x, self.target.y, self.isFlying)
     end
 end
 
@@ -506,7 +528,7 @@ function Entity:debug()
 
         -- Draw a box around the entity hitbox
         love.graphics.setColor(0.5, 0.7, 0, 0.7)
-        love.graphics.rectangle("line", self.x - self.width/2, self.y - self.height/2, self.width, self.height)
+        love.graphics.rectangle("line", self.x - self.width/2 * self.scale, self.y - self.height/2 * self.scale, self.width * self.scale, self.height * self.scale)
         love.graphics.setColor(1, 1, 1, 1)
 
         -- Draw the current path of the entity if exists
@@ -535,11 +557,11 @@ function Entity:debug()
         if player:isTargetInRange(self) then
             --color hitbox green if in range
             love.graphics.setColor(0, 1, 0, 0.3)
-            love.graphics.rectangle("fill", self.x - self.width/2, self.y - self.height/2, self.width, self.height)
+            love.graphics.circle("fill", self.x, self.y, player.attackRange)
         else
             --not in range, color yellow
             love.graphics.setColor(1, 1, 0, 0.3)
-            love.graphics.rectangle("line", self.x - self.width/2, self.y - self.height/2, self.width, self.height)
+            love.graphics.circle("fill", self.x, self.y, player.attackRange)
         end
 
         -- Debug text over the entity to display stats.

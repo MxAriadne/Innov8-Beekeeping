@@ -21,7 +21,7 @@ CharacterSelector = require "UI/CharacterSelector"
 -- Set player name, used for save files.
 PlayerName = "Player"
 -- Total money the player has, starts out with 2000 KSh
-PlayerMoney = 1000000
+PlayerMoney = 3000
 -- Variable used to determine if day or night
 TintEnabled = false
 -- Variable used to determine if debug mode is on
@@ -40,6 +40,15 @@ PressSpaceAllowed = true
 -- Current build mode: "hive", "bee", "flower", or ""
 CurrentBuildMode = ""
 
+-- Direction constants
+DIRECTIONS = {
+    [0] = "left",
+    [1] = "right",
+    [2] = "up",
+    [3] = "down",
+    [4] = "still"
+}
+
 function love.load()
     -- Load entities
     require "entities.entity"
@@ -57,6 +66,7 @@ function love.load()
     require "entities.lantana"
     require "entities.dewdrop"
     require "entities.fence"
+    require "entities.chest"
 
     -- Set default filter for graphics
     love.graphics.setDefaultFilter(GameConfig.filter, GameConfig.filter)

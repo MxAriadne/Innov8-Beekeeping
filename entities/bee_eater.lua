@@ -38,7 +38,7 @@ function BeeEater:new(x, y)
     self.type = "bee_eater"
 
     -- Target holder variable for movement
-    self.target = nil or bee
+    self.target = bee or nil
 
     -- Pathfinding variables
     self.pathfinding = Pathfinding
@@ -102,6 +102,13 @@ function BeeEater:new(x, y)
 
     -- Previous state holder
     self.previousState = "hunting"
+
+    -- Set isFlying to true
+    self.isFlying = true
+
+    -- Set collision class
+    self.collider:setCollisionClass("Flying")
+
 end
 
 function BeeEater:draw()

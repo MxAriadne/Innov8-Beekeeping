@@ -102,6 +102,12 @@ function Moth:new(x, y)
 
     -- Previous state holder
     self.previousState = "hunting"
+
+    -- Set isFlying to true
+    self.isFlying = true
+
+    -- Set collision class
+    self.collider:setCollisionClass("Flying")
 end
 
 function Moth:draw()

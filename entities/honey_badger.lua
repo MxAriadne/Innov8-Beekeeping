@@ -77,6 +77,7 @@ function HoneyBadger:new(x, y)
 
     -- Previous state holder
     self.previousState = "hunting"
+
 end
 
 function HoneyBadger:draw()

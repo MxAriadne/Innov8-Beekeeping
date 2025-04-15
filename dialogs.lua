@@ -39,13 +39,7 @@ local dialog = {
 }
 
 dialog.startup0 = {
-    text = [[
-        To play, use the money earned from collecting honey to buy new tools.
-        Press TAB to view the shop. Use LEFT CLICK to buy the listed items.
-        Once you buy something, RIGHT CLICK to place the object where the mouse is.
-        To move, use the arrow keys or WASD in the respective direction.
-        These new hives, flowers, or bees will increase your productivity and help you withstand predator attacks.
-     ]],
+    text = "To play, use the money earned from collecting honey to buy new tools. Press TAB to view the shop. Use LEFT CLICK to buy the listed items. Once you buy something, RIGHT CLICK to place the object where the mouse is. To move, use the arrow keys or WASD in the respective direction. These new hives, flowers, or bees will increase your productivity and help you against predator attacks.",
     options = {}
 }
 
@@ -60,15 +54,24 @@ dialog.startup2 = {
 }
 
 dialog.startup3 = {
+    text = "To harvest honey, RIGHT CLICK on a hive while holding your bucket! To select an item in your inventory, press the NUMBER KEY for the item!",
+    options = {}
+}
+
+dialog.startup4 = {
+    text = "To sell honey, select the jar in your inventory using the NUMBER KEYS and RIGHT CLICK on the chest!",
+    options = {}
+}
+
+dialog.startup5 = {
     text = "More dialogue boxes will show up through out the game. Quick tip: pressing 'C' will finish typing the message. Pressing ENTER will exit the dialogue box. Don't forget to exit the dialogue box before continuing to the next day.",
     options = {}
 }
 
 dialog.startupM = {
-    text = [[Welcome! The goal of this game is to build a good enviroment for your bees in order to collect money! 
-    Quick Tip: Press 'B' or 'N' to select an option. Then press ENTER to continue.]],
+    text = "Welcome! The goal of this game is to build a good enviroment for your bees in order to collect money! Quick Tip: Press 'B' or 'N' to select an option. Then press ENTER to continue.",
     options = {
-        { 'Tell Me How To Play!', function() DialogManager:show(dialog.startup0) DialogManager:push(dialog.startup1) DialogManager:push(dialog.startup2) DialogManager:push(dialog.startup3) DialogManager:push(dialog.startup4) end },
+        { 'Tell Me How To Play!', function() DialogManager:show(dialog.startup0) DialogManager:push(dialog.startup1) DialogManager:push(dialog.startup2) DialogManager:push(dialog.startup3) DialogManager:push(dialog.startup4) DialogManager:push(dialog.startup5) end },
         { 'Skip Tutorial!', function() DialogManager:pop() end }
     }
 }

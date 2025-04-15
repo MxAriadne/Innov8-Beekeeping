@@ -29,6 +29,9 @@ function Fence:new(x, y)
     -- Collider data
     self.collider = nil
 
+    -- Update pathfinding grid
+    Pathfinding:updateGrid(self.x, self.y, true)
+
     -- Image holder
     self.image = love.graphics.newImage("maps/Sprout Lands - Sprites - Basic pack/Tilesets/Fences.png")
     self.quads = self:getQuads()
@@ -39,14 +42,14 @@ function Fence:update(dt)
     if self.collider == nil then
         self.collider = World:newRectangleCollider(self.x - (self.width*self.scale), self.y - (self.height*self.scale), self.width*self.scale, self.height*self.scale)
         self.collider:setType('static')
-        self.collider:setCollisionClass('Wall')
+        self.collider:setCollisionClass('Fence')
     end
 end
 
 function Fence:snapToGrid(x, y)
-    local gridSize = self.width * self.scale
-    local snappedX = math.floor(x / gridSize + 0.5) * gridSize
-    local snappedY = math.floor(y / gridSize + 0.5) * gridSize
+    local gridSize = 42
+    local snappedX = math.floor((x + self.width) / gridSize + 0.5) * gridSize
+    local snappedY = math.floor((y + self.height) / gridSize + 0.5) * gridSize
     return snappedX, snappedY
 end
 
@@ -60,7 +63,7 @@ function Fence:getAdjacent()
 
     local adjacent = {}
 
-    local gridSize = self.width * self.scale
+    local gridSize = 42
 
     for dir, offset in pairs(directions) do
         for _, entity in ipairs(Entities) do
@@ -151,6 +154,9 @@ function Fence:takeDamage(damage, attacker)
 end
 
 function Fence:destroy()
+    -- Update pathfinding grid before destroying
+    Pathfinding:updateGrid(self.x, self.y, false)
+
     if self.collider ~= nil then
         self.collider:destroy()
         self.collider = nil

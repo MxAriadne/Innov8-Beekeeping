@@ -44,6 +44,9 @@ function QueenBee:new(home, x, y)
     -- Type check
     self.type = "queenBee"
 
+    -- Set isFlying to true
+    self.isFlying = true
+
     -- Hive holder
     self.target = self.homeHive
 end
