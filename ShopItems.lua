@@ -10,11 +10,11 @@ ShopTools = {
         description = "Used to gently extract honey from hives.\nCollect more honey.",
         extra = ""
     },
-    bucket = {
-        name = "Bucket",
-        image = love.graphics.newImage("sprites/bucket.png"),
-        price = 400,
-        description = "Used to gather honey.",
+    mesh = {
+        name = "Wire Mesh",
+        image = love.graphics.newImage("sprites/wire_mesh.png"),
+        price = 1000,
+        description = "Use this on a hive to add protection from flying pests!",
         extra = ""
     },
     smoker = {

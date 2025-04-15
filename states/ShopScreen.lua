@@ -177,11 +177,11 @@ function BuyItem(item, selectedPage)
     if PlayerMoney >= item.price then
         PlayerMoney = PlayerMoney - item.price
 
-        local message = selectedPage == "ShopTools"
+        local message = selectedPage == "ShopTools" and item.name ~= "Wire Mesh"
             and item.name .. " is now in your inventory!"
             or "Press RIGHT-CLICK to place!"
 
-        if selectedPage == "ShopTools" then
+        if selectedPage == "ShopTools" and item.name ~= "Wire Mesh" then
             table.insert(player.items, item)
         else
             CurrentBuildMode = string.gsub(item.name, "%s+", "")

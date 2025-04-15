@@ -394,6 +394,10 @@ function MainState:mousepressed(x, y, button)
                     })
                 end
             end
+        elseif e and e.type == "hive" and CurrentBuildMode == "WireMesh" then
+            CurrentBuildMode = ""
+            e.maxHealth = e.maxHealth * 1.5
+            e.health = e.maxHealth
         end
     end
 
