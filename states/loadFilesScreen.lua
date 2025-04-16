@@ -7,8 +7,11 @@ local gameSaves = {}
 local button = require "UI/button"
 local textbox = require "UI/textbox"
 require "UI/design"
+
+-- Save/Load imports
 local save_manager = require "save_manager"
 local game_data = require "game_data"
+local gameState = require("states/MainState")
 
 local textBoxColor = colors.grey
 local lastSearch = nil
@@ -22,7 +25,7 @@ function gameSaves:enter()
     self.textBox = textbox:new(textBoxW, textBoxH)
     self.searchButton = button:new("Search", 
                                 function()
-                                    gameSaves:search(self.textBox.text)
+                                    gameSaves:search(self.textBox.text )
                                 end, textBoxW / 3, textBoxH)
 
     -- Calculate position on screen
@@ -94,7 +97,7 @@ function gameSaves:search(name)
         local loaded = save_manager.load(filename)--pass filename
         if loaded then
             print("Save file loaded. Switching to game.")
-            GameStateManager:setState("game") -- <- switch to your game state
+            GameStateManager:setState(gameState) -- <- switch to your game state
         else
             print("Save file exists but failed to load.")
         end

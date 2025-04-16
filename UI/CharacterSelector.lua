@@ -36,7 +36,7 @@ function CharacterSelector:enter()
     end
 
     -- Initialize name input text to empty
-    textInput = ""
+    --textInput = ""
 
     -- Start with the first character
     currentIndex = 1
