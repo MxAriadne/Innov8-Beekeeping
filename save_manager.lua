@@ -45,6 +45,8 @@ function SaveManager.load(filename)
             if ok and type(data) == "table" then
                 gameData.apply(data)
                 print("Game loaded successfully.")
+                -- load logic for enemies
+                Loaded = true
                 return true
             else
                 print("Load error: returned value is not a table")

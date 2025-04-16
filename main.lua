@@ -19,6 +19,7 @@ Settings = require "states/Settings"
 CharacterSelector = require "UI/CharacterSelector"
 
 textInput = "savegame"
+Loaded = false
 -- Total money the player has, starts out with 2000 KSh
 PlayerMoney = 2000
 -- Variable used to determine if day or night

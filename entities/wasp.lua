@@ -71,7 +71,7 @@ function Wasp:new()
 end
 
 function Wasp:update(dt)
-    if WaspGo then
+    if WaspGo and not Loaded then
         self.visible = true
         self:updateState(dt)
         self:updateCombat(dt)

@@ -6,6 +6,26 @@
 -- import
 local lume = require("libraries/lume-master.lume")
 
+local default_gameData = {
+    
+    PlayerMoney = 2000,
+    TintEnabled = false,
+    DebugMode = false,
+    FirstRun = true,
+    Timer = 0,
+    Interval = 60,
+    LastTrigger = 0,
+    PressSpaceAllowed = true,
+    CurrentBuildMode = "",
+    days = 0,
+    Hives = {},     -- You can fill this with your hive info
+    Flowers = {},
+    Bees = {},
+    waspGo = false,
+    badgerGo = false,
+    PlayerName = ""
+
+}
 
 local gameData = {
     
