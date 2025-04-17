@@ -84,11 +84,13 @@ function exitGame()
 end
 
 function newGame()
+    Loaded = false
     GameStateManager:setState(CharacterSelector)
 end
 
 -- TODO: add function to change game state to gameSaves
 function loadGame()
+    Loaded = true
     GameStateManager:setState(gameSaves)
 end
 
