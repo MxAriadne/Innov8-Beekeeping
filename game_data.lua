@@ -4,18 +4,10 @@
 --TODO: fix update and var refs
 
 -- Make sure these variables are defined somewhere in your code before you use them
-local days = 1  -- Example value
-local hives = {}  -- Example empty table, replace with actual data
-local flowers = {}  -- Example empty table, replace with actual data
-local PlayerMoney = 100  -- Example value
-local bees = {}  -- Example empty table, replace with actual data
-local waspGo = false  -- Example value
-local badgerGo = false  -- Example value
-local PlayerName = ""
 
 local gameData = {
     -- day number
-    daysPassed = daysPassed,
+    daysPassed = 0,
     -- hive health, level, count, positions
     --hives = hives,
     -- flower count, positions
@@ -27,17 +19,21 @@ local gameData = {
     -- bee count
     --bees = bees,
     -- waspGo
-    waspGo = waspGo,
+    --waspGo = waspGo,
     -- badgerGo
-    badgerGo = badgerGo
+    --badgerGo = badgerGo
     -- fence count, positions
     -- tool integrity n stuff
 }
 
-function Update_gameData()
+function Update_gameDataWGlobals()
     gameData.daysPassed = daysPassed
-    gameData.waspGo = waspGo
-    gameData.badgerGo = badgerGo
+
+end
+
+function Update_GlobalsWgameData()
+    daysPassed = gameData.daysPassed
+
 end
 
 return gameData
