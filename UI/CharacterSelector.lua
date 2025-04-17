@@ -3,9 +3,6 @@ local CharacterSelector = {}
 -- Global variable to store the selected character index
 Character = 1
 
-local save_manager = require "save_manager"
-local game_data = require "game_data"
-
 local MainState = require("states/MainState")
 
 local arrowLeft, arrowRight
@@ -64,8 +61,6 @@ function CharacterSelector:enter()
 
     -- Create a continue button to proceed to the main game state
     continueButton = button:new("Continue", function()
-        --added to load default variables
-        save_manager.load("")
         GameStateManager:setState(MainState)
         FirstRun = false
     end, 150, 50, GameConfig.windowW / 2 - 75, GameConfig.windowH - 100)

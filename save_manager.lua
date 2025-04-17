@@ -7,23 +7,24 @@ local gameData = require("game_data")
 
 local SaveManager = {}
 textInput = textInput or "savegame"
-local save_filename = "" --"savegame.lua" -- change to use username in filename to load
+local save_filename = ""--"savegame.lua" -- change to use username in filename to load
 
 function SaveManager.save()
+
+
     --print("Hives:", lume.serialize(Hives))  -- You can use lume.serialize to log tables
     --print("Flowers:", lume.serialize(Flowers))
     --print("Bees:", lume.serialize(Bees))
     save_filename = textInput .. ".lua"
-    print("inside save: ".. PlayerMoney)
+
     -- update data
-    gameData.updateSave()
+    gameData.update()
 
     local dataToSave = gameData.getSerializableData()
     -- serialize and store
     local serialized = lume.serialize(dataToSave)
-    print("saving to : " .. save_filename)
+    print("saving to : ".. save_filename)
     love.filesystem.write(save_filename, serialized)
-    print("Save location: " .. love.filesystem.getSaveDirectory())
 
 
     print("Game saved!")
@@ -32,49 +33,33 @@ function SaveManager.save()
     print("end")
 end
 
-
-
 function SaveManager.load(filename)
-    if Loaded then
-        print("loading filename: " .. filename)
+    
+    print("loading filename: " .. filename)
 
-        if love.filesystem.getInfo(filename) then
-            local contents = love.filesystem.read(filename)
-            local chunk = loadstring("return " .. contents)
-            if chunk then
-                local ok, data = pcall(chunk)
-                print(data)
-                if ok and type(data) == "table" then
-                    gameData.apply(data)
-                    --gameData.updateLoad()
-                    gameData.getSerializableData()
-                    print("Game loaded successfully.")
-                    -- load logic for enemies
-                    --Loaded = true
-                    return true
-                else
-                    print("Load error: returned value is not a table")
-                end
+    if love.filesystem.getInfo(filename) then
+        local contents = love.filesystem.read(filename)
+        local chunk = loadstring("return " .. contents)
+        if chunk then
+            local ok, data = pcall(chunk)
+            if ok and type(data) == "table" then
+                gameData.apply(data)
+                print("Game loaded successfully.")
+                -- load logic for enemies
+                Loaded = true
+                return true
             else
-                print("Load error: could not parse save file")
+                print("Load error: returned value is not a table")
             end
         else
-            print("No save file found.")
+            print("Load error: could not parse save file")
         end
-
-        return false
     else
-        
-        --gameData.resetToDefaults()  -- resets the gameData table itself
-
-        -- load defualt table
-        --print(default_gameData)
-        --gameData.apply(default_gameData)
-        gameData.updateWithDefault()
-        print("loaded default game variables")
-        --print(default_gameData.PlayerMoney)
-        print(PlayerMoney)
+        print("No save file found.")
     end
+
+    return false
+
 end
 
 return SaveManager
