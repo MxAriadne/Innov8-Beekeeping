@@ -45,6 +45,9 @@ PressSpaceAllowed = true
 -- Current build mode: "hive", "bee", "flower", or ""
 CurrentBuildMode = ""
 
+-- to get username
+textInput = ""
+
 -- Direction constants
 DIRECTIONS = {
     [0] = "left",

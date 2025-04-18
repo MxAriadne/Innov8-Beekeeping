@@ -95,7 +95,7 @@ function gameSaves:search(name)
 
     if love.filesystem.getInfo(filename) then
         FirstRun = false
-        local loaded = SaveManager.loadGame()--pass filename
+        local loaded = SaveManager.loadGame(filename)--pass filename
         if loaded then
             print("Save file loaded. Switching to game.")
             GameStateManager:setState(gameState) -- <- switch to your game state

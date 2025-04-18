@@ -9,12 +9,23 @@ local SaveManager = {}
 
 -- saving now
 function SaveManager.save()
+    -- get username to write to
+    local name = ""
+    if textInput == "" then
+        name = "default_save"
+    else
+        name = textInput
+    end
+
+    -- create filename
+    local filename = name .. ".lua"
+
     -- update data
     GameData.Update_gameDataWGlobals()
 
     -- serialize and store
     local serialized = lume.serialize(GameData.gameData)
-    love.filesystem.write("save2.lua", serialized)
+    love.filesystem.write(filename, serialized)
     print("Game saved!")
     print("File saved to: " .. love.filesystem.getSaveDirectory())
 
@@ -22,10 +33,10 @@ end
 
 
 --og name .load()
-function SaveManager.loadGame()
-    if love.filesystem.getInfo("save.lua") then
+function SaveManager.loadGame(filename)
+    if love.filesystem.getInfo(filename) then
         -- get data from the file
-        local data = love.filesystem.read("save.lua")
+        local data = love.filesystem.read(filename)
         local table = lume.deserialize(data)
         print("deserialized table is returned")
 
