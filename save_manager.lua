@@ -19,7 +19,8 @@ function SaveManager.save()
     print("File saved to: " .. love.filesystem.getSaveDirectory())
 
 end
---[[
+
+
 --og name .load(), now only being called in this file.
 function SaveManager.loadGame()
     if love.filesystem.getInfo("save.lua") then
@@ -31,10 +32,10 @@ function SaveManager.loadGame()
     end
 end
 
-local loadedData = loadGame("save.lua")
+local loadedData = loadGame()
 
 if loadedData then
     print("Loaded Dayspassed: ", loadedData.DaysPassed)
 end
-]]
+
 return SaveManager
