@@ -61,6 +61,13 @@ function CharacterSelector:enter()
 
     -- Create a continue button to proceed to the main game state
     continueButton = button:new("Continue", function()
+        -- check is old game is loaded
+        --[[if not FirstRun then 
+            FirstRun = true 
+            -- reset world
+
+        end -- reset because they pressed new
+        ]]
         GameStateManager:setState(MainState)
         FirstRun = false
         PlayerName = textInput

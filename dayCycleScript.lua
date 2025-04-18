@@ -24,7 +24,7 @@ local DayCycle = {}
 local d = require("dialogs")
 local tips = require("tips")
 
-local daysPassed = 0.0
+--local DaysPassed = 0.0
 local bgTint = {0.1, 0, .2} -- tint for background(r, g, b)
 
 -- days for attacks
@@ -34,7 +34,8 @@ local cycle = "day"
 --this function changes the day counter
 --after user is done updating their hive for the day
 function DayCycle:AdvanceDay()
-    daysPassed = daysPassed + 0.5
+    DaysPassed = DaysPassed + 0.5
+    print("DaysPassed: "..DaysPassed)
 end
 
 --method to change to night
@@ -83,7 +84,7 @@ function DayCycle:DaySky()
     --day message
     DialogManager:show(d.goodmorning) -- stores dialog
 
-    modal:show("Dawn of Day " .. daysPassed .. "!", string.format(
+    modal:show("Dawn of Day " .. DaysPassed .. "!", string.format(
                                                         "You have %d KSh!\n" ..
                                                         "Remember to press TAB to purchase new equipment!\n\n\n" ..
                                                         "Your bees produced " .. (TotalHoney - HoneyTemp) .. " grams of honey today!\n\n\n" ..
@@ -131,7 +132,7 @@ function DayCycle:TriggerUpdates(dt)
         ["moth"] = Moth,
     }
 
-    if daysPassed == eventDay then
+    if DaysPassed == eventDay then
         -- Update event day randomly
         eventDay = eventDay + math.random(0.5, 2)
 

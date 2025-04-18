@@ -3,22 +3,23 @@
 --TODO: fix update call and serialize/save. Load
 
 local lume = require("libraries/lume-master/lume")
-local gd = require("game_data")
+--local gd = require("game_data")
 
 local SaveManager = {}
 
 -- not saving now
 function SaveManager.save()
     -- update data
-    gd.Update_gameDataWGlobals()
+    GameData.Update_gameDataWGlobals()
 
     -- serialize and store
-    local serialized = lume.serialize(gd.gameData)
+    local serialized = lume.serialize(GameData.gameData)
     love.filesystem.write("save.lua", serialized)
     print("Game saved!")
+    print("File saved to: " .. love.filesystem.getSaveDirectory())
 
 end
-
+--[[
 --og name .load(), now only being called in this file.
 function SaveManager.loadGame()
     if love.filesystem.getInfo("save.lua") then
@@ -33,7 +34,7 @@ end
 local loadedData = loadGame("save.lua")
 
 if loadedData then
-    print("Loaded Dayspassed: ", loadedData.daysPassed)
+    print("Loaded Dayspassed: ", loadedData.DaysPassed)
 end
-
+]]
 return SaveManager

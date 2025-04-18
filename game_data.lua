@@ -5,35 +5,55 @@
 
 -- Make sure these variables are defined somewhere in your code before you use them
 
-local gameData = {
-    -- day number
-    daysPassed = 0,
-    -- hive health, level, count, positions
-    --hives = hives,
-    -- flower count, positions
-    --flowers = flowers,
-    -- honey count 
-    -- honey = hive.honey,  -- maybe get honey from all hives
-    -- money count
-    --PlayerMoney = PlayerMoney,
-    -- bee count
-    --bees = bees,
-    -- waspGo
-    --waspGo = waspGo,
-    -- badgerGo
-    --badgerGo = badgerGo
-    -- fence count, positions
-    -- tool integrity n stuff
+local GameData = {}
+
+GameData.gameData = {
+    -- globally defined variables in main
+    DaysPassed = 0,
+    PlayerName = "Player",
+    PlayerMoney = 3000,
+    TintEnabled = false,
+    DebugMode = false,
+    FirstRun = true,
+    Timer = 0,
+    LastTrigger = 0,
+    PressSpaceAllowed = true,
+
+    -- add entities
+    --bees (type(queen, worker), location, health)
+    --hives(type(), location, health)
+    --flowers(type(), location)
+
+    -- inventory
+    --brush (integrity)
+    --mesh (integrity)
+    --smoker (integrity)
+
 }
 
-function Update_gameDataWGlobals()
-    gameData.daysPassed = daysPassed
 
+function GameData.Update_gameDataWGlobals()
+    GameData.gameData.DaysPassed = DaysPassed
+    GameData.gameData.PlayerName = PlayerName
+    GameData.gameData.PlayerMoney = PlayerMoney
+    GameData.gameData.TintEnabled = TintEnabled
+    GameData.gameData.DebugMode = DebugMode
+    GameData.gameData.FirstRun = FirstRun
+    GameData.gameData.Timer = Timer
+    GameData.gameData.LastTrigger = LastTrigger
+    GameData.gameData.PressSpaceAllowed = PressSpaceAllowed
 end
 
-function Update_GlobalsWgameData()
-    daysPassed = gameData.daysPassed
-
+function GameData.Update_GlobalsWgameData()
+    DaysPassed = GameData.gameData.DaysPassed
+    PlayerName = GameData.gameData.PlayerName
+    PlayerMoney = GameData.gameData.PlayerMoney
+    TintEnabled = GameData.gameData.TintEnabled
+    DebugMode = GameData.gameData.DebugMode
+    FirstRun = GameData.gameData.FirstRun
+    Timer = GameData.gameData.Timer
+    LastTrigger = GameData.gameData.LastTrigger
+    PressSpaceAllowed = GameData.gameData.PressSpaceAllowed
 end
 
-return gameData
+return GameData

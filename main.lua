@@ -18,6 +18,11 @@ MainState = require "states/MainState"
 Settings = require "states/Settings"
 CharacterSelector = require "UI/CharacterSelector"
 
+SaveManager = require "save_manager"
+GameData = require "game_data"
+
+-- All variables that need to be saved should be global variables for sake of my sanity.
+DaysPassed = 0.0
 -- Set player name, used for save files.
 PlayerName = "Player"
 -- Total money the player has, starts out with 2000 KSh
