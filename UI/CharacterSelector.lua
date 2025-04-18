@@ -61,12 +61,25 @@ function CharacterSelector:enter()
 
     -- Create a continue button to proceed to the main game state
     continueButton = button:new("Continue", function()
+        --[[ I tried fixing the newgame button bug where when esc back to main, the game reloads instead of building a new one.
+            Having issues with collision clear and cleanly destorying the instance of world before recreating it
         -- check is old game is loaded
-        --[[if not FirstRun then 
-            FirstRun = true 
+        if not FirstRun then
+            FirstRun = true
             -- reset world
-
+            -- Destroy all bodies
+            if World then
+                print("Does new world have collisionClear?", World.collisionClear)
+                print("destroying bodies")
+                for _, body in ipairs(World:getBodies()) do
+                    body:destroy()
+                end
+                print("Does new world have collisionClear?", World.collisionClear)
+            end
+            -- Destroy the world
+            World = nil
         end -- reset because they pressed new
+        -- will recreate in mainstate bc FirstRun is true
         ]]
         GameStateManager:setState(MainState)
         FirstRun = false
@@ -81,7 +94,7 @@ function CharacterSelector:draw()
 
     -- Display prompt to enter player's name
     --love.graphics.setFont(love.graphics.newFont(18))
-    love.graphics.setColor(0, 0, 0)  -- Set text color to black
+    love.graphics.setColor(0, 0, 0) -- Set text color to black
     love.graphics.print("Enter your name:", GameConfig.windowW / 2 - 100, 30)
 
     -- Draw text input box
@@ -89,7 +102,7 @@ function CharacterSelector:draw()
     love.graphics.print(textInput, GameConfig.windowW / 2 - 95, 65)
 
     -- Draw the continue button
-    continueButton:draw(colors.yellow, love.graphics.newFont(24), {0, 0, 0})
+    continueButton:draw(colors.yellow, love.graphics.newFont(24), { 0, 0, 0 })
 
     -- Reset drawing color for full opacity, without this the character is blank.
     love.graphics.setColor(1, 1, 1, 1)
@@ -134,7 +147,7 @@ function CharacterSelector:mousepressed(x, y, b)
     if x >= GameConfig.windowW / 2 - 100 and x <= GameConfig.windowW / 2 + 100 and y >= 60 and y <= 90 then
         nameInputActive = true  -- Activate text input
     else
-        nameInputActive = false  -- Deactivate text input if clicked outside
+        nameInputActive = false -- Deactivate text input if clicked outside
     end
 end
 
