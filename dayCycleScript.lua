@@ -23,6 +23,7 @@ local DayCycle = {}
 
 local d = require("dialogs")
 local tips = require("tips")
+local SaveManager = require "save_manager"
 
 --local DaysPassed = 0.0
 local bgTint = {0.1, 0, .2} -- tint for background(r, g, b)
@@ -157,6 +158,9 @@ function DayCycle:TriggerUpdates(dt)
     else
         PressSpaceAllowed = true
     end
+
+    -- update save
+    SaveManager.save()
 end
 
 -- applys a tint over everything using a transparent rectangle

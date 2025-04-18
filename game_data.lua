@@ -44,16 +44,16 @@ function GameData.Update_gameDataWGlobals()
     GameData.gameData.PressSpaceAllowed = PressSpaceAllowed
 end
 
-function GameData.Update_GlobalsWgameData()
-    DaysPassed = GameData.gameData.DaysPassed
-    PlayerName = GameData.gameData.PlayerName
-    PlayerMoney = GameData.gameData.PlayerMoney
-    TintEnabled = GameData.gameData.TintEnabled
-    DebugMode = GameData.gameData.DebugMode
-    FirstRun = GameData.gameData.FirstRun
-    Timer = GameData.gameData.Timer
-    LastTrigger = GameData.gameData.LastTrigger
-    PressSpaceAllowed = GameData.gameData.PressSpaceAllowed
+function GameData.Update_GlobalsWgameData(data)
+    DaysPassed = data.DaysPassed
+    PlayerName = data.PlayerName
+    PlayerMoney = data.PlayerMoney
+    TintEnabled = data.TintEnabled
+    DebugMode = data.DebugMode
+    FirstRun = data.FirstRun
+    Timer = data.Timer
+    LastTrigger = data.LastTrigger
+    PressSpaceAllowed = data.PressSpaceAllowed
 end
 
 return GameData

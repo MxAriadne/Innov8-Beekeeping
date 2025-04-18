@@ -8,6 +8,11 @@ local button = require "UI/button"
 local textbox = require "UI/textbox"
 require "UI/design"
 
+-- Save/Load imports
+local SaveManager = require "save_manager"
+local GameData = require "game_data"
+local gameState = require("states/MainState")
+
 local textBoxColor = colors.grey
 local lastSearch = nil
 
@@ -20,7 +25,7 @@ function gameSaves:enter()
     self.textBox = textbox:new(textBoxW, textBoxH)
     self.searchButton = button:new("Search", 
                                 function()
-                                    gameSaves:search(self.textBox.text)
+                                    gameSaves:search(self.textBox.text )
                                 end, textBoxW / 3, textBoxH)
 
     -- Calculate position on screen
@@ -80,7 +85,26 @@ end
 function gameSaves:search(name)
     lastSearch = name
     print(string.format("Searching for %s's save file", lastSearch))
-                   
+        
+    if name == nil or name == "" then
+        print("No username entered.")
+        return
+    end
+
+    local filename = name .. ".lua"
+
+    if love.filesystem.getInfo(filename) then
+        FirstRun = false
+        local loaded = SaveManager.loadGame()--pass filename
+        if loaded then
+            print("Save file loaded. Switching to game.")
+            GameStateManager:setState(gameState) -- <- switch to your game state
+        else
+            print("Save file exists but failed to load.")
+        end
+    else
+        print("No save file found for: " .. name)
+    end
 end
 
 return gameSaves

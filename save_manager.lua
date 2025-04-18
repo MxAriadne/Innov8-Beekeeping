@@ -7,35 +7,35 @@ local lume = require("libraries/lume-master/lume")
 
 local SaveManager = {}
 
--- not saving now
+-- saving now
 function SaveManager.save()
     -- update data
     GameData.Update_gameDataWGlobals()
 
     -- serialize and store
     local serialized = lume.serialize(GameData.gameData)
-    love.filesystem.write("save.lua", serialized)
+    love.filesystem.write("save2.lua", serialized)
     print("Game saved!")
     print("File saved to: " .. love.filesystem.getSaveDirectory())
 
 end
 
 
---og name .load(), now only being called in this file.
+--og name .load()
 function SaveManager.loadGame()
     if love.filesystem.getInfo("save.lua") then
-        local chunk = love.filesystem.load("save.lua")
-        return chunk()  -- returns the loaded table
+        -- get data from the file
+        local data = love.filesystem.read("save.lua")
+        local table = lume.deserialize(data)
+        print("deserialized table is returned")
+
+        -- update the variables with the saved values
+        GameData.Update_GlobalsWgameData(table)
+        return table
     else
         print("No save file found.")
         return nil
     end
-end
-
-local loadedData = loadGame()
-
-if loadedData then
-    print("Loaded Dayspassed: ", loadedData.DaysPassed)
 end
 
 return SaveManager
