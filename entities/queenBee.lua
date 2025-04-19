@@ -7,7 +7,6 @@ function QueenBee:new(hive, x, y)
     self.image = love.graphics.newImage("sprites/queen_bee.png")
 
     -- Queen specific properties
-    self.type = "queen_bee"
     self.is_queen = true
     
     -- scale and dimension
@@ -51,6 +50,19 @@ function QueenBee:new(hive, x, y)
     -- Other properties
     self.visible = true
     self.threatDetectionRange = 100
+
+    -- Range at which entity will attack.
+    -- Queen doesn't leave the hive.
+    self.wanderRadius = 50 -- Stays close to hive
+
+    -- Type check
+    self.type = "queenBee"
+
+    -- Set isFlying to true
+    self.isFlying = true
+
+    -- Hive holder
+    self.target = self.homeHive
     
     return self
 end

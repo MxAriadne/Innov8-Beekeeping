@@ -14,31 +14,32 @@ local dialog = {
     },
     waspmessage = {
         text = "Oh no! Wasps are attacking! Wasps are a natural predator to honey bees. Paper wasps build open-comb in paper nests in trees. They attack weak hives and hunt bees mid-flight.",
-        options = { 
-            {
-                "Time to defend the hive!",  -- Option label (text displayed to the player)
-                function() TrigW() end 
-            }
+        options = {
+            {"Time to defend the hive!", function () for _, e in ipairs(Entities) do if e.type == "wasp" then e.visible = true end end end}
         }
-    },badgermessage = {
+    },
+    bee_eatermessage = {
+        text = "Oh no! A bee eater is attacking! Bee eaters are a natural predator to honey bees. They hunt bees mid-flight!",
+        options = {
+            {"Time to defend the hive!", function () for _, e in ipairs(Entities) do if e.type == "bee_eater" then e.visible = true end end end}
+        }
+    },
+    mothmessage = {
+        text = "Oh no! A wax moth is attacking! They invade hives and feed on the wax and larvae!",
+        options = {
+            {"Time to defend the hive!", function () for _, e in ipairs(Entities) do if e.type == "moth" then e.visible = true end end end}
+        }
+    },
+    badgermessage = {
         text = "Oh no! A honey badger is attacking! Badgers are tough and aggressive predators. They can tear open bee hives with their powerful claws in order to feast on the honey, wax, and bee larvae. They withstand any bee stings through their thick, loose skin.",
         options = {
-            {
-                "Time to defend the hive!",  -- Option label (text displayed to the player)
-                function() TrigB() end 
-            }
+            {"Time to defend the hive!", function () for _, e in ipairs(Entities) do if e.type == "honey_badger" then e.visible = true end end end}
         }
     },
 }
 
 dialog.startup0 = {
-    text = [[
-        To play, use the money earned from collecting honey to buy new tools.
-        Press TAB to view the shop. Use LEFT CLICK to buy the listed items.
-        Once you buy something, RIGHT CLICK to place the object where the mouse is.
-        To move, use the arrow keys or WASD in the respective direction.
-        These new hives, flowers, or bees will increase your productivity and help you withstand predator attacks.
-     ]],
+    text = "To play, use the money earned from collecting honey to buy new tools. Press TAB to view the shop. Use LEFT CLICK to buy the listed items. Once you buy something, RIGHT CLICK to place the object where the mouse is. To move, use the arrow keys or WASD in the respective direction. These new hives, flowers, or bees will increase your productivity and help you against predator attacks.",
     options = {}
 }
 
@@ -53,15 +54,24 @@ dialog.startup2 = {
 }
 
 dialog.startup3 = {
+    text = "To harvest honey, RIGHT CLICK on a hive while holding your bucket! To select an item in your inventory, press the NUMBER KEY for the item!",
+    options = {}
+}
+
+dialog.startup4 = {
+    text = "To sell honey, select the jar in your inventory using the NUMBER KEYS and RIGHT CLICK on the chest!",
+    options = {}
+}
+
+dialog.startup5 = {
     text = "More dialogue boxes will show up through out the game. Quick tip: pressing 'C' will finish typing the message. Pressing ENTER will exit the dialogue box. Don't forget to exit the dialogue box before continuing to the next day.",
     options = {}
 }
 
 dialog.startupM = {
-    text = [[Welcome! The goal of this game is to build a good enviroment for your bees in order to collect money! 
-    Quick Tip: Press 'B' or 'N' to select an option. Then press ENTER to continue.]],
+    text = "Welcome! The goal of this game is to build a good enviroment for your bees in order to collect money! Quick Tip: Press 'B' or 'N' to select an option. Then press ENTER to continue.",
     options = {
-        { 'Tell Me How To Play!', function() DialogManager:show(dialog.startup0) DialogManager:push(dialog.startup1) DialogManager:push(dialog.startup2) DialogManager:push(dialog.startup3) end },
+        { 'Tell Me How To Play!', function() DialogManager:show(dialog.startup0) DialogManager:push(dialog.startup1) DialogManager:push(dialog.startup2) DialogManager:push(dialog.startup3) DialogManager:push(dialog.startup4) DialogManager:push(dialog.startup5) end },
         { 'Skip Tutorial!', function() DialogManager:pop() end }
     }
 }

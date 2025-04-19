@@ -30,7 +30,7 @@ function HoneyBadger:new(x, y)
 
     -- Position of the entity
     self.x = x or 970
-    self.y = y or 150
+    self.y = y or math.random(100, 500)
 
     -- Scale of the entity
     self.scale = 1
@@ -78,6 +78,7 @@ function HoneyBadger:new(x, y)
 
     -- Previous state holder
     self.previousState = "hunting"
+
 end
 
 function HoneyBadger:draw()

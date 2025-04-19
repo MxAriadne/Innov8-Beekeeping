@@ -48,7 +48,7 @@ function Bee:new(home, x, y)
     self.scale = 2
 
     -- Collider holder
-    self.collider = nil
+    -- self.collider = nil
 
     -- Type check
     self.type = "bee"
@@ -72,7 +72,7 @@ function Bee:new(home, x, y)
     self.isAggressive = false
 
     -- List of entities that this one will try to fight
-    self.enemies = {"wasp", "honey_badger"}
+    self.enemies = {"wasp", "honey_badger", "bee_eater", "moth"}
 
     -- Is entity under attack?
     self.isUnderAttack = false
@@ -124,9 +124,19 @@ function Bee:new(home, x, y)
 
     -- Previous state holder
     self.previousState = "foraging"
+
+    -- Set isFlying to true
+    self.isFlying = true
+
+    -- Set collision class
+    self.collider:setCollisionClass('Bee')
 end
 
 function Bee:update(dt)
+
+    -- Update collider position
+    self.collider:setPosition(self.x, self.y)
+
     -- If entity is hidden, skip update
     if not self.visible or self == nil then return end
     if not self.homeHive then
@@ -213,7 +223,7 @@ function Bee:uniqueUpdate(dt)
             -- Returning state
             self.state = "returning"
             -- Find path to hive
-            self.current_path = self.pathfinding:findPathToHive(self.x, self.y, self.homeHive.x, self.homeHive.y)
+            self.current_path = self.pathfinding:findPathToHive(self.x, self.y, self.homeHive.x, self.homeHive.y, self.isFlying)
             -- Reset path index
             self.current_path_index = 1
         end

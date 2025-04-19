@@ -41,7 +41,7 @@ function Flower:update(dt)
     if not self.visible or self == nil then return end
 
     if self.onCooldown then
-        self.harvestTimer = self.harvestTimer + dt
+        self.harvestTimer = self.harvestTimer + dt 
         if self.harvestTimer >= self.harvestCooldown then
             self.onCooldown = false
             self.harvestTimer = 0

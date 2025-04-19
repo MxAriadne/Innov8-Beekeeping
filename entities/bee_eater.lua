@@ -1,13 +1,12 @@
-Wasp = Entity:extend()
+BeeEater = Entity:extend()
 
-function Wasp:new(x, y)
+function BeeEater:new(x, y)
     -- Parent constructor
     Entity.new(self)
 
     -- Health variables
-    local buff = self:getDayBuff()
-    self.health = 10 + (1.5 * buff)
-    self.maxHealth = self.health
+    self.health = 30
+    self.maxHealth = 30
 
     -- Dimensions of the entity
     self.width = 64
@@ -16,11 +15,11 @@ function Wasp:new(x, y)
     self.y_offset = 32
 
     -- Image holder
-    self.image = love.graphics.newImage("sprites/wasp.png")
+    self.image = love.graphics.newImage("sprites/beeeater.png")
 
     -- List of entities that this one will try to fight
     -- THIS IS IN ORDER OF PRIORITY
-    self.enemies = {"bee", "hive", "queenBee", "player"}
+    self.enemies = {"bee", "queenBee", "player"}
 
     -- Animation duration
     self.animationDuration = 2
@@ -33,13 +32,13 @@ function Wasp:new(x, y)
     self.y = y or math.random(100, 500)
 
     -- Scale of the entity
-    self.scale = 0.6
+    self.scale = 0.7
 
     -- Type check
-    self.type = "wasp"
+    self.type = "bee_eater"
 
     -- Target holder variable for movement
-    self.target = nil
+    self.target = bee or nil
 
     -- Pathfinding variables
     self.pathfinding = Pathfinding
@@ -49,8 +48,8 @@ function Wasp:new(x, y)
     self.state = "hunting"
 
     -- Speed variables
-    self.movementSpeed = 70
-    self.retreatSpeed = 150
+    self.movementSpeed = 100
+    self.retreatSpeed = 200
     self.speed = self.movementSpeed
 
     -- Is entity under attack?
@@ -60,28 +59,28 @@ function Wasp:new(x, y)
     self.lastAttacker = nil
 
     -- Hits taken before retaliating
-    self.aggressionThreshold = 1
+    self.aggressionThreshold = 2
 
     -- Hit tracker for retaliating
     self.hitsTaken = 0
 
     -- Amount of attacks before fleeing
-    self.maxAttacks = 5
+    self.maxAttacks = 2
 
     -- Range at which entity will attack
     self.combatEngagementRange = 500
 
     -- Health threshold for retreat
-    self.retreatHealthThreshold = 1
+    self.retreatHealthThreshold = 5
 
     -- Tracker for time since last attack
     self.attackTimer = 0
 
     -- Attack cooldown
-    self.attackCooldown = 1.5
+    self.attackCooldown = 1
 
     -- Attack damage
-    self.attackDamage = 1 + self:getDayBuff(0.1)
+    self.attackDamage = 1
 
     -- Attack range
     self.attackRadius = 50
@@ -109,9 +108,10 @@ function Wasp:new(x, y)
 
     -- Set collision class
     self.collider:setCollisionClass("Flying")
+
 end
 
-function Wasp:draw()
+function BeeEater:draw()
     -- Default draw function
     if not self.visible or self == nil then return end
 
@@ -138,4 +138,38 @@ function Wasp:draw()
     self:debug()
 end
 
-return Wasp
+function BeeEater:attack()
+    -- Early return if attack timer not up
+    if self:distanceFromObject(self.target) > self.attackRadius then return end
+    if self.attackTimer > 0 then
+        return
+    end
+
+    -- Validate target
+    if not self.target or not self.target.visible then
+        self.target = nil
+        self.state = "hunting"
+        self.isAggressive = false
+        return
+    end
+
+    -- Put attack on cooldown
+    self.attackTimer = self.attackCooldown
+
+    -- Try to get target type safely
+    local targetType = self.target.type
+    if not targetType then
+        self.target = nil
+        self.state = "hunting"
+        self.isAggressive = false
+        return
+    end
+
+    -- Regular attack, bee eaters will try to eat the bee itself
+    -- So they don't try to steal honey.
+    self.target:takeDamage(self.attackDamage, self)
+    --self:addHitFeedback(self.target.x, self.target.y)
+    self.isAggressive = true
+end
+
+return BeeEater

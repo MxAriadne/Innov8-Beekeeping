@@ -21,10 +21,14 @@ function Player:new()
         self.scale = 1.25
         self.width = 64
         self.height = 64
+        self.x_offset = 42
+        self.y_offset = 42
     else
         self.scale = 3
         self.width = 32
         self.height = 32
+        self.x_offset = 48
+        self.y_offset = 64
     end
 
     self.animations = {
@@ -32,7 +36,7 @@ function Player:new()
         attack = playerAnimation(love.graphics.newImage(AttackingSheet[Character]), self.width, self.height, 0.4)
     }
 
-    self.animation = self.animations.idle    
+    self.animation = self.animations.idle
     self.direction = "still"
 
     self.type = "player"
@@ -50,7 +54,7 @@ function Player:new()
     self.isAttacking = false
     self.attackCooldown = 0.5
     self.attackTimer = 0
-    self.attackRange = 30
+    self.attackRange = 25
 
     --tracks when damage is dealt to add visual effect -- want to add a robloxian oof here
     self.damageIndicator = {}  --table to store hit effects
@@ -60,8 +64,8 @@ function Player:new()
     self.equippedWeapon = "hands"
     self.weapons = {
         hands = {
-            damage = {wasp = 4, honey_badger = 3, bee = 5, hive = 10, flower = 10, queenBee = 10},
-            hitChance = {wasp = 0.50, honey_badger = 0.85, bee = 0.70, hive = 1.0, flower = 1.0, queenBee = 1.0}
+            damage = {wasp = 4, honey_badger = 3, bee = 1, hive = 10, flower = 10, queenBee = 10, moth = 4, bee_eater = 5, fence = 10},
+            hitChance = {wasp = 0.50, honey_badger = 0.85, bee = 0.05, hive = 1.0, flower = 1.0, queenBee = 1.0, moth = 0.50, bee_eater = 0.5, fence = 1.0}
         }
     }
 
@@ -76,10 +80,6 @@ function Player:new()
 end
 
 function Player:update(dt)
-
-    if self.itemInHand then
-        love.graphics.draw(self.itemInHand.image, self.x-32, self.y-32)
-    end
 
     -- Update the attack timer
     if self.isAttacking then
@@ -132,19 +132,19 @@ function Player:update(dt)
     local vy = 0
     if love.keyboard.isDown("right", 'd') then
         vx = self.speed
-        self.direction = "right"
+        self.direction = DIRECTIONS[1]
     end
     if love.keyboard.isDown("left", 'a') then
         vx = self.speed * -1
-        self.direction = "left"
+        self.direction = DIRECTIONS[0]
     end
     if love.keyboard.isDown("up", 'w') then
         vy = self.speed * -1
-        self.direction = "up"
+        self.direction = DIRECTIONS[2]
     end
     if love.keyboard.isDown("down", 's') then
         vy = self.speed
-        self.direction = "down"
+        self.direction = DIRECTIONS[3]
     end
 
     if self.collider then
@@ -156,7 +156,7 @@ end
 
 function Player:keyreleased(k)
     if k == "w" or k == "a" or k == "s" or k == "d" or k == "up" or k == "left" or k == "down" or k == "right" then
-        self.direction = "still"
+        self.direction = DIRECTIONS[4]
     end
 end
 
@@ -165,22 +165,35 @@ function Player:distanceTo(target)
     return math.sqrt((self.x - target.x)^2 + (self.y - target.y)^2)
 end
 
+function Player:isFacing(target)
+
+    local facing = false
+
+    if self.direction == "left" and target.x < self.x then
+        facing = true
+    elseif self.direction == "right" and target.x > self.x then
+        facing = true
+    elseif self.direction == "up" and target.y < self.y then
+        facing = true
+    elseif self.direction == "down" and target.y > self.y then
+        facing = true
+    end
+
+    return facing
+end
+
 --checking if target is within range
 function Player:isTargetInRange(target)
-    --player x and y
-    local pCenterX = self.x
-    local pCenterY = self.y
-
-    --getting the center of the target
-    local tCenterX = target.x + target.width/2
-    local tCenterY = target.y + target.height/2
-
     --calculate distance between the center of player and target
-    local distX = math.abs(pCenterX - tCenterX)
-    local distY = math.abs(pCenterY - tCenterY)
+    local distX = math.abs(self.x - target.x)
+    local distY = math.abs(self.y - target.y)
 
     --check if within attack range
-    return distX <= (self.attackRange + target.width/2) and distY <= (self.attackRange + target.height/2)
+    if target.scale >= 1 then
+        return distX <= (self.attackRange + target.width * target.scale) and distY <= (self.attackRange + target.height * target.scale) and self:isFacing(target)
+    else
+        return distX <= (self.attackRange + target.width/2) and distY <= (self.attackRange + target.height/2) and self:isFacing(target)
+    end
 end
 
 function Player:addHitFeedback(x, y)
@@ -203,7 +216,7 @@ function Player:attack()
 
         -- Checking if the target is in range
         for _, e in ipairs(Entities) do
-            if e.type ~= "player" then
+            if e.type ~= "player" and e.type ~= "Chest" then
                 if e.visible and self:isTargetInRange(e) then
                     table.insert(targets, {obj = e, type = e.type})
                     print(e.type .. " in range")
@@ -218,11 +231,6 @@ function Player:attack()
             for _, target in ipairs(targets) do
                 print("Attacking " .. target.type)
 
-                -- not dealing damage to fleeing enemies
-                if target.obj.state and (target.obj.state == "retreating" or target.obj.state == "fleeing") then
-                    goto continue
-                end
-
                 --getting weapon damage
                 local damage = self.weapons[self.equippedWeapon].damage[target.type]
 
@@ -231,8 +239,6 @@ function Player:attack()
                     target.obj:takeDamage(damage, self)
                     self:addHitFeedback(target.obj.x, target.obj.y)
                 end
-
-                ::continue::
             end
         end
 
@@ -247,9 +253,10 @@ function Player:takeDamage(damage, attacker)
 end
 
 function Player:draw()
-    --player draw, formerly in MainState.lua
-    --love.graphics.setColor(1, 1, 1, 1)
-    --love.graphics.circle("line", self.x, self.y, self.radius)
+    
+    if self.itemInHand then
+        love.graphics.draw(self.itemInHand.image, self.x - (self.itemInHand.image:getWidth()*2), self.y - self.height/2, 0, 1.5)
+    end
 
     -- Get mouse position
     local mouseX, mouseY = love.mouse.getPosition()
@@ -284,9 +291,9 @@ function Player:draw()
         if spriteNum > #self.animation.quads then
             spriteNum = #self.animation.quads  -- Use the last frame if out of bounds
         end
-        love.graphics.draw(self.animation.spritesheet, self.animation.quads[spriteNum], self.x - 48, self.y - 64, 0, self.scale)
+        love.graphics.draw(self.animation.spritesheet, self.animation.quads[spriteNum], self.x - self.x_offset, self.y - self.y_offset, 0, self.scale)
     else
-        love.graphics.draw(self.animation.spritesheet, self.animation.quads[1], self.x - 48, self.y - 64, 0, self.scale)
+        love.graphics.draw(self.animation.spritesheet, self.animation.quads[1], self.x - self.x_offset, self.y - self.y_offset, 0, self.scale)
     end
 
     --drawing damage effects
@@ -298,6 +305,7 @@ function Player:draw()
     love.graphics.setColor(1, 1, 1, 1)
 
     if DebugMode then
+        Pathfinding:drawDebug()
         --draw health
         love.graphics.setColor(1, 0, 0, 0.7)
         love.graphics.print(string.format("Health: %d/%d", self.health, self.maxHealth), self.x - 30, self.y - 40)
@@ -313,59 +321,13 @@ function Player:draw()
 
         --drawing a vision cone
         local segments = 20
-        local angleStep = math.pi/2 / segments
         love.graphics.arc("fill", self.x, self.y, self.attackRange, angle - math.pi/4, angle + math.pi/4, segments)
-
-        --draw entity hitboxes
-        local targets = {
-            {obj = wasp, type = "wasp", color = {1, 1, 0}},
-            {obj = honeybadger, type = "honey_badger", color = {0.7, 0.4, 0}},
-            {obj = Entities, type = "bee", color = {1, 0.8, 0}},
-            {obj = Entities, type = "queenBee", color = {1, 0.8, 0}},
-            {obj = Entities, type = "hive", color = {0.8, 0.6, 0.2}},
-            {obj = Entities, type = "flower", color = {0.8, 0.6, 0.2}}
-        }
-
-        for _, target in ipairs(targets) do
-            for _, entity in ipairs(target.obj) do
-                if entity.type ~= "player" and entity.visible then
-                    --drawing the hitboxes
-                    love.graphics.setColor(target.color[1], target.color[2], target.color[3], 0.7)
-
-                    --getting size
-                    local width = entity.width
-                    local height = entity.height
-
-                    --drawing rectange shape centered around png
-                    love.graphics.rectangle("line", entity.x - width/2, entity.y - height/2, width, height)
-
-                    --checking if target is in range
-                    if self:isTargetInRange(entity) then
-                        --color hitbox green if in range
-                        love.graphics.setColor(0, 1, 0, 0.3)
-                        love.graphics.rectangle("fill", entity.x - width/2, entity.y - height/2, width, height)
-                    else
-                        --not in range, color yellow
-                        love.graphics.setColor(1, 1, 0, 0.3)
-                        love.graphics.rectangle("line", entity.x - width/2, entity.y - height/2, width, height)
-                    end
-                end
-            end
-        end
     end
 
     if DebugMode then
         --DEBUG VARIABLE PRINT FOR ENTITIES
         love.graphics.setColor(1, 1, 1, 1)
         love.graphics.print("ENTITY DEBUG:", 10, 10)
-
-        if wasp then
-            love.graphics.print("Wasp: x=" .. math.floor(wasp.x) .. " y=" .. math.floor(wasp.y) .. " Health=" .. (wasp.health or "N/A"), 10, 30)
-        end
-
-        if honeybadger then
-            love.graphics.print("HoneyBadger: x=" .. math.floor(honeybadger.x) .. " y=" .. math.floor(honeybadger.y) .. " Health=" .. (honeybadger.health or "N/A"), 10, 70)
-        end
 
         love.graphics.setColor(1, 1, 1, 1)  --reset color
     end
