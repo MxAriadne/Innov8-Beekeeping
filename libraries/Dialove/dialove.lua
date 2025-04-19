@@ -169,10 +169,12 @@ end
 
 function dialove:initBounds(dialog, optionsH)
   dialog.optionsH = optionsH
-  dialog.backgroundH = (dialog.linesH) + self.verticalPadding * 2 + dialog.optionsH
+  dialog.backgroundH = (dialog.linesH) + (self.verticalPadding + dialog.optionsH) * 0.75
 
-  if optionsH == 0 then
-    dialog.backgroundH = dialog.backgroundH - (self.lineHeight - self.fontH)
+  if optionsH == 0 and #dialog.lines <= 2 then
+    dialog.backgroundH = (dialog.backgroundH - self.lineHeight) * 0.8
+  elseif optionsH == 0 and #dialog.lines > 3 then
+    dialog.backgroundH = (dialog.backgroundH + self.lineHeight) * 1.05
   end
 
   local heightToFitImage = 0
@@ -244,7 +246,10 @@ function dialove:push(data)
 
   local indexWord = 1
 
-  newDialog.noPaddingWidth = self.viewportW - (self.horizontalPadding * 2 + self.margin * 2)
+  --changed dialogue width to 90%
+  local dialogWidth = self.viewportW * 0.9
+  newDialog.noPaddingWidth = dialogWidth - (self.horizontalPadding * 2)
+  
   if newDialog.image then
     newDialog.noPaddingWidth = newDialog.noPaddingWidth - (newDialog.image:getWidth() + self.horizontalPadding)
   end
@@ -290,8 +295,9 @@ function dialove:push(data)
     self:setActiveDialogList({})
   end
 
-  -- extra props
-  newDialog.quadWidth = (self.viewportW - self.margin * 2) / 2
+  local dialogWidth = self.viewportW * 0.9
+  
+  newDialog.quadWidth = dialogWidth / 2
   newDialog.quadHeight = (newDialog.height - self.verticalPadding * 2) / 2
   newDialog.backgroundQuad = love.graphics.newQuad(0, 0,
     math.floor(newDialog.quadWidth + 10),
@@ -398,29 +404,40 @@ function dialove:complete()
   end
 end
 
+-- i had to change things here because for some reason the dialogue box would get 'cut off' when moving it
 function dialove:draw()
-  love.graphics.push('all')
+  love.graphics.push()
+  local r, g, b, a = love.graphics.getColor()
+  local blendMode, alphaMode = love.graphics.getBlendMode()
+  
   love.graphics.setFont(self.font)
   love.graphics.setLineWidth(2)
   love.graphics.setLineStyle('smooth')
-
+  love.graphics.setBlendMode('alpha', 'alphamultiply')
+  
   local dialog = self:getActiveDialog()
   if not dialog then
+    -- for restoring original state
+    love.graphics.setColor(r, g, b, a)
+    love.graphics.setBlendMode(blendMode, alphaMode)
     love.graphics.pop()
     return
   end
 
   utils.drawBackground(self, dialog)
-
   utils.printTitle(self, dialog)
   -- lines already spelled:
   utils.printText(self, dialog, 1, dialog.lineIndex - 1, true)
-  -- line currently being spelled::
+  -- line currently being spelled:
   utils.printText(self, dialog, dialog.lineIndex, dialog.lineIndex, false)
   utils.drawImage(self, dialog)
   if dialog.done then
     utils.printOptions(self, dialog)
   end
+  
+  --restoring original state
+  love.graphics.setColor(r, g, b, a)
+  love.graphics.setBlendMode(blendMode, alphaMode)
   love.graphics.pop()
 end
 
