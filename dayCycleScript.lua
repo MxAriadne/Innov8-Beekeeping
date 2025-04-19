@@ -57,6 +57,9 @@ function DayCycle:NightSky()
 
     --stop shop keys functionality?
 
+    local dialove = require "libraries/Dialove/dialove"
+    DialogManager:setTypingVolume(dialove:getTypingVolume())
+
     -- Show a night message using Dialove
     -- Push the night message to the dialog manager
     DialogManager:show(d.goodnight) -- stores dialog
@@ -79,6 +82,9 @@ function DayCycle:DaySky()
 
     -- pop any old messages
     DialogManager:clearDialogs()
+
+    local dialove = require "libraries/Dialove/dialove"
+    DialogManager:setTypingVolume(dialove:getTypingVolume())
 
     --day message
     DialogManager:show(d.goodmorning) -- stores dialog

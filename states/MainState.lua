@@ -20,8 +20,14 @@ function MainState:enter()
 
     -- Initialize dialog system
     DialogManager = Dialove.init({
-        font = love.graphics.newFont('libraries/fonts/comic-neue/ComicNeue-Bold.ttf', 16)
+        font = love.graphics.newFont('libraries/fonts/comic-neue/ComicNeue-Bold.ttf', 16),
+        horizontalOffset = 300 -- Add offset to shift dialog box to the right
     })
+
+    --Setting Typing Sound Volume
+    if Dialove:getTypingVolume() then
+        DialogManager:setTypingVolume(Dialove:getTypingVolume())
+    end
 
     -- Initialize everything if this is the first time opening the state.
     -- This stops everything from doubling when reverting state from menus.
@@ -59,20 +65,16 @@ function MainState:enter()
 
         hive.collider = wall
 
-<<<<<<< HEAD
-=======
         -- Set up player collider
         player.collider = World:newRectangleCollider(480, 340, player.width/2, player.height/2)
         player.collider:setFixedRotation(true)
         player.collider:setObject(player)
         player.collider:setCollisionClass('Player')
 
-        -- Load and play background music
-        Music:setVolume(0.3)
-        Music:setLooping(true)
-        Music:play()
-
->>>>>>> freyja-modifications
+        --making sure volume is correctly set before entering the startupM
+        local dialove = require "libraries/Dialove/dialove"
+        DialogManager:setTypingVolume(dialove:getTypingVolume())
+        
         -- Start tutorial dialog
         DialogManager:show(dialogs.startupM)
 

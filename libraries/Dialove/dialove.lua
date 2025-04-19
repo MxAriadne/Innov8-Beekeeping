@@ -22,6 +22,15 @@ local BASE = (...):sub(1, #(...) - 7) .. '/'
 local timer = require(BASE .. 'timer')
 local utils = require(BASE .. 'dialove-utils')
 
+--Global static object to be shared across all dialove instances
+local staticObjects = {
+  typingSound = love.audio.newSource(BASE .. 'assets/typing-sound.ogg', 'static'),
+  typingVolume = 1
+}
+
+-- Making typingVolume a local variable
+local typingVolume = 1
+
 local defaultFont = love.graphics.newFont()
 defaultFont = love.graphics.newFont(defaultFont:getBaseline() * 1.5)
 local defaultLineSpacing = 1.4
@@ -47,7 +56,7 @@ local dialove = {
     [';'] = 0.5,
     [','] = 0.3
   },
-  typingSound = love.audio.newSource(BASE .. 'assets/typing-sound.ogg', 'static'),
+  typingSound = staticObjects.typingSound, --CHNAGED TO USE THE STATIC OBJECT
   backgroundTypes = {
     normal = 1,
     tiled = 2,
@@ -71,9 +80,18 @@ dialove.init = function (data)
   dialove.cornerRadius = data.cornerRadius or dialove.cornerRadius
   dialove.optionsSeparation = data.optionsSeparation or dialove.lineHeight
   dialove.defaultNumberOfLines = data.numberOfLines or dialove.defaultNumberOfLines
+  
+  --Using the shared typing volume
+  if data.typingVolume then 
+    typingVolume = data.typingVolume
+    staticObjects.typingSound:setVolume(typingVolume)
+  end
 
   dialove.fontH = dialove.font:getHeight()
-  dialove.typingSound:setVolume(data.typingVolume or 1)
+  
+  --Making sure every instance uses the same typing sound and volume
+  dialove.typingSound = staticObjects.typingSound 
+  dialove.typingSound:setVolume(typingVolume)
 
   return setmetatable(d, dialove)
 end
@@ -176,11 +194,15 @@ function dialove:initBounds(dialog, optionsH)
 end
 
 function dialove:show(data)
+  staticObjects.typingSound:setVolume(typingVolume)
+  
   self:push(data)
   self:pop(true)
 end
 
 function dialove:push(data)
+  staticObjects.typingSound:setVolume(typingVolume)
+  
   local newDialog = {
     characterIndex = 0,
     lineIndex = 1,
@@ -324,7 +346,8 @@ end
 
 function dialove:playTypingSound(currentChar, dialog)
   if (not self.delayPerCharacerMap[currentChar]) and (dialog.lineIndex <= #dialog.lines) then
-    love.audio.play(self.typingSound)
+    staticObjects.typingSound:setVolume(typingVolume)
+    love.audio.play(staticObjects.typingSound)
   end
 end
 
@@ -399,6 +422,16 @@ function dialove:draw()
     utils.printOptions(self, dialog)
   end
   love.graphics.pop()
+end
+
+--GETTER AND SETTER FUNCTIONS FOR THE TYPING SOUND SLIDER
+function dialove:setTypingVolume(volume)
+  typingVolume = volume
+  staticObjects.typingSound:setVolume(volume)
+end
+
+function dialove:getTypingVolume()
+  return typingVolume
 end
 
 return dialove

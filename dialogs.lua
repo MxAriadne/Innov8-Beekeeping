@@ -71,7 +71,17 @@ dialog.startup5 = {
 dialog.startupM = {
     text = "Welcome! The goal of this game is to build a good enviroment for your bees in order to collect money! Quick Tip: Press 'B' or 'N' to select an option. Then press ENTER to continue.",
     options = {
-        { 'Tell Me How To Play!', function() DialogManager:show(dialog.startup0) DialogManager:push(dialog.startup1) DialogManager:push(dialog.startup2) DialogManager:push(dialog.startup3) DialogManager:push(dialog.startup4) DialogManager:push(dialog.startup5) end },
+        { 'Tell Me How To Play!', function() 
+            local dialove = require "libraries/Dialove/dialove"
+            DialogManager:setTypingVolume(dialove:getTypingVolume())
+            
+            DialogManager:show(dialog.startup0) 
+            DialogManager:push(dialog.startup1) 
+            DialogManager:push(dialog.startup2) 
+            DialogManager:push(dialog.startup3) 
+            DialogManager:push(dialog.startup4) 
+            DialogManager:push(dialog.startup5) 
+        end },
         { 'Skip Tutorial!', function() DialogManager:pop() end }
     }
 }

@@ -50,6 +50,11 @@ DIRECTIONS = {
     [4] = "still"
 }
 
+Music = love.audio.newSource("tunes/Flowers.mp3", "stream")
+    Music:setVolume(0.3)
+    Music:setLooping(true)
+    Music:play()
+
 function love.load()
     -- Load entities
     require "entities.entity"
