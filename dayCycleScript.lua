@@ -115,6 +115,11 @@ function DayCycle:DaySky()
     -- Update cycle
     cycle = "day"
 
+    --resetting player health back to max every morning
+    if player then
+        player.health = player.maxHealth
+    end
+
     -- pop any old messages
     dialogManager:clearDialogs()
 
