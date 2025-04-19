@@ -28,6 +28,9 @@ function MainState:enter()
     if Dialove:getTypingVolume() then
         DialogManager:setTypingVolume(Dialove:getTypingVolume())
     end
+    
+    --intializing dayCycle to have reference to DialogManager
+    DayCycle:init(DialogManager)
 
     -- Initialize everything if this is the first time opening the state.
     -- This stops everything from doubling when reverting state from menus.
@@ -88,6 +91,8 @@ function MainState:enter()
         table.insert(Entities, player)
         table.insert(Entities, chest)
     else
+        --making sure DayCycle has the DialogManager reference
+        DayCycle:init(DialogManager)
     end
 
     -- Load HUD

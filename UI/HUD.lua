@@ -41,19 +41,6 @@ end
 
 function HUD:draw()
     love.graphics.setFont(XSfont) --- BY THE WAY THIS FIXES THE BUG WHERE THE HUD FONT IS SUDDENLY BIGGER UPON LOADING INTO MAIN STATE --- IT RESETS THE FONT SIZE !!!
-    --draw money
-    love.graphics.setColor(self.colors.money)
-    love.graphics.print("Money: " .. PlayerMoney .. " KSh ", 800, 60)
-
-    --draw build mode if active
-    if CurrentBuildMode then
-        love.graphics.setColor(self.colors.buildMode)
-        local buildModeText = "Build Mode: " .. CurrentBuildMode
-        love.graphics.print(buildModeText, 800, 80)
-        love.graphics.print("Right-click to place", 800, 100)
-    end
-
-
     --print controls
     love.graphics.setColor(self.colors.text)
 

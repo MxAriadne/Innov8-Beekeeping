@@ -451,4 +451,14 @@ function dialove:getTypingVolume()
   return typingVolume
 end
 
+--using a function instead to handle clearing dialogs
+function dialove:clearDialogs()
+  --resetting dialog list and index
+  self.activeDialogListMap = {}
+  self.activeDialogListIndex = 1
+  
+  --clearing active dialog
+  self.activeDialog = nil
+end
+
 return dialove
