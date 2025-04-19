@@ -94,10 +94,19 @@ function gameSaves:search(name)
     local filename = name .. ".lua"
 
     if love.filesystem.getInfo(filename) then
+        -- check if first new game, else it needs to destroy
+        NewWorldCount = NewWorldCount + 1
+        if NewWorldCount > 1 then
+            DeleteOldWorld = true
+        else
+            DeleteOldWorld = false
+        end
+
         FirstRun = false
         local loaded = SaveManager.loadGame(filename)--pass filename
         if loaded then
             print("Save file loaded. Switching to game.")
+            --FirstRun = true  -- samtest
             GameStateManager:setState(gameState) -- <- switch to your game state
         else
             print("Save file exists but failed to load.")

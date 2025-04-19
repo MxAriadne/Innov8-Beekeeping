@@ -21,6 +21,8 @@ CharacterSelector = require "UI/CharacterSelector"
 SaveManager = require "save_manager"
 GameData = require "game_data"
 
+DeleteOldWorld = false
+NewWorldCount = 0
 -- All variables that need to be saved should be global variables for sake of my sanity.
 DaysPassed = 0.0
 -- Set player name, used for save files.

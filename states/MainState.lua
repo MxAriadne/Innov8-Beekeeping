@@ -26,9 +26,16 @@ function MainState:enter()
         font = love.graphics.newFont('libraries/fonts/comic-neue/ComicNeue-Bold.ttf', 16)
     })
 
+    -- check if old world to delete
+    if DeleteOldWorld then
+        print("in delete world")
+        World:destroy()
+        DeleteOldWorld = false -- turn back to false so if game calls mainstat ein an update it doesnt destroy
+    end
+
     -- Initialize everything if this is the first time opening the state.
     -- This stops everything from doubling when reverting state from menus.
-    if FirstRun then
+    --if FirstRun then
         World = wf.newWorld(0, 0, 100)
         -- Define collision categories
         World:addCollisionClass('Wall')
@@ -85,12 +92,12 @@ function MainState:enter()
         table.insert(Entities, flower)
         table.insert(Entities, player)
         table.insert(Entities, chest)
-    else
+    --else
         Music:stop()
         Music:setVolume(0.3)
         Music:setLooping(true)
         Music:play()
-    end
+   -- end
 
     -- Load HUD
     HUD:load()

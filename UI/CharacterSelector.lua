@@ -62,6 +62,7 @@ function CharacterSelector:enter()
 
     -- Create a continue button to proceed to the main game state
     continueButton = button:new("Continue", function()
+        local count = 0
         --[[ I tried fixing the newgame button bug where when esc back to main, 
             the game reloads instead of building a new one.
             Having issues with collision clear and cleanly destorying the instance
@@ -92,8 +93,16 @@ function CharacterSelector:enter()
         -- will recreate in mainstate bc FirstRun is true
         ]] -- below actually creates the new game, if not cleared, it goes to mainstate with the current state
         
+        -- check if first new game, else it needs to destroy
+        NewWorldCount = NewWorldCount + 1
+        if NewWorldCount > 1 then
+            DeleteOldWorld = true
+        else
+            DeleteOldWorld = false
+        end
         GameStateManager:setState(MainState)
         FirstRun = false
+        
         PlayerName = textInput
     end, 150, 50, GameConfig.windowW / 2 - 75, GameConfig.windowH - 100)
 end
