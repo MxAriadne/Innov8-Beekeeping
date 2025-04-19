@@ -58,7 +58,7 @@ function Bee:new(home, x, y)
 
     -- Pathfinding variables
     self.pathfinding = Pathfinding
-    self.pathfinding:initialize()
+    self.pathfinding:initialize() -- calling in function instead
     self.current_path = nil
     self.current_path_index = 1
     self.state = "foraging"
@@ -130,6 +130,9 @@ function Bee:new(home, x, y)
 
     -- Set collision class
     self.collider:setCollisionClass('Bee')
+    
+    --added
+    return self
 end
 
 function Bee:update(dt)
@@ -234,6 +237,84 @@ function Bee:uniqueUpdate(dt)
         self.target = self.homeHive
         self:move(dt)
     end
+
+end
+
+-- add for save/load
+-- added function to serialize
+function Bee:serialize()
+    return {
+        type = self.type,
+        x = self.x,
+        y = self.y,
+        
+        health = self.health,
+        honey = self.honey,
+        hasQueen = self.hasQueen,
+        beeCount = self.beeCount,
+        maxHealth = self.maxHealth,
+        state = self.state,
+        previousState = self.previousState,
+        isFlying = self.isFlying,
+        currentLoot = self.currentLoot,
+        homeHiveId = self.homeHive and self.homeHive.id or nil,
+        hasLoot = self.hasLoot,
+        hitsTaken = self.hitsTaken,
+    }
+end
+
+-- deserilize for loading purposes
+function Bee.deserialize(data)
+    -- :new() shoudl reintialize its functionality but its not!
+    local bee = Bee:new(data.homeHiveId or nil, data.x, data.y)
+    
+    -- Re-apply saved state
+    bee.honey = data.honey
+    bee.hasQueen = data.hasQueen
+    bee.beeCount = data.beeCount
+    bee.health = data.health or bee.health
+    bee.maxHealth = data.maxHealth or bee.maxHealth
+    bee.state = data.state or "foraging"
+    bee.hasLoot = data.hasLoot or false
+    bee.hitsTaken = data.hitsTaken or 0
+    bee.previousState = data.previousState or "foraging"
+    bee.currentLoot = data.currentLoot or 0
+    bee.isFlying = data.isFlying or true
+
+    -- Attempted to add functionality back manually
+        -- i was able to get it to go back to the home_path but once it got there it did not start foraging again like it should.
+            -- this might mean we have to manually code its functionality back in for each function? i hope not.
+
+
+    -- Link homeHive if ID is provided
+    --[[if data.homeHiveId then
+        for _, e in ipairs(Entities) do
+            if e.id == data.homeHiveId and e.type == "hive" then
+                bee.homeHive = e
+                break
+            end
+        end
+    end]]
+
+    --bee:update(dt)
+
+
+    -- Recalculate path if needed
+    --[[if bee.state == "returning" and bee.homeHive then
+        bee.current_path = bee.pathfinding:findPathToHive(
+            bee.x, bee.y,
+            bee.homeHive.x, bee.homeHive.y,
+            bee.isFlying
+        )
+        bee.current_path_index = 1
+    end]]
+
+    return bee
+end
+
+-- attmepted to initialize the pathfinding outside, did not work.
+function Bee:init_Pathfinding()
+    self.pathfinding:initialize()
 
 end
 

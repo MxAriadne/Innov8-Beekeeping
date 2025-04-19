@@ -62,26 +62,36 @@ function CharacterSelector:enter()
 
     -- Create a continue button to proceed to the main game state
     continueButton = button:new("Continue", function()
-        --[[ I tried fixing the newgame button bug where when esc back to main, the game reloads instead of building a new one.
-            Having issues with collision clear and cleanly destorying the instance of world before recreating it
+        --[[ I tried fixing the newgame button bug where when esc back to main, 
+            the game reloads instead of building a new one.
+            Having issues with collision clear and cleanly destorying the instance
+            of world before recreating it.
+        
         -- check is old game is loaded
         if not FirstRun then
-            FirstRun = true
+            FirstRun = true -- so when called to recreate it will start new
+
             -- reset world
+
             -- Destroy all bodies
             if World then
-                print("Does new world have collisionClear?", World.collisionClear)
+                print("Does new world have collisionClear?", World.collisionClear) -- returns true
                 print("destroying bodies")
                 for _, body in ipairs(World:getBodies()) do
                     body:destroy()
                 end
-                print("Does new world have collisionClear?", World.collisionClear)
+                print("Does new world have collisionClear?", World.collisionClear) -- returns true
             end
+
             -- Destroy the world
+                -- also tried world:destory() and this did not work either
             World = nil
+
         end -- reset because they pressed new
+
         -- will recreate in mainstate bc FirstRun is true
-        ]]
+        ]] -- below actually creates the new game, if not cleared, it goes to mainstate with the current state
+        
         GameStateManager:setState(MainState)
         FirstRun = false
         PlayerName = textInput

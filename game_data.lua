@@ -1,7 +1,7 @@
 --holds game variables to be saved and loaded
 -- Holds game variables to be saved and loaded
 
---TODO: fix update and var refs
+--TODO: fix entity logic if this is root of issue (i dont think it is)
 
 -- Make sure these variables are defined somewhere in your code before you use them
 
@@ -20,14 +20,8 @@ GameData.gameData = {
     PressSpaceAllowed = true,
 
     -- add entities
-    --bees (type(queen, worker), location, health)
-    --hives(type(), location, health)
-    --flowers(type(), location)
+    entities = {}
 
-    -- inventory
-    --brush (integrity)
-    --mesh (integrity)
-    --smoker (integrity)
 
 }
 
@@ -42,8 +36,27 @@ function GameData.Update_gameDataWGlobals()
     GameData.gameData.Timer = Timer
     GameData.gameData.LastTrigger = LastTrigger
     GameData.gameData.PressSpaceAllowed = PressSpaceAllowed
+    
+    -- entities 
+
+    -- Adds serialized entities to table (CANNOT ADD FUNCTIONS or USERDATA 
+        --(these things SHOULD be reintialized when entity:new() is 
+        -- called for each type for each entity in their own deserialize function)).
+    GameData.gameData.entities = {}
+
+    for _, entity in ipairs(Entities) do
+        if entity.serialize then
+            table.insert(GameData.gameData.entities, entity:serialize())
+        end
+    end
+
+    if player and player.serialize then
+        table.insert(GameData.gameData.entities, player:serialize())
+    end
+
 end
 
+-- Update glabals with the tables values. At the moment it works by using the newgame created and updates those variables.
 function GameData.Update_GlobalsWgameData(data)
     DaysPassed = data.DaysPassed
     PlayerName = data.PlayerName
@@ -54,6 +67,8 @@ function GameData.Update_GlobalsWgameData(data)
     Timer = data.Timer
     LastTrigger = data.LastTrigger
     PressSpaceAllowed = data.PressSpaceAllowed
+
+    -- entities are loaded separately (In save_manager.loadGame())
 end
 
 return GameData
