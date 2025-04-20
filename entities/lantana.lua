@@ -13,7 +13,7 @@ function CommonLantana:new(x, y)
     self.height = self.image:getHeight() * self.scale
     self.type = "flower"
     self.onCooldown = false
-    self.harvestCooldown = 9
+    self.harvestCooldown = 20
     self.harvestTimer = 0
 end
 

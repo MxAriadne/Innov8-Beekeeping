@@ -173,11 +173,18 @@ function Bee:uniqueUpdate(dt)
             -- Check if the flower is a flower, visible, closer than the current closest, and not on harvesting cooldown
             if f.type == "flower" then
                 -- If no closest flower is found, set the first flower as the closest
-                if not self.closestFlower then self.closestFlower = f end
-
-                -- If the flower is closer than the current closest and not on cooldown, set it as the closest
-                if f.visible and self:distanceFromObject(f) < self:distanceFromObject(self.closestFlower) and f.onCooldown == false then
+                if not self.closestFlower and f.onCooldown == false then
                     self.closestFlower = f
+                end
+
+                if self.closestFlower then
+                    -- If the flower is closer than the current closest and not on cooldown, set it as the closest
+                    if f.visible and self:distanceFromObject(f) < self:distanceFromObject(self.closestFlower) and f.onCooldown == false then
+                        self.closestFlower = f
+                    end
+                else
+                    -- This means the nearest flower is on cooldown
+                    print("Nearest flower is on cooldown, skipping...")
                 end
             end
         end
@@ -211,6 +218,8 @@ function Bee:uniqueUpdate(dt)
     if self.state == "collecting" then
         -- If we're maxed out
         if self.currentLoot >= self.maxLootCapacity then
+            -- Update flower is on cooldown
+            self.lastFlower.onCooldown = true
             -- Return to hive
             self.state = "returning"
         end
@@ -220,6 +229,8 @@ function Bee:uniqueUpdate(dt)
         if self.harvestingTimer >= self.harvestingTime then
             -- Set nectar flag and return to hive
             self.hasLoot = true
+            -- Update flower is on cooldown
+            self.lastFlower.onCooldown = true
             -- Returning state
             self.state = "returning"
             -- Find path to hive

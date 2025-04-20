@@ -60,6 +60,7 @@ function gameSaves:draw()
         love.graphics.print(message, self.textBox.xPos / 2, self.textBox.yPos + 70)
     end
 
+    love.graphics.setFont(SmallFont)
     
 end
 

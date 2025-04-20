@@ -11,17 +11,18 @@ Object = require "libraries.classic"
 modal = require("UI/modal")
 
 -- Declare all states in main.
--- THIS MUST BE DONE IN MAIN OR IT WILL CAUSE RECIPROICAL IMPORT ERROR.
+-- THIS MUST BE DONE IN MAIN OR IT WILL CAUSE RECIPROCAL IMPORT ERROR.
 ShopScreen = require "states/ShopScreen"
 MainMenu = require "states/MainMenu"
 MainState = require "states/MainState"
+Inventory = require "states/Inventory"
 Settings = require "states/Settings"
 CharacterSelector = require "UI/CharacterSelector"
 
 -- Set player name, used for save files.
 PlayerName = "Player"
 -- Total money the player has, starts out with 2000 KSh
-PlayerMoney = 3000
+PlayerMoney = 6000
 -- Variable used to determine if day or night
 TintEnabled = false
 -- Variable used to determine if debug mode is on

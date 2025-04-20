@@ -13,7 +13,7 @@ function GoldenDewdrops:new(x, y)
     self.height = self.image:getHeight() * self.scale
     self.type = "flower"
     self.onCooldown = false
-    self.harvestCooldown = 6
+    self.harvestCooldown = 15
     self.harvestTimer = 0
 end
 

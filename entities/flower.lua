@@ -13,7 +13,7 @@ function Flower:new(x, y)
     self.height = self.image:getHeight() * self.scale
     self.type = "flower"
     self.onCooldown = false
-    self.harvestCooldown = 3
+    self.harvestCooldown = 10
     self.harvestTimer = 0
 end
 
@@ -23,7 +23,7 @@ function Flower:draw()
 end
 
 function Flower:takeDamage(damage, attacker)
-    self.health = math.max(0, self.health - damage)
+    self.health = self.health - damage
     if self.health <= 0 then
         self.visible = false
         -- Find the current index of this flower in the Entities table
@@ -41,9 +41,10 @@ function Flower:update(dt)
     if not self.visible or self == nil then return end
 
     if self.onCooldown then
-        self.harvestTimer = self.harvestTimer + dt 
+        self.harvestTimer = self.harvestTimer + dt
         if self.harvestTimer >= self.harvestCooldown then
             self.onCooldown = false
+            print("Harvesting cooldown reset for flower " .. self.id)
             self.harvestTimer = 0
         end
     end

@@ -47,7 +47,7 @@ local dialove = {
     [';'] = 0.5,
     [','] = 0.3
   },
-  typingSound = love.audio.newSource(BASE .. 'assets/typing-sound.ogg', 'static'),
+  typingSound = love.audio.newSource('libraries/Dialove/assets/typing-sound.ogg', 'static'),
   backgroundTypes = {
     normal = 1,
     tiled = 2,

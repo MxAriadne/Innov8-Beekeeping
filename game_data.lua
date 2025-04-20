@@ -1,4 +1,3 @@
---holds game variables to be saved and loaded
 -- Holds game variables to be saved and loaded
 
 --TODO: fix update and var refs

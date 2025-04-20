@@ -69,6 +69,7 @@ function MainState:enter()
         player.collider:setCollisionClass('Player')
 
         -- Load and play background music
+        Music:stop()
         Music:setVolume(0.3)
         Music:setLooping(true)
         Music:play()
@@ -165,9 +166,20 @@ function MainState:keypressed(k)
         Music:stop()
         -- Open shop screen
         GameStateManager:setState(ShopScreen)
+    elseif k == 'i' then
+        Music:stop()
+        -- Open inventory
+        GameStateManager:setState(Inventory)
     elseif k == "f" then
-        -- DEBUG
-        CurrentBuildMode = "Fence"
+        if PlayerMoney < 400 then
+            modal:show("", "You don't have enough money to build a fence!", {
+                { label = "Continue", action = function() print("Closed") end }
+            })
+            return
+        else
+            PlayerMoney = PlayerMoney - 400
+            CurrentBuildMode = "Fence"
+        end
     elseif k == "1" then
         InventoryPosition = 1
         player.itemInHand = player.items[1]
@@ -307,7 +319,6 @@ BuildOptions = {
         end
     end,
     Fence = function(x, y)
-        print("X: " .. x .. " Y: " .. y)
         for _, e in ipairs(Entities) do
             if e.type == "fence" then
                 local snappedX, snappedY = e:snapToGrid(x, y)
@@ -348,7 +359,7 @@ function MainState:mousepressed(x, y, button)
         -- Get the entity at the clicked position
         local e = self:entityAtPosition(x, y)
         -- If its a hive and they're holding a harvesting bucket...
-        if e and e.type == "hive" and player.itemInHand == ShopTools.bucket then
+        if e and e.type == "hive" and player.itemInHand.name == "Bucket" then
             -- Check if theres enough honey to harvest
             if e.honey >= 10 then
                 -- Check if they have enough space in their inventory
