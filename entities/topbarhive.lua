@@ -26,6 +26,9 @@ function TopBarHive:new()
     self.flashDuration = 0.2
 
     self.hasQueen = false
+
+    --added
+    return self
 end
 
 function TopBarHive:updateHoneyProduction()

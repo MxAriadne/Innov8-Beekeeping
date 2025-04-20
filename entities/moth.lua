@@ -108,6 +108,9 @@ function Moth:new(x, y)
 
     -- Set collision class
     self.collider:setCollisionClass("Flying")
+
+    --added
+    return self
 end
 
 function Moth:draw()

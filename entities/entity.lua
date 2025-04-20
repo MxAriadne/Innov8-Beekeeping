@@ -115,7 +115,8 @@ function Entity:new()
     self.hasLoot = false
 
     -- Create collider but let derived classes set their specific collision class
-    self.collider = World:newRectangleCollider(self.x, self.y, self.width, self.height)
+    --change World to Level
+    self.collider = Level:newRectangleCollider(self.x, self.y, self.width, self.height)
     self.collider:setFixedRotation(true)
     self.collider:setObject(self)
     self.collider:setType('dynamic')
@@ -125,6 +126,9 @@ function Entity:new()
 
     -- Set default collision class
     self.collider:setCollisionClass("Enemy")
+
+    --added
+    return self
 
 end
 

@@ -27,6 +27,9 @@ function LangstrothHive:new()
 
     self.hasQueen = false
 
+    --added
+    return self
+
 end
 
 function LangstrothHive:updateHoneyProduction()

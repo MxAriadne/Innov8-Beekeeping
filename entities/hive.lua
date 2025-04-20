@@ -27,6 +27,9 @@ function Hive:new(x, y)
 
     --collider data
     self.collider = nil
+
+    --added
+    return self
 end
 
 function Hive:update(dt)

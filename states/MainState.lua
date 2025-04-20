@@ -14,7 +14,6 @@ local DayCycle = require("dayCycleScript")
 
 -- Initial setup
 function MainState:enter()
-
     -- Load the tilemap
     Map = sti('maps/TilesForBeekeepingGameTopBoundaries.lua')
 
@@ -26,78 +25,93 @@ function MainState:enter()
         font = love.graphics.newFont('libraries/fonts/comic-neue/ComicNeue-Bold.ttf', 16)
     })
 
-    -- check if old world to delete
+    -- check if old Level to delete
     if DeleteOldWorld then
-        print("in delete world")
-        World:destroy()
+        print("in delete Level")
+        Level:destroy()
         DeleteOldWorld = false -- turn back to false so if game calls mainstat ein an update it doesnt destroy
     end
 
+    --^^Leevel to wolrd
     -- Initialize everything if this is the first time opening the state.
     -- This stops everything from doubling when reverting state from menus.
     --if FirstRun then
-        World = wf.newWorld(0, 0, 100)
-        -- Define collision categories
-        World:addCollisionClass('Wall')
-        World:addCollisionClass('Hive')
-        World:addCollisionClass('Fence')
-        World:addCollisionClass('Flying', {ignores = {'Fence', 'Wall'}})
-        World:addCollisionClass('Bee', {ignores = {'Fence', 'Wall'}})
-        World:addCollisionClass('Enemy', {ignores = {'Enemy'}})
-        World:addCollisionClass('Player', {ignores = {'Player', 'Bee', 'Enemy', 'Flying'}})
+    --change Level to Level
+    print("about to create Level")
+    Level = wf.newWorld(0, 0, 100)
+    -- Define collision categories
+    Level:addCollisionClass('Wall')
+    Level:addCollisionClass('Hive')
+    Level:addCollisionClass('Fence')
+    Level:addCollisionClass('Flying', { ignores = { 'Fence', 'Wall' } })
+    Level:addCollisionClass('Bee', { ignores = { 'Fence', 'Wall' } })
+    Level:addCollisionClass('Enemy', { ignores = { 'Enemy' } })
+    Level:addCollisionClass('Player', { ignores = { 'Player', 'Bee', 'Enemy', 'Flying' } })
 
-        -- Ensure entity table exist before inserting
-        if not Entities then Entities = {} end
+    -- Ensure entity table exist before inserting
+    if not Entities then Entities = {} elseif Entities then Entities = {} end
 
-        -- Assign instances to globals for other modules to access
-        hive = Hive()
-        flower = Flower(500, 500)
-        player = Player()
-        bee = Bee(hive, 275, 300)
-        chest = Chest()
+    -- Assign instances to globals for other modules to access
+    hive = Hive()
+    flower = Flower(500, 500)
+    player = Player()
+    bee = Bee(hive, 275, 300)
+    chest = Chest()
 
-        -- Create a collider for the first hive
-        local wall = World:newRectangleCollider(
-            hive.x - hive.width/2,
-            hive.y - hive.height/2,
-            hive.width,
-            hive.height-32
-        )
+    --update base variable to default values
+    DaysPassed = 0.0
+    PlayerMoney = 3000
+    TintEnabled = false
+    DebugMode = false
+    FirstRun = true
+    Timer = 0
+    Interval = 60
+    LastTrigger = 0
+    PressSpaceAllowed = true
+    CurrentBuildMode = ""
 
-        wall:setType('static')
-        wall:setCollisionClass('Hive')
+    -- Create a collider for the first hive
+    local wall = Level:newRectangleCollider(
+        hive.x - hive.width / 2,
+        hive.y - hive.height / 2,
+        hive.width,
+        hive.height - 32
+    )
 
-        hive.collider = wall
+    wall:setType('static')
+    wall:setCollisionClass('Hive')
 
-        -- Set up player collider
-        player.collider = World:newRectangleCollider(480, 340, player.width/2, player.height/2)
-        player.collider:setFixedRotation(true)
-        player.collider:setObject(player)
-        player.collider:setCollisionClass('Player')
+    hive.collider = wall
 
-        -- Load and play background music
-        Music:setVolume(0.3)
-        Music:setLooping(true)
-        Music:play()
+    -- Set up player collider
+    player.collider = Level:newRectangleCollider(480, 340, player.width / 2, player.height / 2)
+    player.collider:setFixedRotation(true)
+    player.collider:setObject(player)
+    player.collider:setCollisionClass('Player')
 
-        -- Start tutorial dialog
-        DialogManager:show(dialogs.startupM)
+    -- Load and play background music
+    Music:setVolume(0.3)
+    Music:setLooping(true)
+    Music:play()
 
-        -- Init honey total
-        TotalHoney = 0
+    -- Start tutorial dialog
+    DialogManager:show(dialogs.startupM)
 
-        -- Add created entities to their respective tables
-        table.insert(Entities, hive)
-        table.insert(Entities, bee)
-        table.insert(Entities, flower)
-        table.insert(Entities, player)
-        table.insert(Entities, chest)
+    -- Init honey total
+    TotalHoney = 0
+
+    -- Add created entities to their respective tables
+    table.insert(Entities, hive)
+    table.insert(Entities, bee)
+    table.insert(Entities, flower)
+    table.insert(Entities, player)
+    table.insert(Entities, chest)
     --else
-        Music:stop()
-        Music:setVolume(0.3)
-        Music:setLooping(true)
-        Music:play()
-   -- end
+    Music:stop()
+    Music:setVolume(0.3)
+    Music:setLooping(true)
+    Music:play()
+    -- end
 
     -- Load HUD
     HUD:load()
@@ -106,7 +120,7 @@ function MainState:enter()
     local walls = {}
     if Map.layers["Walls"] then
         for _, obj in pairs(Map.layers["Walls"].objects) do
-            local wall = World:newRectangleCollider(obj.x*2, obj.y*2, obj.width*2, obj.height*2)
+            local wall = Level:newRectangleCollider(obj.x * 2, obj.y * 2, obj.width * 2, obj.height * 2)
             wall:setType('static')
             wall:setCollisionClass('Wall')
             table.insert(walls, wall)
@@ -116,7 +130,7 @@ end
 
 function MainState:update(dt)
     DialogManager:update(dt)
-    World:update(dt)
+    Level:update(dt)
     HUD:update(dt)
     chest:update(dt)
 
@@ -127,7 +141,6 @@ function MainState:update(dt)
         if not e.visible then
             e = nil
         end
-
     end
 
     -- Press escape to save and quit
@@ -191,7 +204,6 @@ function MainState:keypressed(k)
         InventoryPosition = 5
         player.itemInHand = player.items[5]
     end
-    
 end
 
 -- Called when a key is released
@@ -211,11 +223,11 @@ BuildOptions = {
     LangstrothHive = function(x, y)
         local h = LangstrothHive(); h.x = x; h.y = y;
         -- Create a collider for the hive
-        local wall = World:newRectangleCollider(
-            h.x - h.width/2,
-            h.y - h.height/2,
+        local wall = Level:newRectangleCollider(
+            h.x - h.width / 2,
+            h.y - h.height / 2,
             h.width,
-            h.height-32
+            h.height - 32
         )
 
         wall:setType('static')
@@ -228,11 +240,11 @@ BuildOptions = {
     LogHive = function(x, y)
         local h = Hive(); h.x = x; h.y = y;
         -- Create a collider for the hive
-        local wall = World:newRectangleCollider(
-            h.x - h.width/2,
-            h.y - h.height/2,
+        local wall = Level:newRectangleCollider(
+            h.x - h.width / 2,
+            h.y - h.height / 2,
             h.width,
-            h.height-32
+            h.height - 32
         )
 
         wall:setType('static')
@@ -245,11 +257,11 @@ BuildOptions = {
     TopBarHive = function(x, y)
         local h = TopBarHive(); h.x = x; h.y = y;
         -- Create a collider for the hive
-        local wall = World:newRectangleCollider(
-            h.x - h.width/2,
-            h.y - h.height/2,
+        local wall = Level:newRectangleCollider(
+            h.x - h.width / 2,
+            h.y - h.height / 2,
             h.width,
-            h.height-32
+            h.height - 32
         )
 
         wall:setType('static')
@@ -309,7 +321,7 @@ BuildOptions = {
             local b = QueenBee(closestHive, x, y); table.insert(Entities, b)
             closestHive.hasQueen = true
             closestHive.QueenBee = b
-        else 
+        else
             local b = QueenBee(nil, x, y); table.insert(Entities, b)
         end
     end,
@@ -344,7 +356,7 @@ end
 -- Called when mouse is clicked
 function MainState:mousepressed(x, y, button)
     print("Mouse pressed at: " .. x .. ", " .. y)
-    if button == 2 and BuildOptions[CurrentBuildMode] then  -- Right click
+    if button == 2 and BuildOptions[CurrentBuildMode] then -- Right click
         BuildOptions[CurrentBuildMode](x, y)
         CurrentBuildMode = ""
         return
@@ -359,20 +371,20 @@ function MainState:mousepressed(x, y, button)
             -- Check if theres enough honey to harvest
             if e.honey >= 10 then
                 -- Check if they have enough space in their inventory
-                for i = 1, HUD.hotbarSize+1, 1 do
+                for i = 1, HUD.hotbarSize + 1, 1 do
                     -- If there's an empty slot
                     if player.items[i] == nil then
                         -- Add a honey jar to their inventory
                         table.insert(player.items,
-                        {
-                            name = "Honey Jar",
-                            image = love.graphics.newImage("sprites/honey_jar.png"),
-                        })
+                            {
+                                name = "Honey Jar",
+                                image = love.graphics.newImage("sprites/honey_jar.png"),
+                            })
                         e.honey = e.honey - 10
                         print("Added honey jar to inventory at position " .. i)
                         break
-                    -- Else, inventory is full, display an error
-                    elseif i == HUD.hotbarSize+1 then
+                        -- Else, inventory is full, display an error
+                    elseif i == HUD.hotbarSize + 1 then
                         modal:show("", "Your inventory is full!", {
                             { label = "Continue", action = function() print("Closed") end }
                         })
@@ -396,7 +408,8 @@ function MainState:mousepressed(x, y, button)
                     PlayerMoney = PlayerMoney + 500
                 else
                     -- If not holding a honey jar, display an error
-                    modal:show("You aren't holding a honey jar!", "Use the number keys to select a honey jar in your inventory!", {
+                    modal:show("You aren't holding a honey jar!",
+                        "Use the number keys to select a honey jar in your inventory!", {
                         { label = "Continue", action = function() print("Closed") end }
                     })
                 end

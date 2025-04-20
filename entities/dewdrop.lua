@@ -15,6 +15,9 @@ function GoldenDewdrops:new(x, y)
     self.onCooldown = false
     self.harvestCooldown = 6
     self.harvestTimer = 0
+
+    --added
+    return self
 end
 
 

@@ -103,11 +103,12 @@ function gameSaves:search(name)
         end
 
         FirstRun = false
+        GameStateManager:setState(gameState)
         local loaded = SaveManager.loadGame(filename)--pass filename
         if loaded then
             print("Save file loaded. Switching to game.")
             --FirstRun = true  -- samtest
-            GameStateManager:setState(gameState) -- <- switch to your game state
+            --GameStateManager:setState(gameState) -- <- switch to your game state
         else
             print("Save file exists but failed to load.")
         end

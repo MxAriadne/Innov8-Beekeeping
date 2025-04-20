@@ -1,4 +1,5 @@
-local Player = Object:extend()
+--local 
+Player = Object:extend()
 
 Spritesheet = {
     "sprites/chars/char9.png",
@@ -77,6 +78,9 @@ function Player:new()
 
     -- Current item in hand
     self.itemInHand = nil
+
+    --added
+    return self
 end
 
 function Player:update(dt)

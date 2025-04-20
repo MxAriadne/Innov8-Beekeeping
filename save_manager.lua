@@ -22,11 +22,12 @@ function SaveManager.save()
 
     -- update data to be saved
     GameData.Update_gameDataWGlobals()
-    GameData.gameData.entities = Entity.getSaveData()
+    --GameData.gameData.entities = Entity.getSaveData()
 
     -- serialize and store
     local serialized = lume.serialize(GameData.gameData)
     love.filesystem.write(filename, serialized)
+
     print("Game saved!")
     print("File saved to: " .. love.filesystem.getSaveDirectory()) -- use to view og save file
 end
@@ -42,6 +43,9 @@ function SaveManager.loadGame(filename)
     FirstRun = false;]]
 
     if love.filesystem.getInfo(filename) then
+        --update registry
+        GameData.updateRegistry()
+
         -- get data from the file
         local data = love.filesystem.read(filename)
         local loadtable = lume.deserialize(data)
@@ -79,7 +83,7 @@ function SaveManager.loadGame(filename)
             There is also the entity.getSaveData that adds all the entities to the 
             table to be saved, called in save() through gameData.update_gamDataWithGlobals
         ]]
-        local loadentities = true;
+        local loadentities = false;
         if loadentities then
             --clear existing entities to reload
             Entities = {}
@@ -116,6 +120,8 @@ function SaveManager.loadGame(filename)
             print("Entities table size after load: " .. #Entities)
 
         end -- loadentities condition end
+
+        GameData.LoadEntities(loadtable)
 
         return loadtable
     else

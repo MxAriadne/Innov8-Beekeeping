@@ -35,12 +35,16 @@ function Fence:new(x, y)
     -- Image holder
     self.image = love.graphics.newImage("maps/Sprout Lands - Sprites - Basic pack/Tilesets/Fences.png")
     self.quads = self:getQuads()
+
+    --added
+    return self
 end
 
 function Fence:update(dt)
     if not self.visible or self == nil then return end
     if self.collider == nil then
-        self.collider = World:newRectangleCollider(self.x - (self.width*self.scale), self.y - (self.height*self.scale), self.width*self.scale, self.height*self.scale)
+        --change World to Level
+        self.collider = Level:newRectangleCollider(self.x - (self.width*self.scale), self.y - (self.height*self.scale), self.width*self.scale, self.height*self.scale)
         self.collider:setType('static')
         self.collider:setCollisionClass('Fence')
     end

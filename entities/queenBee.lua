@@ -49,6 +49,9 @@ function QueenBee:new(home, x, y)
 
     -- Hive holder
     self.target = self.homeHive
+
+    --added
+    return self
 end
 
 -- Override parent update function

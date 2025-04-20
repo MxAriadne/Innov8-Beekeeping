@@ -34,6 +34,9 @@ function Chest:new()
 
     self.animation:gotoFrame(5)
 
+    --added
+    return self
+
 end
 
 function Chest:update(dt)
@@ -59,7 +62,8 @@ function Chest:update(dt)
 
 
     if self.collider == nil then
-        self.collider = World:newRectangleCollider(self.x - self.x_offset/self.scale, self.y, self.width, self.height/2)
+        --change World to Level
+        self.collider = Level:newRectangleCollider(self.x - self.x_offset/self.scale, self.y, self.width, self.height/2)
         self.collider:setType('static')
         self.collider:setCollisionClass('Wall')
     end

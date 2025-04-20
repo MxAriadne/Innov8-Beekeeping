@@ -15,6 +15,9 @@ function Flower:new(x, y)
     self.onCooldown = false
     self.harvestCooldown = 3
     self.harvestTimer = 0
+
+    --added
+    return self
 end
 
 function Flower:draw()

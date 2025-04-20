@@ -242,7 +242,7 @@ end
 
 -- add for save/load
 -- added function to serialize
-function Bee:serialize()
+--[[function Bee:serialize()
     return {
         type = self.type,
         x = self.x,
@@ -309,13 +309,13 @@ function Bee.deserialize(data)
         bee.current_path_index = 1
     end]]
 
-    return bee
+    --[[return bee
 end
 
 -- attmepted to initialize the pathfinding outside, did not work.
 function Bee:init_Pathfinding()
     self.pathfinding:initialize()
 
-end
+end]]
 
 return Bee
