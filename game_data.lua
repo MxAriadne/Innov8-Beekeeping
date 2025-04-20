@@ -198,7 +198,7 @@ function GameData.deserializeEntity(data)
         if k ~= "x" and k ~= "y" and k ~= "__entityType" and k ~= "state" then
             entity[k] = v
         elseif k == "state" and entityType == "bee" then
-            entity[k] = "foraging" -- overide bee
+            entity[k] = "wandering" -- overide bee
         end
     end
 

@@ -72,7 +72,7 @@ function Bee:new(home, x, y)
     self.isAggressive = false
 
     -- List of entities that this one will try to fight
-    self.enemies = {"wasp", "honey_badger", "bee_eater", "moth"}
+    self.enemies = { "wasp", "honey_badger", "bee_eater", "moth" }
 
     -- Is entity under attack?
     self.isUnderAttack = false
@@ -130,12 +130,45 @@ function Bee:new(home, x, y)
 
     -- Set collision class
     self.collider:setCollisionClass('Bee')
-    
+
     --added
     return self
 end
 
 function Bee:update(dt)
+    --debug prints
+    --check if self is set up correctly
+    -- Check if the bee itself is valid
+    print("Bee object: ", self)
+
+    -- Check if Level/world exists
+    if Level then
+        print("Level exists")
+    else
+        print("Level is nil")
+    end
+
+    -- Check if collider exists
+    if self.collider then
+        print("Bee collider: ", self.collider)
+    else
+        print("Bee collider is nil")
+    end
+
+    -- Check if setPosition function exists
+    if self.collider and self.collider.setPosition then
+        print("Collider supports setPosition")
+    else
+        print("Collider is missing setPosition (not a valid Windfield collider?)")
+    end
+
+    -- Check x and y values
+    if self.x and self.y then
+        print("Bee position: ", self.x, self.y)
+    else
+        print("Bee x or y is nil")
+    end
+    --end debug prints
 
     -- Update collider position
     self.collider:setPosition(self.x, self.y)
@@ -226,7 +259,8 @@ function Bee:uniqueUpdate(dt)
             -- Returning state
             self.state = "returning"
             -- Find path to hive
-            self.current_path = self.pathfinding:findPathToHive(self.x, self.y, self.homeHive.x, self.homeHive.y, self.isFlying)
+            self.current_path = self.pathfinding:findPathToHive(self.x, self.y, self.homeHive.x, self.homeHive.y,
+                self.isFlying)
             -- Reset path index
             self.current_path_index = 1
         end
@@ -237,9 +271,7 @@ function Bee:uniqueUpdate(dt)
         self.target = self.homeHive
         self:move(dt)
     end
-
 end
-
 
 -- ********* DELETE AFTER ENTITIES CAN BE LOADED *********
 -- add for save/load
@@ -249,7 +281,7 @@ end
         type = self.type,
         x = self.x,
         y = self.y,
-        
+
         health = self.health,
         honey = self.honey,
         hasQueen = self.hasQueen,
@@ -269,7 +301,7 @@ end
 function Bee.deserialize(data)
     -- :new() shoudl reintialize its functionality but its not!
     local bee = Bee:new(data.homeHiveId or nil, data.x, data.y)
-    
+
     -- Re-apply saved state
     bee.honey = data.honey
     bee.hasQueen = data.hasQueen
@@ -298,11 +330,11 @@ function Bee.deserialize(data)
         end
     end]]
 
-    --bee:update(dt)
+--bee:update(dt)
 
 
-    -- Recalculate path if needed
-    --[[if bee.state == "returning" and bee.homeHive then
+-- Recalculate path if needed
+--[[if bee.state == "returning" and bee.homeHive then
         bee.current_path = bee.pathfinding:findPathToHive(
             bee.x, bee.y,
             bee.homeHive.x, bee.homeHive.y,
@@ -311,7 +343,7 @@ function Bee.deserialize(data)
         bee.current_path_index = 1
     end]]
 
-    --[[return bee
+--[[return bee
 end
 
 -- attmepted to initialize the pathfinding outside, did not work.

@@ -137,6 +137,8 @@ function MainState:update(dt)
 
     -- Update all entities
     for _, e in ipairs(Entities) do
+        print("entity to be updated: " .. e.type)
+        
         e:update(dt)
 
         if not e.visible then

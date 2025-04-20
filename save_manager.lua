@@ -126,6 +126,15 @@ function SaveManager.loadGame(filename)
         --[[******* WHAT IS ACTUALLY LOADING ENTITIES **********]]
         GameData.LoadEntities(loadtable)
 
+        -- debug print
+        print("After loading entities")
+        for i, entity in ipairs(Entities) do
+            print("Entity " .. i .. ": type = " .. tostring(entity.type) .. ", collider = " .. tostring(entity.collider))
+        end
+
+        print("Level is Windfield world:", Level and Level.newRectangleCollider and "yes" or "no")
+
+
         return loadtable
     else
         print("No save file found.")
