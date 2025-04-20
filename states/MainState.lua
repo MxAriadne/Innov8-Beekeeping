@@ -23,8 +23,17 @@ function MainState:enter()
 
     -- Initialize dialog system
     DialogManager = Dialove.init({
-        font = love.graphics.newFont('libraries/fonts/comic-neue/ComicNeue-Bold.ttf', 16)
+        font = love.graphics.newFont('libraries/fonts/comic-neue/ComicNeue-Bold.ttf', 16),
+        horizontalOffset = 300 -- Add offset to shift dialog box to the right
     })
+
+    --Setting Typing Sound Volume
+    if Dialove:getTypingVolume() then
+        DialogManager:setTypingVolume(Dialove:getTypingVolume())
+    end
+
+    --intializing dayCycle to have reference to DialogManager
+    DayCycle:init(DialogManager)
 
     -- Initialize everything if this is the first time opening the state.
     -- This stops everything from doubling when reverting state from menus.
@@ -69,10 +78,8 @@ function MainState:enter()
         player.collider:setCollisionClass('Player')
 
         -- Load and play background music
-        Music:stop()
-        Music:setVolume(0.3)
-        Music:setLooping(true)
-        Music:play()
+        --making sure volume is correctly set before entering the startupM
+        DialogManager:setTypingVolume(Dialove:getTypingVolume())
 
         -- Start tutorial dialog
         DialogManager:show(dialogs.startupM)
@@ -87,10 +94,8 @@ function MainState:enter()
         table.insert(Entities, player)
         table.insert(Entities, chest)
     else
-        Music:stop()
-        Music:setVolume(0.3)
-        Music:setLooping(true)
-        Music:play()
+        --making sure DayCycle has the DialogManager reference
+        DayCycle:init(DialogManager)
     end
 
     -- Load HUD
@@ -126,9 +131,8 @@ function MainState:update(dt)
 
     -- Press escape to save and quit
     if love.keyboard.isDown("escape") then
-        Music:stop()
         SaveManager.save()
-        GameStateManager:setState(MainMenu)
+        GameStateManager:setState(PauseMenu)
     end
 end
 
@@ -163,11 +167,9 @@ function MainState:keypressed(k)
         DebugMode = not DebugMode
         print("Debug mode: " .. (DebugMode and "ON" or "OFF"))
     elseif k == "tab" then
-        Music:stop()
         -- Open shop screen
         GameStateManager:setState(ShopScreen)
     elseif k == 'i' then
-        Music:stop()
         -- Open inventory
         GameStateManager:setState(Inventory)
     elseif k == "f" then

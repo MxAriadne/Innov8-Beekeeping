@@ -30,6 +30,12 @@ local bgTint = {0.1, 0, .2} -- tint for background(r, g, b)
 -- days for attacks
 local eventDay = 1.0
 local cycle = "day"
+local dialogManager = nil -- LOCAL DIALOG MANAGER REFERENCE
+
+--intializing dayCycle with the dialogManager
+function DayCycle:init(dialogMgr)
+    dialogManager = dialogMgr
+end
 
 --this function changes the day counter
 --after user is done updating their hive for the day
@@ -39,6 +45,21 @@ end
 
 --method to change to night
 function DayCycle:NightSky()
+    --dialogManager check
+    if not dialogManager then 
+        print("dm not initialized, intializing")
+        if DialogManager then
+            dialogManager = DialogManager
+        else
+            local Dialove = require("libraries/Dialove/dialove")
+            dialogManager = Dialove.init({
+                font = love.graphics.newFont('libraries/fonts/comic-neue/ComicNeue-Bold.ttf', 16),
+                horizontalOffset = 300
+            })
+            DialogManager = dialogManager
+        end
+    end
+
     HoneyTemp = TotalHoney
 
     -- Update cycle
@@ -53,21 +74,38 @@ function DayCycle:NightSky()
     Timer = 0;
 
     -- pop any old messages
-    DialogManager:clearDialogs()
+    dialogManager:clearDialogs()
 
     --stop shop keys functionality?
 
+    local dialove = require "libraries/Dialove/dialove"
+    dialogManager:setTypingVolume(dialove:getTypingVolume())
+
     -- Show a night message using Dialove
     -- Push the night message to the dialog manager
-    DialogManager:show(d.goodnight) -- stores dialog
+    dialogManager:show(d.goodnight) -- stores dialog
 
     -- tigger nightly updates
     self:TriggerUpdates()
-
 end
 
 --method to change to day
 function DayCycle:DaySky()
+    if not dialogManager then 
+        print("dm not initialized, intializing")
+        if DialogManager then
+            dialogManager = DialogManager
+        else
+            --if necessary
+            local Dialove = require("libraries/Dialove/dialove")
+            dialogManager = Dialove.init({
+                font = love.graphics.newFont('libraries/fonts/comic-neue/ComicNeue-Bold.ttf', 16),
+                horizontalOffset = 300
+            })
+            DialogManager = dialogManager
+        end
+    end
+
     -- lock space
     PressSpaceAllowed = false
 
@@ -77,11 +115,19 @@ function DayCycle:DaySky()
     -- Update cycle
     cycle = "day"
 
+    --resetting player health back to max every morning
+    if player then
+        player.health = player.maxHealth
+    end
+
     -- pop any old messages
-    DialogManager:clearDialogs()
+    dialogManager:clearDialogs()
+
+    local dialove = require "libraries/Dialove/dialove"
+    dialogManager:setTypingVolume(dialove:getTypingVolume())
 
     --day message
-    DialogManager:show(d.goodmorning) -- stores dialog
+    dialogManager:show(d.goodmorning) -- stores dialog
 
     modal:show("Dawn of Day " .. daysPassed .. "!", string.format(
                                                         "You have %d KSh!\n" ..
@@ -113,6 +159,11 @@ end
 
 --method to update things throughout the night
 function DayCycle:TriggerUpdates(dt)
+    --making sure DM is available
+    if not dialogManager then 
+        print("DialogManager not initialized")
+        return
+    end
 
     local dayEvents = {
         [1] = "wasp",
@@ -143,7 +194,7 @@ function DayCycle:TriggerUpdates(dt)
             entity.visible = false
             table.insert(Entities, entity)
 
-            DialogManager:push(d[event .. "message"])
+            dialogManager:push(d[event .. "message"])
         else
             local event = dayEvents[math.random(1, #dayEvents)]
 
@@ -151,7 +202,7 @@ function DayCycle:TriggerUpdates(dt)
             entity.visible = false
             table.insert(Entities, entity)
 
-            DialogManager:push(d[event .. "message"])
+            dialogManager:push(d[event .. "message"])
         end
     else
         PressSpaceAllowed = true
@@ -173,6 +224,15 @@ function DayCycle:ApplyBGTint()
     -- Reset blend mode and color to prevent issues
     love.graphics.setBlendMode("alpha")
     love.graphics.setColor(1, 1, 1, 1)
+end
+
+function DayCycle.getDaysPassed()
+    return daysPassed
+end
+
+--getter for DialogManager
+function DayCycle:getDialogManager()
+    return dialogManager
 end
 
 return DayCycle

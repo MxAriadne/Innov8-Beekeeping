@@ -40,6 +40,8 @@ function HUD:update(dt)
 end
 
 function HUD:draw()
+    love.graphics.setFont(XSfont) --- BY THE WAY THIS FIXES THE BUG WHERE THE HUD FONT IS SUDDENLY BIGGER UPON LOADING INTO MAIN STATE --- IT RESETS THE FONT SIZE !!!
+    
     --print controls
     love.graphics.setColor(self.colors.text)
 

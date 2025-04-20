@@ -1,6 +1,11 @@
 Pathfinding = require("libraries.pathfinding")
+local DayCycle = require("dayCycleScript")
 
 Entity = Object:extend()
+
+function Entity:getDayBuff()
+    return DayCycle.getDaysPassed() or 0
+end
 
 function Entity:new()
     -- ID is the index of the entity in the parent table

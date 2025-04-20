@@ -15,6 +15,7 @@ modal = require("UI/modal")
 ShopScreen = require "states/ShopScreen"
 MainMenu = require "states/MainMenu"
 MainState = require "states/MainState"
+PauseMenu = require "states/PauseMenu"
 Inventory = require "states/Inventory"
 Settings = require "states/Settings"
 CharacterSelector = require "UI/CharacterSelector"
