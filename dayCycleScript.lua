@@ -132,13 +132,14 @@ function DayCycle:DaySky()
     modal:show("Dawn of Day " .. daysPassed .. "!", string.format(
                                                         "You have %d KSh!\n" ..
                                                         "Remember to press TAB to purchase new equipment!\n\n\n" ..
-                                                        "Your bees produced " .. (TotalHoney - HoneyTemp) .. " grams of honey today!\n\n\n" ..
+                                                        "Your bees produced %.2f grams of honey today!\n\n\n" ..
                                                         "Check out your stats:\n\n" ..
                                                         "%-25s %5d\n" ..
                                                         "%-25s %5d\n" ..
                                                         "%-25s %5d\n" ..
                                                         "%-25s %5d",
                                                         PlayerMoney,
+                                                        (TotalHoney - HoneyTemp),
                                                         "Honey Count:", TotalHoney,
                                                         "Bee Count:", #ShopBees,
                                                         "Sword Strength:", 0,

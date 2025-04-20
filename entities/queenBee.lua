@@ -82,6 +82,9 @@ function QueenBee:update(dt)
 end
 
 function QueenBee:updateState(dt)
+    --ensure dt is valid
+    dt = dt or 0
+    
     --debug stuff
     if DebugMode then
         print("Queen Bee current state:", self.state)
@@ -204,7 +207,7 @@ function QueenBee:checkForThreats()
     local threatDistance = self.threatDetectionRange or 100
 
     for _, entity in ipairs(Entities) do
-        if (entity.type == "wasp" or entity.type == "honey_badger") and entity.visible then
+        if (entity.type == "wasp" or entity.type == "honey_badger" or entity.type == "bee_eater" or entity.type == "moth") and entity.visible then
             local dx = entity.x - self.x
             local dy = entity.y - self.y
             local dist = math.sqrt(dx*dx + dy*dy)
