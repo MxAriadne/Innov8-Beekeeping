@@ -47,7 +47,9 @@ function HUD:draw()
         "Controls:",
         "Left Click - Attack",
         "Right Click - Use",
-        "Space - Advance Day"
+        "Space - Advance Day",
+        "Tab - Shop",
+        "I - Inventory"
     }
 
     for i, line in ipairs(controlsText) do

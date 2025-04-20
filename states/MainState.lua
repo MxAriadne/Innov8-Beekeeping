@@ -165,6 +165,9 @@ function MainState:keypressed(k)
         Music:stop()
         -- Open shop screen
         GameStateManager:setState(ShopScreen)
+    elseif k == 'i' then
+        -- Open inventory
+        GameStateManager:setState(Inventory)
     elseif k == "f" then
         -- DEBUG
         CurrentBuildMode = "Fence"
@@ -348,7 +351,7 @@ function MainState:mousepressed(x, y, button)
         -- Get the entity at the clicked position
         local e = self:entityAtPosition(x, y)
         -- If its a hive and they're holding a harvesting bucket...
-        if e and e.type == "hive" and player.itemInHand == ShopTools.bucket then
+        if e and e.type == "hive" and player.itemInHand.name == "Bucket" then
             -- Check if theres enough honey to harvest
             if e.honey >= 10 then
                 -- Check if they have enough space in their inventory

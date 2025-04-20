@@ -41,26 +41,26 @@ end
 
 -- Function to render the save files screen
 function gameSaves:draw()
-    love.graphics.setBackgroundColor(menuBackgroundColor)
+    love.graphics.setBackgroundColor(MenuBackgroundColor)
 
     -- Draw UI elements
-    self.textBox:draw(smallFont)
-    self.searchButton:draw(colors.yellow, smallFont, menuTextColor)
+    self.textBox:draw(SmallFont)
+    self.searchButton:draw(colors.yellow, SmallFont, MenuTextColor)
 
     -- Display message prompt
     local prompt = "Enter your account username:"
-    love.graphics.setColor(gameTitleColor)
-    love.graphics.print(prompt, smallFont, self.textBox.xPos, self.textBox.yPos - (self.textBox.height + margin))
+    love.graphics.setColor(GameTitleColor)
+    love.graphics.print(prompt, SmallFont, self.textBox.xPos, self.textBox.yPos - (self.textBox.height + margin))
 
     -- Display message after search
     if lastSearch and lastSearch ~= "" then
-        love.graphics.setColor(menuTextColor)
-        love.graphics.setFont(mediumFont)
+        love.graphics.setColor(MenuTextColor)
+        love.graphics.setFont(MediumFont)
         local message = string.format("Results for \"%s\":", lastSearch)
         love.graphics.print(message, self.textBox.xPos / 2, self.textBox.yPos + 70)
     end
 
-    
+    love.graphics.setFont(SmallFont)
 end
 
 function gameSaves:mousepressed(x, y, b)

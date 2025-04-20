@@ -73,7 +73,15 @@ function Player:new()
     self.collider = nil
 
     -- Player inventory
-    self.items = { ShopTools.bucket }
+    self.items = {
+        {
+            name = "Bucket",
+            image = love.graphics.newImage("sprites/bucket.png"),
+            price = 400,
+            description = "Used to collect honey from hives.",
+            extra = ""
+        }
+    }
 
     -- Current item in hand
     self.itemInHand = nil

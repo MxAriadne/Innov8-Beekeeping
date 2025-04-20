@@ -13,6 +13,7 @@ modal = require("UI/modal")
 -- Declare all states in main.
 -- THIS MUST BE DONE IN MAIN OR IT WILL CAUSE RECIPROICAL IMPORT ERROR.
 ShopScreen = require "states/ShopScreen"
+Inventory = require "states/Inventory"
 MainMenu = require "states/MainMenu"
 MainState = require "states/MainState"
 Settings = require "states/Settings"
