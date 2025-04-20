@@ -107,7 +107,7 @@ end
 
 function ShopScreen:update(dt)
     if love.keyboard.isDown("escape") then
-        GameStateManager:revertState()
+        GameStateManager:revertState() -- THIS RESETS THE WORLD EVERYTME YOU LEAVE
     end
 end
 
@@ -170,7 +170,7 @@ end
 
 function CloseShop()
     print("Closed Shop Screen")
-    GameStateManager:revertState()
+    GameStateManager:revertState() -- THIS RESETS THE WORLD EVERTIME YOU LEAVE
 end
 
 function BuyItem(item, selectedPage)
@@ -188,7 +188,7 @@ function BuyItem(item, selectedPage)
         end
 
         modal:show("Success!", "You've bought a " .. item.name .. "!\n" .. message, {
-            { label = "Continue", action = function() GameStateManager:revertState() end }
+            { label = "Continue", action = function() GameStateManager:revertState() end } -- THIS RESETS THE WORLD EVERYTIME YOU LEAVE
         })
     else
         modal:show("Not Enough Money!", "You don't have enough to buy this!", {

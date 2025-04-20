@@ -240,6 +240,8 @@ function Bee:uniqueUpdate(dt)
 
 end
 
+
+-- ********* DELETE AFTER ENTITIES CAN BE LOADED *********
 -- add for save/load
 -- added function to serialize
 --[[function Bee:serialize()

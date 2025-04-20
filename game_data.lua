@@ -91,9 +91,6 @@ end
 function GameData.shallowCopyTable(tbl)
     local copy = {}
     for k, v in pairs(tbl) do
-        --[[if type(v) ~= "function" and type(v) ~= "userdata" then
-            copy[k] = v
-        end]]
         if v == "number" or v == "string" or v == "boolean" then
             copy[k] = v
         end

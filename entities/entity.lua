@@ -615,9 +615,11 @@ function Entity:animate()
     return animation
 end
 
+
+-- ********* DELETE AFTER ENTITIES CAN BE LOADED *********
 -- added for saving /loading
 -- Function to collect serialized entity data
-function Entity.getSaveData()
+--[[function Entity.getSaveData()
     local saveData = {}
 
     if Entities then
@@ -629,6 +631,6 @@ function Entity.getSaveData()
     end
 
     return saveData
-end
+end]]
 
 return Entity

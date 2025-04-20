@@ -58,6 +58,7 @@ function MainState:enter()
     bee = Bee(hive, 275, 300)
     chest = Chest()
 
+    --ADDED TO GET NEW GAME AFTER LOADED TO WORK
     --update base variable to default values
     DaysPassed = 0.0
     PlayerMoney = 3000

@@ -1,6 +1,6 @@
 -- save manager for saving and loading
 
---TODO: fix how to create new world logic, then see if this helps clear up how entities are added
+--TODO: test if entities are loading
 
 local lume = require("libraries/lume-master/lume")
 
@@ -21,8 +21,8 @@ function SaveManager.save()
     local filename = name .. ".lua"
 
     -- update data to be saved
-    GameData.Update_gameDataWGlobals()
-    --GameData.gameData.entities = Entity.getSaveData()
+    GameData.Update_gameDataWGlobals() -- updates entities within this function
+    --GameData.gameData.entities = Entity.getSaveData() -- old
 
     -- serialize and store
     local serialized = lume.serialize(GameData.gameData)
@@ -67,6 +67,7 @@ function SaveManager.loadGame(filename)
 
         --[[
             ***** LOADS ENTITIES *****
+            
             If you want to test only loading basic variables,
             then set test = false.
 
@@ -121,6 +122,8 @@ function SaveManager.loadGame(filename)
 
         end -- loadentities condition end
 
+
+        --[[******* WHAT IS ACTUALLY LOADING ENTITIES **********]]
         GameData.LoadEntities(loadtable)
 
         return loadtable

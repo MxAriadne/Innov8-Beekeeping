@@ -142,9 +142,10 @@ function Hive:takeDamage(damage, attacker)
     end
 end
 
+-- ********* DELETE AFTER ENTITIES CAN BE LOADED *********
 --added functions to save/load
 -- added function to serialize
-function Hive:serialize()
+--[[function Hive:serialize()
     return {
         type = self.type,
         x = self.x,
@@ -165,6 +166,6 @@ function Hive.deserialize(data)
     hive.hasQueen = data.hasQueen
     hive.beeCount = data.beeCount
     return hive
-end
+end]]
 
 return Hive
