@@ -50,6 +50,11 @@ function newSlider(x, y, length, value, min, max, setter, style)
     return setmetatable(s, slider)
 end
 
+function slider:updatescroll(scroll)
+
+  self.y = self.y +scroll
+end
+
 function slider:update(mouseX, mouseY, mouseDown)
     local x = mouseX or love.mouse.getX()
     local y = mouseY or love.mouse.getY()
