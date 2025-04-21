@@ -114,9 +114,6 @@ function Hive:updateHoneyProduction()
     if self.hasQueen then
         self.honeyProductionRate = 1.0
         --basing productivity off queen's health and age
-        local queenHealthFactor = self.QueenBee.health * 0.5
-        local queenAgeFactor = math.max(0, 100 - self.QueenBee.age) * 0.2
-
         local healthPercentage = self.QueenBee.health / self.QueenBee.maxHealth
         local ageImpact = 1 - (self.QueenBee.age / self.QueenBee.maxAge) * 0.5
         self.honeyProductionRate = 1.0 * healthPercentage * ageImpact
@@ -126,7 +123,9 @@ function Hive:updateHoneyProduction()
 end
 
 function Hive:depositNectar(flowerHarvested)
-    self.honey = self.honey + (flowerHarvested.modifier * (self.honeyProductionRate or 1.0))
+    local honeyProduced = flowerHarvested.modifier * (self.honeyProductionRate or 1.0)
+    self.honey = self.honey + honeyProduced
+    HoneyTemp = HoneyTemp + honeyProduced
     return false
 end
 

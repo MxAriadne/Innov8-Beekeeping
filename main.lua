@@ -38,6 +38,8 @@ Interval = 60
 LastTrigger = 0
 -- Locking mechanism to prevent skipping attacks
 PressSpaceAllowed = true
+-- Variable used to track honey produced during the day
+HoneyTemp = 0
 
 -- Current build mode: "hive", "bee", "flower", or ""
 CurrentBuildMode = ""

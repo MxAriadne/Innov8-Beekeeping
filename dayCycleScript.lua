@@ -60,8 +60,6 @@ function DayCycle:NightSky()
         end
     end
 
-    HoneyTemp = TotalHoney
-
     -- Update cycle
     cycle = "night"
 
@@ -129,20 +127,30 @@ function DayCycle:DaySky()
     --day message
     dialogManager:show(d.goodmorning) -- stores dialog
 
+    local numBees = 0
+    local totalHoney = 0
+
+    for _, e in ipairs(Entities) do
+        if e.type == "bee" then
+            numBees = numBees + 1
+        elseif e.type == "hive" then
+            totalHoney = totalHoney + e.honey
+        end
+    end
+
     modal:show("Dawn of Day " .. daysPassed .. "!", string.format(
                                                         "You have %d KSh!\n" ..
                                                         "Remember to press TAB to purchase new equipment!\n\n\n" ..
-                                                        "Your bees produced " .. (TotalHoney - HoneyTemp) .. " grams of honey today!\n\n\n" ..
+                                                        "Your bees produced %.2f grams of honey today!\n\n\n" ..
                                                         "Check out your stats:\n\n" ..
                                                         "%-25s %5d\n" ..
                                                         "%-25s %5d\n" ..
                                                         "%-25s %5d\n" ..
                                                         "%-25s %5d",
                                                         PlayerMoney,
-                                                        "Honey Count:", TotalHoney,
-                                                        "Bee Count:", #ShopBees,
-                                                        "Sword Strength:", 0,
-                                                        "Fence Strength:", 0
+                                                        HoneyTemp,
+                                                        "Honey Count:", totalHoney,
+                                                        "Bee Count:", numBees
                                                     ) .. "\n\n\n" .. tips[math.random(1, #tips)],
     {
         {
@@ -152,6 +160,9 @@ function DayCycle:DaySky()
             end
         }
     }, 512, 512)
+
+    --resetting honey temp
+    HoneyTemp = 0
 
     -- tigger nightly updates
     self:TriggerUpdates()
@@ -207,6 +218,7 @@ function DayCycle:TriggerUpdates(dt)
     else
         PressSpaceAllowed = true
     end
+
 end
 
 -- applys a tint over everything using a transparent rectangle

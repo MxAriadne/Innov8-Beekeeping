@@ -5,7 +5,7 @@ function Fence:new(x, y)
     self.id = #Entities + 1
 
     -- Visual size
-    self.scale = 2.5
+    self.scale = 2.6
 
     -- Dimensions
     self.width = 16
