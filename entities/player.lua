@@ -56,6 +56,8 @@ function Player:new()
     self.attackTimer = 0
     self.attackRange = 25
 
+    self.itemCooldown = 0
+
     --tracks when damage is dealt to add visual effect -- want to add a robloxian oof here
     self.damageIndicator = {}  --table to store hit effects
     self.damageIndicatorDuration = 0.2  --how long hit effects last

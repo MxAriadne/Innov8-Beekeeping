@@ -4,11 +4,13 @@ require "UI/design"
 local slider = require "UI/simple-slider"
 local dialove = require "libraries/Dialove/dialove"
 
-scroll = 0
-menuBottom = -300
-menuTop = 0
+local scroll = 0
+local menuBottom = -300
+local menuTop = 0
+local volumeSlider
+local typingVolumeSlider
 
-function love.wheelmoved(x, y)
+function Settings:wheelmoved(x, y)
   if scroll > menuBottom  and scroll <=menuTop then
     scroll = scroll + y*15
     volumeSlider:updatescroll(y*15)
@@ -35,6 +37,7 @@ end
 
 function Settings:update(dt)
     if love.keyboard.isDown("escape") then
+        love.graphics.setFont(XSfont)
         GameStateManager:revertState()
     end
 

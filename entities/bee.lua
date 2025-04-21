@@ -64,8 +64,8 @@ function Bee:new(home, x, y)
     self.state = "foraging"
 
     -- Speed variables
-    self.movementSpeed = 40
-    self.retreatSpeed = 100
+    self.movementSpeed = 50
+    self.retreatSpeed = 50
     self.speed = self.movementSpeed
 
     -- Is this entity naturally hostile?
@@ -227,6 +227,7 @@ function Bee:uniqueUpdate(dt)
         self.harvestingTimer = self.harvestingTimer + dt
         -- If we've been harvesting long enough, return to hive
         if self.harvestingTimer >= self.harvestingTime then
+            self.currentLoot = self.maxLootCapacity
             -- Set nectar flag and return to hive
             self.hasLoot = true
             -- Update flower is on cooldown

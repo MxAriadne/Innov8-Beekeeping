@@ -346,12 +346,14 @@ function Entity:move(dt)
             if self.type == "bee" then
                 if self.target.type == "hive" then
                     if self.homeHive then
-                        self.homeHive:depositNectar(self.lastFlower)
-                        self.closestFlower = nil
-                        self.target = nil
-                        self.harvestingTimer = 0
-                        self.currentLoot = 0
-                        self.hasNectar = false
+                        if self.currentLoot > 0 then
+                            self.homeHive:depositNectar(self.lastFlower)
+                            self.closestFlower = nil
+                            self.target = nil
+                            self.harvestingTimer = 0
+                            self.currentLoot = 0
+                            self.hasNectar = false
+                        end
                     end
                     self.state = "foraging"
                     return
@@ -395,7 +397,9 @@ function Entity:stealHoney()
     if self.target.honey <= 0 and self.currentLoot <= self.maxLootCapacity then
         print(self.id .. " " .. self.type .. ": " .. "Honey depleted, fleeing.")
         self.isAggressive = false
-        self.speed = self.retreatSpeed
+        if self.type ~= "bee" then
+            self.speed = self.retreatSpeed
+        end
         self.target = nil
         self.state = "fleeing"
         return
@@ -459,9 +463,10 @@ function Entity:updateState()
     -- OR if hits taken is greater than or equal to max attacks, set state to fleeing
     if self.currentLoot >= self.maxLootCapacity or
        self.hitsTaken >= self.maxAttacks or
-       self.health <= self.retreatHealthThreshold
+       self.health <= self.retreatHealthThreshold and self.type ~= "bee"
     then
         self.isAggressive = false
+        print(self.id .. " " .. self.type .. ": " .. "Fleeing...")
         self.speed = self.retreatSpeed
         self.target = nil
         self.state = "fleeing"

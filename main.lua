@@ -115,8 +115,9 @@ function love.textinput(text)
     -- Block text input when modal is up
     if modal.active then return end
     -- Forward text input to current state
-    if GameStateManager.currentState and GameStateManager.currentState.textinput then
-        GameStateManager.currentState:textinput(text)
+    local current = GameStateManager:getState()
+    if current and current.textinput then
+        current:textinput(text)
     end
 end
 
@@ -127,5 +128,13 @@ function love.keypressed(k)
     local current = GameStateManager:getState()
     if current and current.keypressed then
         current:keypressed(k)
+    end
+end
+
+function love.wheelmoved(x, y)
+    -- Forward wheel input to current state
+    local current = GameStateManager:getState()
+    if current and current.wheelmoved then
+        current:wheelmoved(x, y)
     end
 end

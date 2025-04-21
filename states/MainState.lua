@@ -351,10 +351,21 @@ end
 function MainState:mousepressed(x, y, button)
     print("Mouse pressed at: " .. x .. ", " .. y)
     if button == 2 and BuildOptions[CurrentBuildMode] then  -- Right click
-        BuildOptions[CurrentBuildMode](x, y)
-        CurrentBuildMode = ""
-        return
+        -- Get the entity at the clicked position
+        local e = self:entityAtPosition(x, y)
+        if e then
+            modal:show("", "There is already an object here!", {
+                { label = "Continue", action = function() print("Closed") end }
+            })
+            return
+        else
+            BuildOptions[CurrentBuildMode](x, y)
+            CurrentBuildMode = ""
+            return
+        end
     end
+
+    local cooldownTimer = 0
 
     -- If the player is right clicking on an object...
     if button == 2 and player.itemInHand ~= nil then
@@ -374,7 +385,12 @@ function MainState:mousepressed(x, y, button)
                             name = "Honey Jar",
                             image = love.graphics.newImage("sprites/honey_jar.png"),
                         })
-                        e.honey = e.honey - 10
+                        if contains(player.items, ShopTools.honey_brush) then
+                            e.honey = e.honey - 8
+                        else 
+                            e.honey = e.honey - 10
+                        end
+                        
                         print("Added honey jar to inventory at position " .. i)
                         break
                     -- Else, inventory is full, display an error
@@ -391,7 +407,7 @@ function MainState:mousepressed(x, y, button)
                 })
             end
         elseif e and e.type == "Chest" then
-            -- If the chest is open and the player is holding a honey jar...
+            -- If the chest is open and the player is holding a sellable item...
             if e.opening then
                 if player.itemInHand.name == "Honey Jar" then
                     -- Remove the honey jar from the player's inventory
@@ -400,9 +416,23 @@ function MainState:mousepressed(x, y, button)
                     player.itemInHand = nil
                     -- Give the player money
                     PlayerMoney = PlayerMoney + 500
+                elseif player.itemInHand.name == "Smoker" then
+                    -- Remove the smoker from the player's inventory
+                    table.remove(player.items, InventoryPosition)
+                    -- Set the player's current item to nil
+                    player.itemInHand = nil
+                    -- Give the player money
+                    PlayerMoney = PlayerMoney + 5000
+                elseif player.itemInHand.name == "Honey Brush" then
+                    -- Remove the honey brush from the player's inventory
+                    table.remove(player.items, InventoryPosition)
+                    -- Set the player's current item to nil
+                    player.itemInHand = nil
+                    -- Give the player money
+                    PlayerMoney = PlayerMoney + 300
                 else
-                    -- If not holding a honey jar, display an error
-                    modal:show("You aren't holding a honey jar!", "Use the number keys to select a honey jar in your inventory!", {
+                    -- If not holding a sellable item, display an error
+                    modal:show("You aren't holding a sellable item!", "Use the number keys to select a sellable item in your inventory!", {
                         { label = "Continue", action = function() print("Closed") end }
                     })
                 end
@@ -411,6 +441,31 @@ function MainState:mousepressed(x, y, button)
             CurrentBuildMode = ""
             e.maxHealth = e.maxHealth * 1.5
             e.health = e.maxHealth
+        elseif e and e.type == "hive" and player.itemInHand.name == "Smoker" then
+            CurrentBuildMode = ""
+            if player.itemCooldown == 0 then
+                player.itemCooldown = Timer + 10
+            end
+            if Timer < player.itemCooldown then
+                modal:show("", "You must wait 10 seconds to smoke a hive!", {
+                    { label = "Continue", action = function() print("Closed") end }
+                })
+                return
+            else
+                for _, b in ipairs(Entities) do
+                    if (b.type == "bee" or b.type == "QueenBee") and b.homeHive.id == e.id then
+                        b.isAggressive = false
+                        b.health = b.maxHealth
+                        b.currentLoot = 3
+                        b.isUnderAttack = false
+                    end
+                end
+                modal:show("", "You smoked the hive! Its bees are now peaceful and have recovered!", {
+                    { label = "Continue", action = function() print("Closed") end }
+                })
+                player.itemCooldown = 0
+                return
+            end
         end
     end
 

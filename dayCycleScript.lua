@@ -133,6 +133,8 @@ function DayCycle:DaySky()
     for _, e in ipairs(Entities) do
         if e.type == "bee" then
             numBees = numBees + 1
+            e.health = e.maxHealth
+            e.state = "foraging"
         elseif e.type == "hive" then
             totalHoney = totalHoney + e.honey
         end
@@ -141,10 +143,8 @@ function DayCycle:DaySky()
     modal:show("Dawn of Day " .. daysPassed .. "!", string.format(
                                                         "You have %d KSh!\n" ..
                                                         "Remember to press TAB to purchase new equipment!\n\n\n" ..
-                                                        "Your bees produced %.2f grams of honey today!\n\n\n" ..
+                                                        "Your bees produced %d grams of honey today!\n\n\n" ..
                                                         "Check out your stats:\n\n" ..
-                                                        "%-25s %5d\n" ..
-                                                        "%-25s %5d\n" ..
                                                         "%-25s %5d\n" ..
                                                         "%-25s %5d",
                                                         PlayerMoney,
