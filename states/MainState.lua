@@ -17,10 +17,7 @@ function MainState:enter()
 
     -- Load the tilemap
     Map = sti('maps/TilesForBeekeepingGameTopBoundaries.lua')
-
-    -- Load music
-    Music = love.audio.newSource("tunes/Flowers.mp3", "stream")
-
+    
     -- Initialize dialog system
     DialogManager = Dialove.init({
         font = love.graphics.newFont('libraries/fonts/comic-neue/ComicNeue-Bold.ttf', 16),

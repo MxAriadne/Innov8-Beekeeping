@@ -41,23 +41,23 @@ function CharacterSelector:enter()
     -- Start with the first character
     currentIndex = 1
 
-    -- Create the left arrow button to go to the previous character
-    arrowLeft = button:new("<", function()
-        currentIndex = (currentIndex - 2) % #quads + 1
-        Character = Character - 1
-        if Character < 0 then
-            Character = 4
-        end
-    end, 60, 60, 100, GameConfig.windowH / 2 - 30)
+    -- -- Create the left arrow button to go to the previous character
+    -- arrowLeft = button:new("<", function()
+    --     currentIndex = (currentIndex - 2) % #quads + 1
+    --     Character = Character - 1
+    --     if Character < 0 then
+    --         Character = 4
+    --     end
+    -- end, 60, 60, 100, GameConfig.windowH / 2 - 30)
 
-    -- Create the right arrow button to go to the next character
-    arrowRight = button:new(">", function()
-        currentIndex = currentIndex % #quads + 1
-        Character = Character + 1
-        if Character > 4 then
-            Character = 0
-        end
-    end, 60, 60, GameConfig.windowW - 160, GameConfig.windowH / 2 - 30)
+    -- -- Create the right arrow button to go to the next character
+    -- arrowRight = button:new(">", function()
+    --     currentIndex = currentIndex % #quads + 1
+    --     Character = Character + 1
+    --     if Character > 4 then
+    --         Character = 0
+    --     end
+    -- end, 60, 60, GameConfig.windowW - 160, GameConfig.windowH / 2 - 30)
 
     -- Create a continue button to proceed to the main game state
     continueButton = button:new("Continue", function()
@@ -69,8 +69,8 @@ end
 
 function CharacterSelector:draw()
     -- Draw navigation buttons
-    arrowLeft:draw(colors.yellow)
-    arrowRight:draw(colors.yellow)
+    -- arrowLeft:draw(colors.yellow)
+    -- arrowRight:draw(colors.yellow)
 
     -- Display prompt to enter player's name
     --love.graphics.setFont(love.graphics.newFont(18))
@@ -87,14 +87,18 @@ function CharacterSelector:draw()
     -- Reset drawing color for full opacity, without this the character is blank.
     love.graphics.setColor(1, 1, 1, 1)
 
-    -- Draw the currently selected character sprite
-    local quad = quads[currentIndex]
-    if quad then
-        local scale = 4
-        local x = (GameConfig.windowW - 64 * scale) / 2
-        local y = (GameConfig.windowH - 64 * scale) / 2
-        love.graphics.draw(image, quad, x, y, 0, scale, scale)
-    end
+    -- -- Draw the currently selected character sprite
+    -- local quad = quads[currentIndex]
+    -- if quad then
+    --     local scale = 4
+    --     local x = (GameConfig.windowW - 64 * scale) / 2
+    --     local y = (GameConfig.windowH - 64 * scale) / 2
+    --     love.graphics.draw(image, quad, x, y, 0, scale, scale)
+    -- end
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setDefaultFilter("nearest", "nearest")
+    love.graphics.draw(love.graphics.newImage("sprites/front.png"), 375, 230, 0, 0.4)
+
 end
 
 function CharacterSelector:keypressed(key)
@@ -119,8 +123,8 @@ end
 
 function CharacterSelector:mousepressed(x, y, b)
     -- Pass click to arrow and continue buttons
-    arrowLeft:mousepressed(x, y, b)
-    arrowRight:mousepressed(x, y, b)
+    -- arrowLeft:mousepressed(x, y, b)
+    -- arrowRight:mousepressed(x, y, b)
     continueButton:mousepressed(x, y, b)
 
     -- Detect if the name input box was clicked

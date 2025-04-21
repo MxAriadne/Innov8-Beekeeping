@@ -6,7 +6,7 @@ local button = require "UI/button"
 
 local pages = {"Hives", "Tools"}
 -- CHANGE IF ALLOWING CHARACTER SPRITE SELECTION
-local characterSprite = love.graphics.newImage("sprites/chars/char9.png")
+local characterSprite = love.graphics.newImage("sprites/front.png")
 
 function inventory:enter()
     self.page = 1
@@ -49,14 +49,15 @@ function inventory:draw()
     -- Character sprite
     love.graphics.setColor(colors.black)
     love.graphics.rectangle("line", 100, 150, 200, 400)
-    if player.sprite then
-        love.graphics.draw(characterSprite, 50, 150)
-    end 
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setDefaultFilter("nearest", "nearest")
+    love.graphics.draw(characterSprite, 75, 230, 0, 0.5)
+
 
     -- Username
     love.graphics.setColor(colors.black)
-    love.graphics.setFont(MediumFont)
-    love.graphics.printf(PlayerName or "Name", 60, 140, 100)
+    love.graphics.setFont(SmallFont)
+    love.graphics.printf(PlayerName or "Name", 100, 90, 100)
     love.graphics.setFont(XSfont)
 
     -- Get player's current items and hives

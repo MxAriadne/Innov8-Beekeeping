@@ -72,6 +72,12 @@ function love.load()
     require "entities.fence"
     require "entities.chest"
 
+
+    Music = love.audio.newSource("tunes/Flowers.mp3", "stream")
+    Music:setVolume(0.3)
+    Music:setLooping(true)
+    Music:play()
+
     -- Set default filter for graphics
     love.graphics.setDefaultFilter(GameConfig.filter, GameConfig.filter)
     love.window.setMode(GameConfig.windowW, GameConfig.windowH)
