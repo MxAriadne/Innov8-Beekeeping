@@ -25,7 +25,7 @@ function love.wheelmoved(x, y)
 end
 
 function Settings:enter()
-    volumeSlider = newSlider(600, 100+scroll, 300, love.audio.getVolume(), 0, 1, function (v) love.audio.setVolume(v) end)
+    volumeSlider = newSlider(600, 100, 300, love.audio.getVolume(), 0, 1, function (v) love.audio.setVolume(v) end)
 
     local savedTypingVolume = dialove:getTypingVolume()
     typingVolumeSlider = newSlider(600, 200, 300, savedTypingVolume, 0, 1, function (v)
