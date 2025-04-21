@@ -4,9 +4,7 @@
 -- Import required modules
 require "UI/design"
 local button = require "UI/button"
-local gameSaves = require "states/loadFilesScreen"
-local MainState = require("states/MainState")
-local Settings = require("states/Settings")
+local gameSaves = require "states.LoadFilesScreen"
 
 local MainMenu = {}
 
@@ -30,9 +28,18 @@ function MainMenu:enter()
     end
 
     -- Generate title and honeycomb
-    self.title = "Bizzy Beez"
-    love.graphics.setColor(gameTitleColor)
-    self.titleW = largeFont:getWidth(self.title)
+    -- Generate logo
+    self.logo = love.graphics.newImage("sprites/logo.png")
+    self.logoCanvas = love.graphics.newCanvas(280, 280)
+    love.graphics.setCanvas(self.logoCanvas) -- Switch drawing to canvas
+    love.graphics.clear(0, 0, 0, 0) -- Make new canvas transparent
+    love.graphics.setColor(1,1,1) -- Set color back to default
+    love.graphics.draw(self.logo, 0, 0, 0,
+                        self.logoCanvas:getWidth() / self.logo:getWidth(),
+                        self.logoCanvas:getHeight() / self.logo:getHeight()) -- Draw image onto canvas
+
+    love.graphics.setCanvas() -- Swtich back to screen
+    love.graphics.setColor(GameTitleColor)
     self.honeycomb = love.graphics.newImage("sprites/honeycomb.png")
 
 end
@@ -40,10 +47,11 @@ end
 -- This function draws the created buttons on the screen
 function MainMenu:draw()
     -- Set background color
-    love.graphics.setBackgroundColor(menuBackgroundColor)
+    love.graphics.setBackgroundColor(MenuBackgroundColor)
 
     -- Draw title centered to top of window
-    love.graphics.print(self.title, largeFont, (GameConfig.windowW-self.titleW) / 2, 100)
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.draw(self.logoCanvas, (GameConfig.windowW - self.logoCanvas:getWidth()) / 2, 10)
 
     -- Draw honeycomb image
     love.graphics.setColor(1,1,1)
@@ -52,7 +60,14 @@ function MainMenu:draw()
 
     -- Draw the buttons
     for _, button in ipairs(self.buttons) do
-        button:draw(button.color, mediumFont, menuTextColor)
+        button:draw(colors.yellow, MediumFont, MenuTextColor)
+    end
+end
+
+function MainMenu:mousepressed(x, y, b)
+    print("Mouse pressed at " .. x .. ", " .. y)
+    for _, button in ipairs(self.buttons) do
+        button:mousepressed(x, y, b)
     end
 end
 
@@ -69,7 +84,7 @@ function exitGame()
 end
 
 function newGame()
-    GameStateManager:setState(MainState)
+    GameStateManager:setState(CharacterSelector)
 end
 
 -- TODO: add function to change game state to gameSaves

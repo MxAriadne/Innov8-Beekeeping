@@ -1,4 +1,3 @@
---holds game variables to be saved and loaded
 -- Holds game variables to be saved and loaded
 
 --TODO: fix update and var refs
@@ -11,6 +10,7 @@ local PlayerMoney = 100  -- Example value
 local bees = {}  -- Example empty table, replace with actual data
 local waspGo = false  -- Example value
 local badgerGo = false  -- Example value
+local PlayerName = ""
 
 local gameData = {
     -- day number

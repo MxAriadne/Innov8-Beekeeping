@@ -19,31 +19,54 @@
     update everything
 ]]
 
-local d = require("dialogs")
+local DayCycle = {}
 
-daysPassed = 0.0;
-bgTint = {0.1, 0, .2} -- tint for background(r, g, b)
+local d = require("dialogs")
+local tips = require("tips")
+
+local daysPassed = 0.0
+local bgTint = {0.1, 0, .2} -- tint for background(r, g, b)
 
 -- days for attacks
-waspDay = 1 --5
-waspGo = false
-badgerDay = 3 --10
-badgerGo = false
+local eventDay = 1.0
+local cycle = "day"
+local dialogManager = nil -- LOCAL DIALOG MANAGER REFERENCE
+
+--intializing dayCycle with the dialogManager
+function DayCycle:init(dialogMgr)
+    dialogManager = dialogMgr
+end
 
 --this function changes the day counter
 --after user is done updating their hive for the day
-function AdvanceDay()
+function DayCycle:AdvanceDay()
     daysPassed = daysPassed + 0.5
-
-
 end
 
 --method to change to night
-function NightSky()
+function DayCycle:NightSky()
+    --dialogManager check
+    if not dialogManager then 
+        print("dm not initialized, intializing")
+        if DialogManager then
+            dialogManager = DialogManager
+        else
+            local Dialove = require("libraries/Dialove/dialove")
+            dialogManager = Dialove.init({
+                font = love.graphics.newFont('libraries/fonts/comic-neue/ComicNeue-Bold.ttf', 16),
+                horizontalOffset = 300
+            })
+            DialogManager = dialogManager
+        end
+    end
+
+    -- Update cycle
+    cycle = "night"
+
     -- lock space
-    pressSpaceAllowed = false
+    PressSpaceAllowed = false
     print("before update")
-    print(pressSpaceAllowed)
+    print(PressSpaceAllowed)
 
     -- update timer
     Timer = 0;
@@ -53,70 +76,154 @@ function NightSky()
 
     --stop shop keys functionality?
 
+    local dialove = require "libraries/Dialove/dialove"
+    dialogManager:setTypingVolume(dialove:getTypingVolume())
+
     -- Show a night message using Dialove
     -- Push the night message to the dialog manager
     dialogManager:show(d.goodnight) -- stores dialog
 
     -- tigger nightly updates
-    TriggerUpdates()
-
-    
-
+    self:TriggerUpdates()
 end
 
 --method to change to day
-function DaySky()
-    -- lock space
-    pressSpaceAllowed = false
+function DayCycle:DaySky()
+    if not dialogManager then 
+        print("dm not initialized, intializing")
+        if DialogManager then
+            dialogManager = DialogManager
+        else
+            --if necessary
+            local Dialove = require("libraries/Dialove/dialove")
+            dialogManager = Dialove.init({
+                font = love.graphics.newFont('libraries/fonts/comic-neue/ComicNeue-Bold.ttf', 16),
+                horizontalOffset = 300
+            })
+            DialogManager = dialogManager
+        end
+    end
 
-    -- update timer
+    -- lock space
+    PressSpaceAllowed = false
+
+    -- Update timer
     Timer = 0;
-    
+
+    -- Update cycle
+    cycle = "day"
+
+    --resetting player health back to max every morning
+    if player then
+        player.health = player.maxHealth
+    end
+
     -- pop any old messages
     dialogManager:clearDialogs()
+
+    local dialove = require "libraries/Dialove/dialove"
+    dialogManager:setTypingVolume(dialove:getTypingVolume())
 
     --day message
     dialogManager:show(d.goodmorning) -- stores dialog
 
-    --load stat message with variables
-    local morningstats = {
-        text = string.format("Check out your stats: You have $%d.\nYour hive's health is at %d.\nYour hive's honey count is at %d. \nYour bee count is %d. \nYour sword is at %d strength. \nYour fences are at %d strength.", PlayerMoney, hive.health, hive.honey, #bees, 0, 0),
-        options = {} -- no choices, signals end of dialogue
-    }
-    --send update message
-    dialogManager:push(morningstats)
+    local numBees = 0
+    local totalHoney = 0
 
-    --shop populates
+    for _, e in ipairs(Entities) do
+        if e.type == "bee" then
+            numBees = numBees + 1
+        elseif e.type == "hive" then
+            totalHoney = totalHoney + e.honey
+        end
+    end
+
+    modal:show("Dawn of Day " .. daysPassed .. "!", string.format(
+                                                        "You have %d KSh!\n" ..
+                                                        "Remember to press TAB to purchase new equipment!\n\n\n" ..
+                                                        "Your bees produced %.2f grams of honey today!\n\n\n" ..
+                                                        "Check out your stats:\n\n" ..
+                                                        "%-25s %5d\n" ..
+                                                        "%-25s %5d\n" ..
+                                                        "%-25s %5d\n" ..
+                                                        "%-25s %5d",
+                                                        PlayerMoney,
+                                                        HoneyTemp,
+                                                        "Honey Count:", totalHoney,
+                                                        "Bee Count:", numBees
+                                                    ) .. "\n\n\n" .. tips[math.random(1, #tips)],
+    {
+        {
+            label = "Continue", action =
+            function()
+                modal:close()
+            end
+        }
+    }, 512, 512)
+
+    --resetting honey temp
+    HoneyTemp = 0
 
     -- tigger nightly updates
-    TriggerUpdates()
-
-    
+    self:TriggerUpdates()
 end
 
 --method to update things throughout the night
-function TriggerUpdates(dt)
-
-    --check for attack
-    if daysPassed == waspDay then
-        TintEnabled = true
-        dialogManager:push(d.waspmessage)
-       
-
-    elseif daysPassed == badgerDay+0.5 then
-
-        dialogManager:push(d.badgermessage)
-
-    else
-        pressSpaceAllowed = true
+function DayCycle:TriggerUpdates(dt)
+    --making sure DM is available
+    if not dialogManager then 
+        print("DialogManager not initialized")
+        return
     end
 
+    local dayEvents = {
+        [1] = "wasp",
+        [2] = "bee_eater",
+    }
+
+    local nightEvents = {
+        [1] = "badger",
+        [2] = "moth",
+    }
+
+    local entities = {
+        ["wasp"] = Wasp,
+        ["bee_eater"] = BeeEater,
+        ["badger"] = HoneyBadger,
+        ["moth"] = Moth,
+    }
+
+    if daysPassed == eventDay then
+        -- Update event day randomly
+        eventDay = eventDay + math.random(0.5, 2)
+
+        if cycle == "night" then
+            TintEnabled = true
+            local event = nightEvents[math.random(1, #nightEvents)]
+
+            local entity = entities[event]()
+            entity.visible = false
+            table.insert(Entities, entity)
+
+            dialogManager:push(d[event .. "message"])
+        else
+            local event = dayEvents[math.random(1, #dayEvents)]
+
+            local entity = entities[event]()
+            entity.visible = false
+            table.insert(Entities, entity)
+
+            dialogManager:push(d[event .. "message"])
+        end
+    else
+        PressSpaceAllowed = true
+    end
 
 end
 
 -- applys a tint over everything using a transparent rectangle
-function ApplyBGTint()
-    if not tintEnabled then return end -- If tint is disabled, do nothing
+function DayCycle:ApplyBGTint()
+    if not TintEnabled then return end -- If tint is disabled, do nothing
 
     love.graphics.setColor(bgTint[1], bgTint[2], bgTint[3], 0.5) -- Add semi-transparent tint
 
@@ -130,3 +237,14 @@ function ApplyBGTint()
     love.graphics.setBlendMode("alpha")
     love.graphics.setColor(1, 1, 1, 1)
 end
+
+function DayCycle.getDaysPassed()
+    return daysPassed
+end
+
+--getter for DialogManager
+function DayCycle:getDialogManager()
+    return dialogManager
+end
+
+return DayCycle

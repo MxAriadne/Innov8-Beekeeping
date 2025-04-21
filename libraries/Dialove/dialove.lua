@@ -22,6 +22,15 @@ local BASE = (...):sub(1, #(...) - 7) .. '/'
 local timer = require(BASE .. 'timer')
 local utils = require(BASE .. 'dialove-utils')
 
+--Global static object to be shared across all dialove instances
+local staticObjects = {
+  typingSound = love.audio.newSource(BASE .. 'assets/typing-sound.ogg', 'static'),
+  typingVolume = 1
+}
+
+-- Making typingVolume a local variable
+local typingVolume = 1
+
 local defaultFont = love.graphics.newFont()
 defaultFont = love.graphics.newFont(defaultFont:getBaseline() * 1.5)
 local defaultLineSpacing = 1.4
@@ -47,7 +56,7 @@ local dialove = {
     [';'] = 0.5,
     [','] = 0.3
   },
-  typingSound = love.audio.newSource(BASE .. 'assets/typing-sound.ogg', 'static'),
+  typingSound = staticObjects.typingSound, --CHNAGED TO USE THE STATIC OBJECT
   backgroundTypes = {
     normal = 1,
     tiled = 2,
@@ -71,9 +80,18 @@ dialove.init = function (data)
   dialove.cornerRadius = data.cornerRadius or dialove.cornerRadius
   dialove.optionsSeparation = data.optionsSeparation or dialove.lineHeight
   dialove.defaultNumberOfLines = data.numberOfLines or dialove.defaultNumberOfLines
+  
+  --Using the shared typing volume
+  if data.typingVolume then 
+    typingVolume = data.typingVolume
+    staticObjects.typingSound:setVolume(typingVolume)
+  end
 
   dialove.fontH = dialove.font:getHeight()
-  dialove.typingSound:setVolume(data.typingVolume or 1)
+  
+  --Making sure every instance uses the same typing sound and volume
+  dialove.typingSound = staticObjects.typingSound 
+  dialove.typingSound:setVolume(typingVolume)
 
   return setmetatable(d, dialove)
 end
@@ -151,10 +169,12 @@ end
 
 function dialove:initBounds(dialog, optionsH)
   dialog.optionsH = optionsH
-  dialog.backgroundH = (dialog.linesH) + self.verticalPadding * 2 + dialog.optionsH
+  dialog.backgroundH = (dialog.linesH) + (self.verticalPadding + dialog.optionsH) * 0.75
 
-  if optionsH == 0 then
-    dialog.backgroundH = dialog.backgroundH - (self.lineHeight - self.fontH)
+  if optionsH == 0 and #dialog.lines <= 2 then
+    dialog.backgroundH = (dialog.backgroundH - self.lineHeight) * 0.8
+  elseif optionsH == 0 and #dialog.lines > 3 then
+    dialog.backgroundH = (dialog.backgroundH + self.lineHeight) * 1.05
   end
 
   local heightToFitImage = 0
@@ -176,11 +196,15 @@ function dialove:initBounds(dialog, optionsH)
 end
 
 function dialove:show(data)
+  staticObjects.typingSound:setVolume(typingVolume)
+  
   self:push(data)
   self:pop(true)
 end
 
 function dialove:push(data)
+  staticObjects.typingSound:setVolume(typingVolume)
+  
   local newDialog = {
     characterIndex = 0,
     lineIndex = 1,
@@ -216,13 +240,16 @@ function dialove:push(data)
   local lineWasInserted = false
 
   local wordsToInsert = {}
-  for word in string.gmatch(content, '([^( |)]+)') do -- \n
+  for word in string.gmatch(content, '([^( |\n)]+)') do
     table.insert(wordsToInsert, word)
   end
 
   local indexWord = 1
 
-  newDialog.noPaddingWidth = self.viewportW - (self.horizontalPadding * 2 + self.margin * 2)
+  --changed dialogue width to 90%
+  local dialogWidth = self.viewportW * 0.9
+  newDialog.noPaddingWidth = dialogWidth - (self.horizontalPadding * 2)
+  
   if newDialog.image then
     newDialog.noPaddingWidth = newDialog.noPaddingWidth - (newDialog.image:getWidth() + self.horizontalPadding)
   end
@@ -268,8 +295,9 @@ function dialove:push(data)
     self:setActiveDialogList({})
   end
 
-  -- extra props
-  newDialog.quadWidth = (self.viewportW - self.margin * 2) / 2
+  local dialogWidth = self.viewportW * 0.9
+  
+  newDialog.quadWidth = dialogWidth / 2
   newDialog.quadHeight = (newDialog.height - self.verticalPadding * 2) / 2
   newDialog.backgroundQuad = love.graphics.newQuad(0, 0,
     math.floor(newDialog.quadWidth + 10),
@@ -312,8 +340,6 @@ function dialove:pop(forcePop)
       if self.activeDialogListIndex >= 1 then
         self.activeDialogListIndex = self.activeDialogListIndex - 1
         table.remove(self.activeDialogListMap)
-
-      else break -- added to fix bug
       end
     until not self:getActiveDialogList() or #self:getActiveDialogList() > 0
 
@@ -326,7 +352,8 @@ end
 
 function dialove:playTypingSound(currentChar, dialog)
   if (not self.delayPerCharacerMap[currentChar]) and (dialog.lineIndex <= #dialog.lines) then
-    love.audio.play(self.typingSound)
+    staticObjects.typingSound:setVolume(typingVolume)
+    love.audio.play(staticObjects.typingSound)
   end
 end
 
@@ -377,36 +404,61 @@ function dialove:complete()
   end
 end
 
+-- i had to change things here because for some reason the dialogue box would get 'cut off' when moving it
 function dialove:draw()
-  love.graphics.push('all')
+  love.graphics.push()
+  local r, g, b, a = love.graphics.getColor()
+  local blendMode, alphaMode = love.graphics.getBlendMode()
+  
   love.graphics.setFont(self.font)
   love.graphics.setLineWidth(2)
   love.graphics.setLineStyle('smooth')
-
+  love.graphics.setBlendMode('alpha', 'alphamultiply')
+  
   local dialog = self:getActiveDialog()
   if not dialog then
+    -- for restoring original state
+    love.graphics.setColor(r, g, b, a)
+    love.graphics.setBlendMode(blendMode, alphaMode)
     love.graphics.pop()
     return
   end
 
   utils.drawBackground(self, dialog)
-
   utils.printTitle(self, dialog)
   -- lines already spelled:
   utils.printText(self, dialog, 1, dialog.lineIndex - 1, true)
-  -- line currently being spelled::
+  -- line currently being spelled:
   utils.printText(self, dialog, dialog.lineIndex, dialog.lineIndex, false)
   utils.drawImage(self, dialog)
   if dialog.done then
     utils.printOptions(self, dialog)
   end
+  
+  --restoring original state
+  love.graphics.setColor(r, g, b, a)
+  love.graphics.setBlendMode(blendMode, alphaMode)
   love.graphics.pop()
 end
 
--- added to clear dialog list
+--GETTER AND SETTER FUNCTIONS FOR THE TYPING SOUND SLIDER
+function dialove:setTypingVolume(volume)
+  typingVolume = volume
+  staticObjects.typingSound:setVolume(volume)
+end
+
+function dialove:getTypingVolume()
+  return typingVolume
+end
+
+--using a function instead to handle clearing dialogs
 function dialove:clearDialogs()
-  self.activeDialogListMap = {}  -- Resets the dialog list
-  self.activeDialog = nil        -- Clears the active dialog
+  --resetting dialog list and index
+  self.activeDialogListMap = {}
+  self.activeDialogListIndex = 1
+  
+  --clearing active dialog
+  self.activeDialog = nil
 end
 
 return dialove
