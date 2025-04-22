@@ -350,7 +350,7 @@ function MainState:mousepressed(x, y, button)
     if button == 2 and BuildOptions[CurrentBuildMode] then  -- Right click
         -- Get the entity at the clicked position
         local e = self:entityAtPosition(x, y)
-        if e then
+        if e and e.type ~= "player" and e.type ~= "fence" and e.type ~= "bee" and e.type ~= "flower" and e.type ~= "wasp" and e.type ~= "bee_eater" and e.type ~= "moth" and e.type ~= "honey_badger" then
             modal:show("", "There is already an object here!", {
                 { label = "Continue", action = function() print("Closed") end }
             })

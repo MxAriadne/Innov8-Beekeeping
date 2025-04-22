@@ -54,16 +54,21 @@ dialog.startup2 = {
 }
 
 dialog.startup3 = {
-    text = "To harvest honey, RIGHT CLICK on a hive while holding your bucket! To select an item in your inventory, press the NUMBER KEY for the item!",
+    text = "To harvest honey, RIGHT CLICK on a hive while holding your bucket! To select an item in your inventory, press the NUMBER KEY for the item! If you get a honey brush, you can harvest more honey from less!",
     options = {}
 }
 
 dialog.startup4 = {
-    text = "To sell honey, select the jar in your inventory using the NUMBER KEYS and RIGHT CLICK on the chest!",
+    text = "Press 'F' to purchase fence posts, and RIGHT CLICK to place them where the mouse is! You can also buy Wire Mesh in the shop, RIGHT CLICK on a hive after buying it to strengthen the hive!",
     options = {}
 }
 
 dialog.startup5 = {
+    text = "To sell items, select the item in your inventory using the NUMBER KEYS and RIGHT CLICK on the chest!",
+    options = {}
+}
+
+dialog.startup6 = {
     text = "More dialogue boxes will show up through out the game. Quick tip: pressing 'C' will finish typing the message. Pressing ENTER will exit the dialogue box. Don't forget to exit the dialogue box before continuing to the next day.",
     options = {}
 }
@@ -91,7 +96,8 @@ dialog.startupM = {
                 dialogManager:push(dialog.startup2) 
                 dialogManager:push(dialog.startup3) 
                 dialogManager:push(dialog.startup4) 
-                dialogManager:push(dialog.startup5)
+                dialogManager:push(dialog.startup5) 
+                dialogManager:push(dialog.startup6)
             else
                 print("DialogManager reference -- nil")
             end
