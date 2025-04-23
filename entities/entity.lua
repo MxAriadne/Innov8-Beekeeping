@@ -615,22 +615,4 @@ function Entity:animate()
     return animation
 end
 
-
--- ********* DELETE AFTER ENTITIES CAN BE LOADED *********
--- added for saving /loading
--- Function to collect serialized entity data
---[[function Entity.getSaveData()
-    local saveData = {}
-
-    if Entities then
-        for _, entity in ipairs(Entities) do
-            if entity.serialize then
-                table.insert(saveData, entity:serialize())
-            end
-        end
-    end
-
-    return saveData
-end]]
-
 return Entity

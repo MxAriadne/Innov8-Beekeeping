@@ -149,7 +149,7 @@ function MainState:update(dt)
     -- Press escape to save and quit
     if love.keyboard.isDown("escape") then
         Music:stop()
-        SaveManager.save()
+        -- SaveManager.save()
         GameStateManager:setState(MainMenu)
     end
 end

@@ -1,23 +1,7 @@
 --dayCycleScript.lua file
 --author: Elaina Vogel
 
--- TODO: update appropiate variables to show progression (tool and fence integrity), add shop trigger in daycycle
-
 --[[This file handles the day cycle aspect of the game]]
-
---quick read
---[[
-    update days passed
-    call day/night function to match tint
-        display appropiate message
-        trigger events
-        display updates stats
-
-    in trigger:
-    if a certain num, change bool for specific attack
-        triggers event
-    update everything
-]]
 
 local DayCycle = {}
 
@@ -159,8 +143,8 @@ function DayCycle:TriggerUpdates(dt)
         PressSpaceAllowed = true
     end
 
-    -- update save
-    SaveManager.save()
+    -- update save (hiding save/load functionality)
+    -- SaveManager.save()
 end
 
 -- applys a tint over everything using a transparent rectangle

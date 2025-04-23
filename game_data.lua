@@ -1,4 +1,3 @@
---holds game variables to be saved and loaded
 -- Holds game variables to be saved and loaded
 
 --TODO: fix entity logic if this is root of issue (i dont think it is)
@@ -43,30 +42,6 @@ function GameData.Update_gameDataWGlobals()
     --(these things SHOULD be reintialized when entity:new() is
     -- called for each type for each entity in their own deserialize function)).
     GameData.gameData.entities = {}
-
-    -- old serialize logic depends on serialize frunction for each type
-    --[[for _, entity in ipairs(Entities) do
-        if entity.serialize then
-            table.insert(GameData.gameData.entities, entity:serialize())
-        end
-    end
-
-    if player and player.serialize then
-        table.insert(GameData.gameData.entities, player:serialize())
-    end]]
-
-    --[[print("---- Entities Dump ----")
-for k, v in pairs(Entities) do
-    print("Key:", k, "Type:", type(v))
-
-    if type(v) == "table" then
-        for field, value in pairs(v) do
-            if type(value) ~= "function" then
-                print("  ", field, "=", value)
-            end
-        end
-    end
-end]]
 
     -- new standard function
     GameData.gameData.entities = GameData.SaveEntities(GameData.gameData.entities)
@@ -127,7 +102,6 @@ function GameData.SaveEntities(entitiesTable)
         if type(v) == "table" then
             local serialized = GameData.serializeEntity(v)
             table.insert(entitiesTable, serialized)
-            --GameData.eititiesTable[key] = GameData.serializeEntity(v) -- if they were key styles (they are list so dont use this)
         end
     end
 
@@ -180,7 +154,7 @@ end
 -- deserializes data (individuals)
 function GameData.deserializeEntity(data)
 
-    local entityType = data.type      --data.__entityType
+    local entityType = data.type
     print("deserializing datatype: "..entityType)
 
     local entityClass = GameData.EntityRegistry[entityType]
@@ -215,10 +189,7 @@ function GameData.LoadEntities(file)
         local entity = GameData.deserializeEntity(data)
         table.insert(Entities, entity)
     end
-    -- if they were key styles (they are list so dont use this)
-    --[[for key, data in pairs(GameData.savedEntities or {}) do
-        Entities[key] = GameData.deserializeEntity(data)
-    end]]
+
 end
 
 return GameData

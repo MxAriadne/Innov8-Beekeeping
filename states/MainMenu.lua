@@ -18,7 +18,7 @@ function MainMenu:enter()
 
     -- Create the buttons and add them to the table
     table.insert(self.buttons, button:new("New Game", newGame, buttonW, buttonH))
-    table.insert(self.buttons, button:new("Load Game", loadGame, buttonW, buttonH))
+    -- table.insert(self.buttons, button:new("Load Game", loadGame, buttonW, buttonH))
     table.insert(self.buttons, button:new("Settings", loadSettings, buttonW, buttonH))
     table.insert(self.buttons, button:new("Exit", exitGame, buttonW, buttonH))
 

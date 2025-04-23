@@ -354,39 +354,4 @@ function playerAnimation(image, height, width, duration)
     return animation
 end
 
--- added functions for saving/loading
--- If need to add variables to save for entity, add in both functions!
-function Player:serialize()
-    return {
-        type = self.type,
-        x = self.x,
-        y = self.y,
-        health = self.health,
-        honey = self.honey,
-        hasQueen = self.hasQueen,
-        beeCount = self.beeCount,
-
-        
-        itemInHand = self.itemInHand,
-        items = self.items,
-        
-    }
-end
-
--- deserilize for loading purposes
-function Player.deserialize(data)
-    -- calling the constructor should also reintialize its functionality but its not!
-        -- i tried :new() in other entities and that is not working either
-    local player = Player(data.x, data.y)
-    player.health = data.health
-    player.honey = data.honey
-    player.hasQueen = data.hasQueen
-    player.beeCount = data.beeCount
-
-    player.itemInHand = data.itemInHand
-    player.items = data.item
-
-    return player
-end
-
 return Player

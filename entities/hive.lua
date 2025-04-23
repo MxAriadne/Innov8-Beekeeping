@@ -142,30 +142,4 @@ function Hive:takeDamage(damage, attacker)
     end
 end
 
--- ********* DELETE AFTER ENTITIES CAN BE LOADED *********
---added functions to save/load
--- added function to serialize
---[[function Hive:serialize()
-    return {
-        type = self.type,
-        x = self.x,
-        y = self.y,
-        health = self.health,
-        honey = self.honey,
-        hasQueen = self.hasQueen,
-        beeCount = self.beeCount,
-    }
-end
-
--- deserilize for loading purposes
-function Hive.deserialize(data)
-    -- constructor shoudl reintialize its functionality but its not!
-    local hive = Hive(data.x, data.y)
-    hive.health = data.health
-    hive.honey = data.honey
-    hive.hasQueen = data.hasQueen
-    hive.beeCount = data.beeCount
-    return hive
-end]]
-
 return Hive
