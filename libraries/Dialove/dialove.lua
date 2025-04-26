@@ -24,7 +24,7 @@ local utils = require(BASE .. 'dialove-utils')
 
 --Global static object to be shared across all dialove instances
 local staticObjects = {
-  typingSound = love.audio.newSource(BASE .. 'assets/typing-sound.ogg', 'static'),
+  typingSound = love.audio.newSource('libraries/Dialove/assets/typing-sound.ogg', 'static'),
   typingVolume = 1
 }
 
