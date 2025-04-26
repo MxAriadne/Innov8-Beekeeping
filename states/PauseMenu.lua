@@ -8,10 +8,10 @@ local HUD = require "UI/HUD"
 local PauseMenu = {}
 
 -- This function displays the settings screen
-    function loadSettings()
-        GameStateManager:setState(Settings)
-        print (Settings)
-    end
+function loadSettings()
+    GameStateManager:setState(Settings)
+    print (Settings)
+end
 
 -- This function generates and returns the buttons for the main menu
 function PauseMenu:enter()
@@ -23,7 +23,7 @@ function PauseMenu:enter()
 
     -- Create the buttons and add them to the table
     table.insert(self.buttons, button:new("Continue", continueGame, buttonW, buttonH))
-    table.insert(self.buttons, button:new("Load Game", loadGame, buttonW, buttonH))
+    --table.insert(self.buttons, button:new("Load Game", loadGame, buttonW, buttonH))
     table.insert(self.buttons, button:new("Settings", loadSettings, buttonW, buttonH))
     table.insert(self.buttons, button:new("Exit", exitGame, buttonW, buttonH))
 

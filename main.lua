@@ -20,6 +20,12 @@ Inventory = require "states/Inventory"
 Settings = require "states/Settings"
 CharacterSelector = require "UI/CharacterSelector"
 
+-- Save variables
+SaveManager = require "save_manager"
+GameData = require "game_data"
+DeleteOldWorld = false
+NewWorldCount = 0
+
 -- Set player name, used for save files.
 PlayerName = "Player"
 -- Total money the player has, starts out with 2000 KSh
@@ -71,7 +77,6 @@ function love.load()
     require "entities.dewdrop"
     require "entities.fence"
     require "entities.chest"
-
 
     Music = love.audio.newSource("tunes/Flowers.mp3", "stream")
     Music:setVolume(0.3)

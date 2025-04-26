@@ -1,42 +1,192 @@
 -- Holds game variables to be saved and loaded
 
---TODO: fix update and var refs
+--TODO: fix entity logic if this is root of issue (i dont think it is)
 
 -- Make sure these variables are defined somewhere in your code before you use them
-local days = 1  -- Example value
-local hives = {}  -- Example empty table, replace with actual data
-local flowers = {}  -- Example empty table, replace with actual data
-local PlayerMoney = 100  -- Example value
-local bees = {}  -- Example empty table, replace with actual data
-local waspGo = false  -- Example value
-local badgerGo = false  -- Example value
-local PlayerName = ""
 
-local gameData = {
-    -- day number
-    daysPassed = daysPassed,
-    -- hive health, level, count, positions
-    --hives = hives,
-    -- flower count, positions
-    --flowers = flowers,
-    -- honey count 
-    -- honey = hive.honey,  -- maybe get honey from all hives
-    -- money count
-    --PlayerMoney = PlayerMoney,
-    -- bee count
-    --bees = bees,
-    -- waspGo
-    waspGo = waspGo,
-    -- badgerGo
-    badgerGo = badgerGo
-    -- fence count, positions
-    -- tool integrity n stuff
+local GameData = {}
+
+GameData.gameData = {
+    -- globally defined variables in main
+    DaysPassed = 0,
+    PlayerName = "Player",
+    PlayerMoney = 3000,
+    TintEnabled = false,
+    DebugMode = false,
+    FirstRun = true,
+    Timer = 0,
+    LastTrigger = 0,
+    PressSpaceAllowed = true,
+
+    -- add entities
+    entities = {}
 }
 
-function Update_gameData()
-    gameData.daysPassed = daysPassed
-    gameData.waspGo = waspGo
-    gameData.badgerGo = badgerGo
+function GameData.Update_gameDataWGlobals()
+    GameData.gameData.DaysPassed = DaysPassed
+    GameData.gameData.PlayerName = PlayerName
+    GameData.gameData.PlayerMoney = PlayerMoney
+    GameData.gameData.TintEnabled = TintEnabled
+    GameData.gameData.DebugMode = DebugMode
+    GameData.gameData.FirstRun = FirstRun
+    GameData.gameData.Timer = Timer
+    GameData.gameData.LastTrigger = LastTrigger
+    GameData.gameData.PressSpaceAllowed = PressSpaceAllowed
+
+    -- entities
+
+    -- Adds serialized entities to table (CANNOT ADD FUNCTIONS or USERDATA
+    --(these things SHOULD be reintialized when entity:new() is
+    -- called for each type for each entity in their own deserialize function)).
+    GameData.gameData.entities = {}
+
+    -- new standard function
+    GameData.gameData.entities = GameData.SaveEntities(GameData.gameData.entities)
 end
 
-return gameData
+-- Update glabals with the tables values. At the moment it works by using the newgame created and updates those variables.
+function GameData.Update_GlobalsWgameData(data)
+    DaysPassed = data.DaysPassed
+    PlayerName = data.PlayerName
+    PlayerMoney = data.PlayerMoney
+    TintEnabled = data.TintEnabled
+    DebugMode = data.DebugMode
+    FirstRun = data.FirstRun
+    Timer = data.Timer
+    LastTrigger = data.LastTrigger
+    PressSpaceAllowed = data.PressSpaceAllowed
+
+    -- entities are loaded separately (In save_manager.loadGame())
+end
+
+-- handles tables inside entity data
+function GameData.shallowCopyTable(tbl)
+    local copy = {}
+    for k, v in pairs(tbl) do
+        if v == "number" or v == "string" or v == "boolean" then
+            copy[k] = v
+        end
+    end
+    return copy
+end
+
+-- universal serialize each entitiy function
+function GameData.serializeEntity(entity)
+    local data = {}
+
+    for k, v in pairs(entity) do
+        local vType = type(v)
+
+        -- skip function, userdata, threads, etc
+        if vType == "number" or vType == "string" or vType == "boolean" then
+            data[k] = v
+        elseif vType == "table" then
+            -- handle nested tables
+            data[k] = GameData.shallowCopyTable(v)
+        end
+    end
+
+    -- include entity type for recreating
+    data.__entityType = entity.__entityType or entity.type or "unknown"
+
+    return data
+end
+
+-- universal serialize function for entities
+function GameData.SaveEntities(entitiesTable)
+    -- loop through and skip any functions or nil values
+    for key, v in pairs(Entities) do
+        if type(v) == "table" then
+            local serialized = GameData.serializeEntity(v)
+            table.insert(entitiesTable, serialized)
+        end
+    end
+
+    return entitiesTable
+end
+
+-- generic loading
+-- regsitry to map names to classes
+GameData.EntityRegistry = {
+    bee = Bee,
+    flower = Flower,
+    bee_eater = BeeEater,
+    Chest = Chest,
+    --dewdrop = GoldenDewdrops,
+    fence = Fence,
+    hive = Hive,
+    honey_badger = HoneyBadger,
+    --langstrothhive = LangstrothHive,
+    --lantana = CommonLantana,
+    moth = Moth,
+    player = Player,
+    queenBee = QueenBee,
+    --topbarhive = TopBarHive,
+    wasp = Wasp,
+
+}
+
+--updates registry to current instances
+function GameData.updateRegistry()
+    GameData.EntityRegistry = {
+        bee = Bee,
+        flower = Flower,
+        bee_eater = BeeEater,
+        Chest = Chest,
+        --dewdrop = GoldenDewdrops,
+        fence = Fence,
+        hive = Hive,
+        honey_badger = HoneyBadger,
+        --langstrothhive = LangstrothHive,
+        --lantana = CommonLantana,
+        moth = Moth,
+        player = Player,
+        queenBee = QueenBee,
+        --topbarhive = TopBarHive,
+        wasp = Wasp,
+    
+    }
+end
+
+-- deserializes data (individuals)
+function GameData.deserializeEntity(data)
+
+    local entityType = data.type
+    print("deserializing datatype: "..entityType)
+
+    local entityClass = GameData.EntityRegistry[entityType]
+
+    if not entityClass then
+        error("Unknown entity type: " .. tostring(entityType))
+    end
+
+    local entity = entityClass:new(data.x, data.y)
+    -- Make sure entity.type exists before printing
+    print("Created new entity of type: " .. tostring(entity.type or "nil"))
+
+    -- Restore fields (skip anything like collider that’s created during :new())
+    for k, v in pairs(data) do
+        if k ~= "x" and k ~= "y" and k ~= "__entityType" and k ~= "state" then
+            entity[k] = v
+        elseif k == "state" and entityType == "bee" then
+            entity[k] = "wandering" -- overide bee
+        end
+    end
+
+    return entity
+end
+
+-- deserializes all entities
+function GameData.LoadEntities(file)
+    Entities = {}
+    GameData.gameData.entities = file.entities
+
+    for _, data in ipairs(GameData.gameData.entities or {}) do
+        print("loadtable.entities entity type: " .. data.type)
+        local entity = GameData.deserializeEntity(data)
+        table.insert(Entities, entity)
+    end
+
+end
+
+return GameData
