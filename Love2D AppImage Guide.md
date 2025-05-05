@@ -1,4 +1,6 @@
 
+# Love2D AppImage Generation Guide
+
 1. Zip the directory containing the files. Make sure *main.lua* is in the **root directory** of the zip, and not contained within a folder in the zip, which is the default with many archive programs like WinRAR.
 2. Rename the file extension from *.zip* to *.love*
 3. In terminal, run the following commands in the same directory as the .love file:
